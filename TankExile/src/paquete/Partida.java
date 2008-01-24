@@ -31,12 +31,15 @@ public class Partida extends Canvas implements Finals{
 	private Conexion conexion; // Objeto utilizado para todo lo relacionado a la comunicación entre ambos hosts.
 	private String nombreCircuitoTXT; // Atributo que representa el nombre del archivo del circuito.
 	
+ 
 	// Contstructor. Genera los elementos básicos de una aplicación del tipo juego.
 	public Partida(int yoID, String nombreCircuitoTXT, Conexion conexion) {
 		JFrame ventana = new JFrame("TankExile"); // Armado de la ventana.
 		JPanel panel = (JPanel)ventana.getContentPane(); // Obtención de su JPanel.
 		this.setBounds(0,0,Finals.ANCHO_VENTANA,Finals.ALTO_VENTANA); // Establecimiento de las dimensiones de este objeto Partida.
 		
+                
+                
 		panel.setPreferredSize(new Dimension(Finals.ANCHO_VENTANA,Finals.ALTO_VENTANA)); // Establecimiento de las dimensiones del panel.
 		panel.setLayout(null);
 		panel.add(this); // El panel pintará este canvas (definido por esta instancia de Partida).
@@ -97,6 +100,7 @@ public class Partida extends Canvas implements Finals{
 	public void pintarEscena() {
 		Graphics2D g = (Graphics2D)estrategia.getDrawGraphics();
 		g.setColor(Color.LIGHT_GRAY);
+            
 		g.fillRect(0,0,this.getWidth(),this.getHeight());
 		for (int i = 0; i < bloquesAPintar.size(); i++) {
 			((Bloque)bloquesAPintar.get(i)).paint(g);
