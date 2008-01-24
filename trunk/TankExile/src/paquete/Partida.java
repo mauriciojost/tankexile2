@@ -134,6 +134,7 @@ public class Partida extends Canvas implements Finals{
 		
 		try {
 			conexion.copiarDeHostRemoto("circuiton.txt", "copio.txt");
+			conexion.enviarAHostRemoto("circuiton.txt", "copio.txt");
 		} catch (IOException ex) {
 			System.err.println("Error al intentar copiar en el método de Conexion copiarDeHostRemoto.");
 			Logger.getLogger(Partida.class.getName()).log(Level.SEVERE, null, ex);
