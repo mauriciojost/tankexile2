@@ -76,6 +76,13 @@ public class Conexion extends Thread implements Legible{
 		}
 	}
 	
+	// Método que realiza el envío de un archivo local hacia el host remoto.
+	// Se requiere para su uso haber ejecutado previamente bindearMisArchivos() remotamente.
+	// Además se requiere luego de ello haber ejecutado ponerADisposicionArchivosRemotos().
+	public void enviarAHostRemoto(String archivoOrigenLocal, String archivoDestinoRemoto) throws IOException {
+		archivosRemotos.copiarDeHostRemoto(archivoOrigenLocal,archivoDestinoRemoto);
+	}
+	
 	// Método que realiza la copia de un archivo remoto al host actual.
 	// Se requiere para su uso haber ejecutado previamente bindearMisArchivos() remotamente.
 	// Además se requiere luego de ello haber ejecutado ponerADisposicionArchivosRemotos().
