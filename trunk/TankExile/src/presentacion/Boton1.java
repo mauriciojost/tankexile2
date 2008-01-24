@@ -2,9 +2,6 @@
 package presentacion;
 
 import paquete.*;
-import presentacion.FileChooser;
-import presentacion.PrePartida1;
-import presentacion.Presentacion;
 import java.awt.Button;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -20,21 +17,18 @@ public class Boton1 extends Button implements MouseListener{
     }
     // Método que responde al evento sobre el boton Conexion.
     public void responderConexion(MouseEvent e) {
-		//((Boton1)e.getComponent()).ventana.getContentPane().removeAll();
-		//this.ventana.dispose();
+		// Acciones relativas a la conexión. Seguramente se necesita de un objeto de la clase Conexion.
+		// Necesito obtener el IP del oponente tipeado en el cuadro de texto.
 		System.out.println("POR CONSTRUIR PRE PARTIDA");
-		this.ventana.dispose();
-		new PrePartida1();
+		ventana.dispose();
+		new PrePartida1(ventana.getX(),ventana.getY());
 		
     }
     // Metodo que responde al evento sobre el boton Jugar.
 	public Partida responderJugar(MouseEvent e) {
-		//((Boton1)e.getComponent()).ventana.getContentPane().removeAll();
-		//this.ventana.setEnabled(false);
-		//this.ventana.setVisible(false);
+		
 		System.out.println("POR CONSTRUIR PARTIDA");
-		//return new Partida(this.ventana);
-		this.ventana.dispose();
+		ventana.dispose();
 		return new Partida(0,"circuito2.txt",null);
 		
 		
@@ -42,8 +36,13 @@ public class Boton1 extends Button implements MouseListener{
     // Método que responder al evento sobre el boton Opciones.
     public void responderOpciones(MouseEvent e) {
 		//((Boton1)e.getComponent()).ventana.getContentPane().removeAll();
-		System.out.println("POR CONSTRUIR CONFIGURADOR");
+		System.out.println("POR CONSTRUIR CONFIGURADOR 1");
 		//new Configurador1();
+
+		//ventana.dispose();
+		//new FileChooser(ventana.getX(),ventana.getY());
+		
+
 		//new FileChooser();
                 /*JFrame frame = new JFrame("Seleccion de Circuito");
                 SplitPane splitPane = new SplitPane();
@@ -52,12 +51,13 @@ public class Boton1 extends Button implements MouseListener{
                 frame.setVisible(true);*/
                 new SplitPane();
                 this.ventana.dispose();
+
     }
 	
     public void responderReiniciar(MouseEvent e) {
 		//((Boton1)e.getComponent()).ventana.getContentPane().removeAll();
-		this.ventana.dispose();
-		new PrePartida1();
+		ventana.dispose();
+		new PrePartida1(ventana.getX(),ventana.getY());
 		
     }
 	

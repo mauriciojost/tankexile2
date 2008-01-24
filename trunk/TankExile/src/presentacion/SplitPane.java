@@ -137,6 +137,11 @@ public class SplitPane implements ListSelectionListener {
      }
  };
  list.addMouseListener(mouseListener);
+ JFrame jf = new JFrame("ANDA ");
+ jf.setPreferredSize(new Dimension(400,400));
+ jf.getContentPane().setPreferredSize(new Dimension(400,400));
+ jf.getContentPane().add(splitPane);
+ jf.setVisible(true);
         
     }
 
