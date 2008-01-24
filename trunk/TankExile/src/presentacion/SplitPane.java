@@ -123,7 +123,7 @@ public class SplitPane implements ListSelectionListener {
         splitPane.setDividerSize(10);
 
         //Provide a preferred size for the split pane
-        splitPane.setPreferredSize(new Dimension(450, 200));
+        splitPane.setPreferredSize(new Dimension(350, 200));
         
         
         MouseListener mouseListener = new MouseAdapter() 
@@ -141,6 +141,9 @@ public class SplitPane implements ListSelectionListener {
  jf.setPreferredSize(new Dimension(400,400));
  jf.getContentPane().setPreferredSize(new Dimension(400,400));
  jf.getContentPane().add(splitPane);
+ jf.addWindowListener(new WindowAdapter() {
+			public void windowClosing(WindowEvent e) {System.exit(0);}
+		}); // Se define un objeto que escucha los eventos sobre la ventana.
  jf.setVisible(true);
         
     }
