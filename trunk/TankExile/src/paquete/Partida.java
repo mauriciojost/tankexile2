@@ -71,8 +71,7 @@ public class Partida extends Canvas implements Finals{
 		
 		tanquePropio = new Tanque(this, circuito, yoID); // Creación del tanque comandado por el jugador en este host.
 		tanqueLocalLigadoOponente = new Tanque(this, circuito, otroID); // Creación del tanque que será ligado al registro de RMI para ser comandado por el host remoto.
-		Conexion.servirTanqueLocalOponente(tanqueLocalLigadoOponente); // El tanque anterior es puesto a disposición del host remoto.
-		
+		conexion.servirTanqueLocalOponente(tanqueLocalLigadoOponente); // El tanque anterior es puesto a disposición del host remoto.
 		conexion.setTanquePropio(tanquePropio); // La conexión esta lista para ser establecida, el hilo conexión observará al tanque y con sus parámetros comandará al tanque remoto puesto en el registro de RMI.
 		conexion.establecerComunicacionTanqueRemoto(); // La conexión es establecida.
 		
