@@ -44,8 +44,14 @@ public class Boton1 extends Button implements MouseListener{
 		//((Boton1)e.getComponent()).ventana.getContentPane().removeAll();
 		System.out.println("POR CONSTRUIR CONFIGURADOR");
 		//new Configurador1();
-		new FileChooser();
-		this.ventana.dispose();
+		//new FileChooser();
+                /*JFrame frame = new JFrame("Seleccion de Circuito");
+                SplitPane splitPane = new SplitPane();
+                frame.getContentPane().add(splitPane.getSplitPane());
+                frame.pack();
+                frame.setVisible(true);*/
+                new SplitPane();
+                this.ventana.dispose();
     }
 	
     public void responderReiniciar(MouseEvent e) {
