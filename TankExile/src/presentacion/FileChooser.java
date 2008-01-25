@@ -29,7 +29,7 @@ public class FileChooser extends JFrame implements ActionListener {
             public void windowClosing(WindowEvent e) {System.exit(0);}
         });
         
-		Boton1 abrir = new Boton1("Explorar",this);
+		JButton abrir = new JButton("Explorar");
 		abrir.addActionListener(this);
 		
 		JPanel jp6 = new JPanel();

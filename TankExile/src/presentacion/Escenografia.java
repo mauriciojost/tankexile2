@@ -1,14 +1,171 @@
+package presentacion;
+
+import java.awt.*;
+import java.awt.event.*;
+import java.io.File;
+import java.io.FileFilter;
+import javax.swing.*;
+import javax.swing.event.*;
+
+import java.util.*;
+
+//SplitPaneDemo itself is not a visible component.
+public class Escenografia extends JFrame implements ListSelectionListener {
+    private Vector fileNames = new Vector();
+    private JList lista;
+    private JSplitPane splitPane;
+    private File dir = new File("Circuitos");
+    private  File files;
+    private String names;
+    private int indeX;
+    final static String tec = "tec";
+    private File[] file = dir.listFiles();
+    
+
+    public Escenografia() {
+		super("TankExile - Seleccionar Escenario");
+		//setBounds(x,y,400,400);
+		//setResizable(false);
+				
+		getContentPane().setPreferredSize(new Dimension(400,400));
+		getContentPane().setLayout(new GridLayout(3,1));
+		addWindowListener(new WindowAdapter() {
+			public void windowClosing(WindowEvent e) {System.exit(0);}
+		}); // Se define un objeto que escucha los eventos sobre la ventana.
+		
+		// Filtrado de archivos del tipo circuito.
+		FileFilter fileFilter = new FileFilter() {
+			public boolean accept(File f) {
+				if (f.isDirectory()) {
+					return true;
+				}
+				String s = f.getName();
+				int i = s.lastIndexOf('.');
+			
+				if (i > 0 &&  i < s.length() - 1) {
+					String extension = s.substring(i+1).toLowerCase();
+					if (tec.equals(extension)) {
+						return true;
+					} else {
+						return false;
+					}
+				}
+				return false;
+		    }
+		};
+		file = dir.listFiles(fileFilter);
+		//String[] children = dir.list();
+		//String[] children;
+		if (file == null) {
+			// Either dir does not exist or is not a directory.
+			System.out.println("no tiene nada"); 
+		} else {
+			for (int i=0; i<file.length; i++) {
+				// Get filename of file or directory
+				fileNames.add(i, file[i]);
+				// PAra borrarr
+				//System.out.println(file[i]+"texto");
+			}
+		}
+		// Create the list of images and put it in a scroll pane.
+		lista = new JList(fileNames);
+		lista.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		lista.setSelectedIndex(0); // Modifica cual es el primer marcado ??
+		lista.addListSelectionListener(this);
+		
+		JScrollPane jsp = new JScrollPane(lista);
+		
+		// Creamos Etiqueta.
+		JLabel jl1 = new JLabel("   Seleccion de Circuito    ");
+		jl1.setSize(70, 10);
+		jl1.setBackground(Color.LIGHT_GRAY);
+		
+		JPanel jp_titulo = new JPanel();
+		jp_titulo.setLayout(new FlowLayout(FlowLayout.LEFT));
+		jp_titulo.setBackground(Color.LIGHT_GRAY);
+		jp_titulo.add(jl1);
+		
+		// Creamos Botones.
+		// abrir
+		JButton abrir = new JButton("Seleccionar"/*, new ImageIcon("images/open.gif")*/);
+		abrir.addActionListener(new OpenListener(lista));
+		
+		// cancelar
+		JButton cancelar = new JButton("Cancelar"/*, new ImageIcon("images/cancel.gif")*/);
+		cancelar.addActionListener(new CancelListener());
+		
+		JPanel jp_boton = new JPanel();
+		jp_boton.setLayout(new FlowLayout(FlowLayout.CENTER));
+		jp_boton.setBackground(Color.LIGHT_GRAY);
+		jp_boton.add(abrir);
+		jp_boton.add(cancelar);
+		
+		MouseListener mouseListener = new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
+				if (e.getClickCount() == 2) {
+					indeX = lista.locationToIndex(e.getPoint());
+					System.out.println("Double clicked on Item " + indeX);
+					lista.setSelectedIndex(indeX);
+				}
+			}
+		};
+		lista.addMouseListener(mouseListener);
+		
+		getContentPane().add(jp_titulo);
+		getContentPane().add(jsp);
+		getContentPane().add(jp_boton);
+		
+		setVisible(true);
+	}
+	
+	public JSplitPane getSplitPane() {
+		return splitPane;
+	}
+	
+	public Object  getSelectedNameFile() {
+		return  lista.getSelectedValue();
+	}
+	
+	public int getSelectedindexFile() {
+		return indeX;
+	}
+	
+	public void valueChanged(ListSelectionEvent e) {
+		/* if (e.getValueIsAdjusting())
+			return;
+
+        JList theList = (JList)e.getSource();
+        if (theList.isSelectionEmpty()) {
+             System.out.println("seleccion vacia");
+        } else {
+            int index = theList.getSelectedIndex();
+            indeX = theList.getSelectedIndex();
+            //names= (String) theList.getSelectedValue();
+            names = (String) list.getSelectedValue();
+        }*/
+    }
+	
+	protected static Vector parseList(String theStringList) {
+		Vector v = new Vector(10);
+		StringTokenizer tokenizer = new StringTokenizer(theStringList, " ");
+		while (tokenizer.hasMoreTokens()) {
+			String image = tokenizer.nextToken();
+			v.addElement(image);
+		}
+		return v;
+	}
+}
+
+
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
 
-package presentacion;
+
 
 /**
  *
  * @author pc
  */
-public class Escenografia {
 
-}
