@@ -14,7 +14,9 @@ import java.awt.event.ActionListener;
  */
 class CancelListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-            System.exit(0);
+           
+            Escenografia.getEsc().dispose();
+            PrePartida1.getPrePartida1().show();
             //hay que implementar la vuelta atras a la pagina que la precede
     }
 

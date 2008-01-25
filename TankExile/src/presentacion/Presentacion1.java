@@ -18,11 +18,13 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
 public class Presentacion1 extends JFrame implements MouseListener {
-	
+	private PrePartida1 prePartida1;
+        private Presentacion1 presentacion1;
 	// Constructor de la clase.
 	public Presentacion1(int x, int y){
 		super("TankExile - Presentacion");
-		setBounds(x,y, Finals.ANCHO_VENTANA-250, Finals.ALTO_VENTANA-500); // Reajusta tamaño de la ventana, sin modificar su posición.
+                
+                setBounds(x,y, Finals.ANCHO_VENTANA-250, Finals.ALTO_VENTANA-500); // Reajusta tamaño de la ventana, sin modificar su posición.
 		setResizable(false);
 		
 		JPanel panel = (JPanel) getContentPane(); // Panel donde se grafican los objetos (bloques)que componen el escenario y los tanques que representan a cada jugador.
@@ -93,14 +95,23 @@ public class Presentacion1 extends JFrame implements MouseListener {
 		panel.add(jp3);
 		
 		setVisible(true);
+                presentacion1 = this;
 	}
+
+    Presentacion1(JFrame ventana) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+  public Presentacion1 getPresentacion1() {
+        return presentacion1;
+    }
 
 	public void mouseClicked(MouseEvent e) {
 		// Acciones relativas a la conexión. Seguramente se necesita de un objeto de la clase Conexion.
 		// Necesito obtener el IP del oponente tipeado en el cuadro de texto.
 		System.out.println("POR CONSTRUIR PRE PARTIDA");
 		this.dispose();
-		new PrePartida1(this.getX(),this.getY());
+		prePartida1 = new PrePartida1(this.getX(),this.getY(),presentacion1);
 	}
 
 	public void mousePressed(MouseEvent e) { }

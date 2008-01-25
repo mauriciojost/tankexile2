@@ -20,10 +20,13 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 public class PrePartida1 extends JFrame implements MouseListener{
-	
+	private Presentacion1 presentacion1;
+        private static PrePartida1 prepartida1;
+        private Escenografia escenografia;
 	// Constructor de la clase.
-	public PrePartida1(int x, int y){
+	public PrePartida1(int x, int y,Presentacion1 presentacion1){
 		super("Tank Exile - Pre Partida");
+                this.presentacion1=presentacion1;
 		setBounds(x,y,Finals.ANCHO_VENTANA-250,Finals.ALTO_VENTANA-500); // Reajusta tamaño de la ventana, sin modificar su posición.
 		setResizable(false); // No se permite dar nuevo tamaño a la ventana.
 		
@@ -33,6 +36,7 @@ public class PrePartida1 extends JFrame implements MouseListener{
 		panel.setBackground(Color.LIGHT_GRAY);
 		
 		addWindowListener(new WindowAdapter() {
+            @Override
 			public void windowClosing(WindowEvent e) {System.exit(0);}
 		}); // Se define un objeto que escucha los eventos sobre la ventana.
 		
@@ -57,11 +61,12 @@ public class PrePartida1 extends JFrame implements MouseListener{
 		panel.add(jp4);
 		panel.add(jp5);
 		setVisible(true);
+                prepartida1=this;
 		System.out.println(" PASE POR CONSTRUCTOR DE PRE PARTIDA");
 	}
 	
 	
-	// Metodo que responde al evento sobre el boton Jugar.
+		// Metodo que responde al evento sobre el boton Jugar.
 	public void Jugar() {
 		
 		this.dispose();
@@ -97,13 +102,17 @@ public class PrePartida1 extends JFrame implements MouseListener{
 		
 	}
     // Método que responder al evento sobre el boton Opciones.
-    public void Opciones() {
+        public void Opciones() {
 		
 		System.out.println("POR CONSTRUIR ESCENOGRAFIA");
-		new Escenografia();
+		escenografia =new Escenografia(prepartida1);
 		this.dispose();
-    }
-	
+        }
+        
+        static public PrePartida1 getPrePartida1() {
+		return prepartida1;
+	}
+        
 	public void mouseClicked(MouseEvent e) {
 		try {
 			String nombre = new String(((JButton)e.getSource()).getText());
