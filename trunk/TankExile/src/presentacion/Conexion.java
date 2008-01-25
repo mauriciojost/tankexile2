@@ -1,5 +1,7 @@
 package presentacion;
 
+import java.awt.Component;
+import java.awt.event.MouseEvent;
 import paquete.*;
 import java.io.File;
 import java.io.FileReader;
@@ -17,13 +19,47 @@ public class Conexion extends Thread implements Legible{
 	private Tanque tanquePropio; // Tanque correspondiente al host propio (o no-remoto).
 	private Controlable tanqueRemotoAControlar; // Interfaz con la que se controla el tanque propio remoto (en el host oponente).
 	private Legible archivosRemotos; // Interfaz con la que se realiza la lectura de los archivos remotos.
+	private VentanaControlable ventanaRemota; // Interfaz con la que se hace la manipulación de la ventana remota de selección de circuitos.
 	private String iPOponente; // Ip del host oponente.
+	private final int PUERTO_VENTANA = 4052; // Puerto al que se asocia el registro de la ventana de selección de circuitos.
 	private final int PUERTO_ARCHIVOS = 4051; // Puerto al que se asocia el registro de archivos de circuitos.
-	private final int PUERTO_TANQUES = 4050; // Puerto al que se asocia el registro de archivos de circuitos.
+	private final int PUERTO_TANQUES = 4050; // Puerto al que se asocia el registro de tanques.
+	private boolean archivosListo = false; // Indicador de la disponibilidad o no de los archivos remotos para el host local.
+	private boolean tanqueListo = false; // Indicador de la disponibilidad o no del tanque remoto para el host local.
+	private boolean ventanaLista = false; // Indicador de la disponibilidad o no de la ventana (de selección de circuito) remota para el host local.
 	
 	// Constructor.
 	public Conexion(String iPOponente){
 		this.iPOponente = iPOponente;
+		MouseEvent a;
+		Component b;
+			
+	}
+	
+	// Método que pone la ventana de selección de circuitos de este host a disposición del host oponente.
+	public void bindearMiVentana(Escenografia ventana){
+		try{
+			LocateRegistry.createRegistry(PUERTO_VENTANA); // Es tomado el puerto PUERTO_VENTANA y creado un registro asociado sobre él.
+			presentacion.VentanaControlable stub = (VentanaControlable) UnicastRemoteObject.exportObject(ventana, PUERTO_VENTANA); // Es exportado el objeto instancia de Conexion.
+			Registry registry = LocateRegistry.getRegistry(PUERTO_VENTANA); // Es tomado el registro recientemente ligado al puerto PUERTO_VENTANA.
+			registry.bind("Clave ventana", stub); // El ligado el stub al registro.
+			System.out.println("Servidor de ventana de circuito listo.");
+		}catch(Exception e){
+			System.err.println("Excepción de servidor de ventana de circuito: " + e.toString());
+			e.printStackTrace();
+		}
+	}
+
+	// Método que pone la ventana de selección de circuitos remota a disposición de este host.
+	public void ponerADisposicionVentanaRemota() throws Exception{	
+		Registry registry = LocateRegistry.getRegistry(iPOponente,PUERTO_VENTANA);
+		this.ventanaRemota = (VentanaControlable) registry.lookup("Clave ventana");    
+		System.out.println("Conexión de cliente exitosa. Ventana remota a disposición local.");
+		ventanaLista = true;
+	}
+	
+	public boolean ventanaLista(){
+		return ventanaLista;
 	}
 	
 	// Método que pone los circuitos de este host a disposición del host oponente.
@@ -34,23 +70,19 @@ public class Conexion extends Thread implements Legible{
 			Registry registry = LocateRegistry.getRegistry(PUERTO_ARCHIVOS); // Es tomado el registro recientemente ligado al puerto PUERTO_ARCHIVOS.
 			registry.bind("Clave archivos", stub); // El ligado el stub al registro.
 			System.out.println("Servidor de archivos de circuito listo.");
-			try{Thread.sleep(3000);}catch(Exception InterruptedException){}
 		}catch(Exception e){
 			System.err.println("Excepción de servidor de archivos de circuito: " + e.toString());
 			e.printStackTrace();
+			
 		}
 	}
 
 	// Método que pone los circuitos remotos a disposición de este host. Luego de este método, es posible realizar la copia de los archivos remotos al host local.
-	public void ponerADisposicionArchivosRemotos(){	
-		try {
-			Registry registry = LocateRegistry.getRegistry(iPOponente,PUERTO_ARCHIVOS);
-			archivosRemotos = (Legible) registry.lookup("Clave archivos");    
-			System.out.println("Conexión de cliente exitosa. Archivos remotos a disposición local.");
-		}catch(Exception e){
-			System.err.println("Excepción de cliente: " + e.toString());
-			e.printStackTrace();
-		}
+	public void ponerADisposicionArchivosRemotos() throws Exception{	
+		Registry registry = LocateRegistry.getRegistry(iPOponente,PUERTO_ARCHIVOS);
+		archivosRemotos = (Legible) registry.lookup("Clave archivos");    
+		System.out.println("Conexión de cliente exitosa. Archivos remotos a disposición local.");
+		archivosListo = true;
 	}
 	
 	// Método que permite la copia de archivos. No se espera su uso por parte dle programador.
@@ -98,25 +130,24 @@ public class Conexion extends Thread implements Legible{
 		out.close();
 	}
 	
+	public boolean archivosListo(){
+		return archivosListo;
+	}
+	
 	// Método que establece la comunicación con el tanque remoto. Utiliza un método privado.
-	public void establecerComunicacionTanqueRemoto(){
+	public void establecerComunicacionTanqueRemoto() throws Exception{
 		this.tanqueRemotoAControlar = llamarTanqueRemoto();
 	}
 	
 	// Método que pone al tanque remoto a disposición del host local, para su control.
 	// Es privado, sólo utilizado por el método establecerComunicacionTanqueRemoto().
-	private Controlable llamarTanqueRemoto(){
-		try {
-			System.out.println("Partida llamando a TankRMI en el otro host (IP:"+iPOponente+"): esperando respuesta...");
-			Registry registry = LocateRegistry.getRegistry(iPOponente,PUERTO_TANQUES); // *****
-			Controlable retorno = (Controlable) registry.lookup("Clave tanques");
-			System.out.println("Conexión de cliente exitosa. Tanque a disposición.");
-			return retorno;
-		} catch (Exception e) {
-			System.err.println("Excepción de cliente: " + e.toString());
-			e.printStackTrace();
-		}
-		return null;
+	private Controlable llamarTanqueRemoto() throws Exception{
+		System.out.println("Conexión llamando a TankRMI en el otro host (IP:" + iPOponente + "): esperando respuesta...");
+		Registry registry = LocateRegistry.getRegistry(iPOponente, PUERTO_TANQUES); // *****
+		Controlable retorno = (Controlable) registry.lookup("Clave tanques");
+		System.out.println("Conexión de cliente exitosa. Tanque a disposición.");
+		this.tanqueListo = true;
+		return retorno;
 	}
 	
 	// Método utilizado por el hilo de conexión para lograr el control del tanque propio remoto.
@@ -154,14 +185,15 @@ public class Conexion extends Thread implements Legible{
 			Controlable stub = (Controlable) UnicastRemoteObject.exportObject(tanqueLocalLigadoOponente, tanqueLocalLigadoOponente.getID());		
 			Registry registry = LocateRegistry.getRegistry(PUERTO_TANQUES);
 			registry.bind("Clave tanques", stub);
-			System.out.println("Servidor de tanque listo.");
-			try{Thread.sleep(3000);}catch(Exception InterruptedException){}
+			System.out.println("Servidor de tanque local listo.");
 			return tanqueLocalLigadoOponente;
 		}catch(Exception e){
-			System.err.println("Excepción de servidor: " + e.toString());
+			System.err.println("Excepción de servidor de tanque local: " + e.toString());
 			e.printStackTrace();
 			return null;
 		}
 	}
-	
+	public boolean tanqueListo(){
+		return tanqueListo;
+	}
 }

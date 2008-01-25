@@ -14,6 +14,7 @@ import java.awt.GridLayout;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.IOException;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -35,7 +36,7 @@ public class PrePartida1 extends JFrame implements MouseListener{
 			public void windowClosing(WindowEvent e) {System.exit(0);}
 		}); // Se define un objeto que escucha los eventos sobre la ventana.
 		
-		JButton b1 = new JButton("    Jugar   ");
+		JButton b1 = new JButton("Jugar");
 		b1.addMouseListener(this);
 		
 		JPanel jp4 = new JPanel();
@@ -61,16 +62,43 @@ public class PrePartida1 extends JFrame implements MouseListener{
 	
 	
 	// Metodo que responde al evento sobre el boton Jugar.
-	public void Jugar(MouseEvent e) {
+	public void Jugar() {
 		
-		System.out.println("POR CONSTRUIR PARTIDA");
 		this.dispose();
-		new Partida(0,"circuito2.txt",null).jugar();
+		System.out.println("POR CONSTRUIR PARTIDA");
 		
+		
+		String ipaca = new String("192.168.0.7"); 
+		String ipalla = new String("192.168.0.101"); //con 1
+		String circuito = new String("circuito2.txt");
+		Conexion conexion = new Conexion(null);
+
+		conexion.bindearMisArchivos();
+		
+		do{
+			try{
+				conexion.ponerADisposicionArchivosRemotos();
+			}catch(Exception e){
+				System.out.println("Intento fallido para obtener archivos remotos. Intentando de nuevo...");
+				try {Thread.sleep(1000);} catch (InterruptedException ex) {Logger.getLogger(Partida.class.getName()).log(Level.SEVERE, null, ex);}
+			}
+		}while(!conexion.archivosListo());
+		
+		try {
+			conexion.copiarDeHostRemoto("circuiton.txt", "copio.txt");
+			conexion.enviarAHostRemoto("circuiton.txt", "copio.txt");
+		} catch (IOException ex) {
+			System.err.println("Error al intentar copiar en el método de Conexion copiarDeHostRemoto.");
+			Logger.getLogger(Partida.class.getName()).log(Level.SEVERE, null, ex);
+		}
+		
+		Partida tank_exile = new Partida(0, circuito, conexion);
+		tank_exile.jugar();
 		
 	}
     // Método que responder al evento sobre el boton Opciones.
-    public void Opciones(MouseEvent e) {
+    public void Opciones() {
+		
 		System.out.println("POR CONSTRUIR ESCENOGRAFIA");
 		new Escenografia();
 		this.dispose();
@@ -78,18 +106,18 @@ public class PrePartida1 extends JFrame implements MouseListener{
 	
 	public void mouseClicked(MouseEvent e) {
 		try {
-			//String nombre = new String(e.getComponent().getName());
-			this.getClass().getMethod(e.getComponent().getName(), null).invoke(this, null);
+			String nombre = new String(((JButton)e.getSource()).getText());
+			this.getClass().getMethod(nombre, null).invoke(this, null);
 		} catch (IllegalAccessException ex) {
-			Logger.getLogger(PrePartida1.class.getName()).log(Level.SEVERE, null, ex);
+			//Logger.getLogger(PrePartida1.class.getName()).log(Level.SEVERE, null, ex);
 		} catch (IllegalArgumentException ex) {
-			Logger.getLogger(PrePartida1.class.getName()).log(Level.SEVERE, null, ex);
+			//Logger.getLogger(PrePartida1.class.getName()).log(Level.SEVERE, null, ex);
 		} catch (InvocationTargetException ex) {
-			Logger.getLogger(PrePartida1.class.getName()).log(Level.SEVERE, null, ex);
+			//Logger.getLogger(PrePartida1.class.getName()).log(Level.SEVERE, null, ex);
 		} catch (NoSuchMethodException ex) {
-			Logger.getLogger(PrePartida1.class.getName()).log(Level.SEVERE, null, ex);
+			//Logger.getLogger(PrePartida1.class.getName()).log(Level.SEVERE, null, ex);
 		} catch (SecurityException ex) {
-			Logger.getLogger(PrePartida1.class.getName()).log(Level.SEVERE, null, ex);
+			//Logger.getLogger(PrePartida1.class.getName()).log(Level.SEVERE, null, ex);
 		}
 	}
 

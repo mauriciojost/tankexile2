@@ -9,6 +9,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferStrategy;
 import java.io.IOException;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -73,7 +74,17 @@ public class Partida extends Canvas implements Finals{
 		tanqueLocalLigadoOponente = new Tanque(this, circuito, otroID); // Creación del tanque que será ligado al registro de RMI para ser comandado por el host remoto.
 		conexion.servirTanqueLocalOponente(tanqueLocalLigadoOponente); // El tanque anterior es puesto a disposición del host remoto.
 		conexion.setTanquePropio(tanquePropio); // La conexión esta lista para ser establecida, el hilo conexión observará al tanque y con sus parámetros comandará al tanque remoto puesto en el registro de RMI.
-		conexion.establecerComunicacionTanqueRemoto(); // La conexión es establecida.
+		
+		
+		do{
+			try{
+				conexion.establecerComunicacionTanqueRemoto(); // La conexión es establecida.
+			}catch(Exception e){
+				System.out.println("Intento fallido para obtener tanque remoto. Intentando de nuevo...");
+				try {Thread.sleep(1000);} catch (InterruptedException ex) {Logger.getLogger(Partida.class.getName()).log(Level.SEVERE, null, ex);}
+			}
+		}while(!conexion.tanqueListo());
+		
 		
 		// Ambos tanques son ubicados en sus metas correspondientes.
 		tanquePropio.setX(circuito.getMeta(yoID).getX());
@@ -130,7 +141,15 @@ public class Partida extends Canvas implements Finals{
 		Conexion conexion = new Conexion(null);
 
 		conexion.bindearMisArchivos();
-		conexion.ponerADisposicionArchivosRemotos();
+		
+		do{
+			try{
+				conexion.ponerADisposicionArchivosRemotos();
+			}catch(Exception e){
+				System.out.println("Intento fallido para obtener archivos remotos. Intentando de nuevo...");
+				try {Thread.sleep(1000);} catch (InterruptedException ex) {Logger.getLogger(Partida.class.getName()).log(Level.SEVERE, null, ex);}
+			}
+		}while(!conexion.archivosListo());
 		
 		try {
 			conexion.copiarDeHostRemoto("circuiton.txt", "copio.txt");
