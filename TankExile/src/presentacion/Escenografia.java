@@ -6,11 +6,13 @@ import java.io.File;
 import java.io.FileFilter;
 import javax.swing.*;
 import javax.swing.event.*;
+import java.rmi.RemoteException;
 
 import java.util.*;
 
 //SplitPaneDemo itself is not a visible component.
-public class Escenografia extends JFrame implements ListSelectionListener {
+
+public class Escenografia extends JFrame implements VentanaControlable, ListSelectionListener {
     private Vector fileNames = new Vector();
     private JList lista;
     private JSplitPane splitPane;
@@ -154,18 +156,8 @@ public class Escenografia extends JFrame implements ListSelectionListener {
 		}
 		return v;
 	}
+	public void metodoDeControl() throws RemoteException {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
 }
-
-
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
-
-
-/**
- *
- * @author pc
- */
 
