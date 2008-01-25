@@ -1,20 +1,23 @@
 
 package presentacion;
 
+import java.awt.event.MouseEvent;
 import paquete.*;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
+import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
-public class Presentacion1 extends JFrame {
+public class Presentacion1 extends JFrame implements MouseListener {
 	
 	// Constructor de la clase.
 	public Presentacion1(int x, int y){
@@ -76,8 +79,8 @@ public class Presentacion1 extends JFrame {
 		jp2.add(jta3);
 		jp2.add(ip_oponente);
 		
-		Boton1 b1 = new Boton1("CONECTAR", this);
-		b1.addMouseListener(b1);
+		JButton b1 = new JButton("CONECTAR");
+		b1.addMouseListener(this);
 		
 		JPanel jp3 = new JPanel();
 		jp3.setPreferredSize(new Dimension(Finals.ANCHO_VENTANA-250,(Finals.ALTO_VENTANA-500)/3));
@@ -90,7 +93,21 @@ public class Presentacion1 extends JFrame {
 		panel.add(jp3);
 		
 		setVisible(true);
-		
 	}
 
+	public void mouseClicked(MouseEvent e) {
+		// Acciones relativas a la conexión. Seguramente se necesita de un objeto de la clase Conexion.
+		// Necesito obtener el IP del oponente tipeado en el cuadro de texto.
+		System.out.println("POR CONSTRUIR PRE PARTIDA");
+		this.dispose();
+		new PrePartida1(this.getX(),this.getY());
+	}
+
+	public void mousePressed(MouseEvent e) { }
+
+	public void mouseReleased(MouseEvent e) { }
+
+	public void mouseEntered(MouseEvent e) { }
+
+	public void mouseExited(MouseEvent e) { }
 }
