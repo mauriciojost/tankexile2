@@ -16,22 +16,28 @@ public class Escenografia extends JFrame implements VentanaControlable, ListSele
     private Vector fileNames = new Vector();
     private JList lista;
     private JSplitPane splitPane;
+    private static Escenografia escenografia;
     private File dir = new File("Circuitos");
     private  File files;
     private String names;
     private int indeX;
     final static String tec = "tec";
     private File[] file = dir.listFiles();
+    private PrePartida1 prepartida1;
     
 
-    public Escenografia() {
+    public Escenografia(PrePartida1 prepartida1) {
 		super("TankExile - Seleccionar Escenario");
 		//setBounds(x,y,400,400);
 		//setResizable(false);
-				
+		//escenografia=new Escenografia();
+                this.prepartida1=prepartida1;
+                setBounds(5, 5, 400, 400);
+              
 		getContentPane().setPreferredSize(new Dimension(400,400));
 		getContentPane().setLayout(new GridLayout(3,1));
 		addWindowListener(new WindowAdapter() {
+            @Override
 			public void windowClosing(WindowEvent e) {System.exit(0);}
 		}); // Se define un objeto que escucha los eventos sobre la ventana.
 		
@@ -103,6 +109,7 @@ public class Escenografia extends JFrame implements VentanaControlable, ListSele
 		jp_boton.add(cancelar);
 		
 		MouseListener mouseListener = new MouseAdapter() {
+            @Override
 			public void mouseClicked(MouseEvent e) {
 				if (e.getClickCount() == 2) {
 					indeX = lista.locationToIndex(e.getPoint());
@@ -116,14 +123,21 @@ public class Escenografia extends JFrame implements VentanaControlable, ListSele
 		getContentPane().add(jp_titulo);
 		getContentPane().add(jsp);
 		getContentPane().add(jp_boton);
+                
 		
 		setVisible(true);
+                escenografia=this;
+                //frame.add(escenografia.getEsc());
+                //frame.setVisible(true);
+                
 	}
 	
 	public JSplitPane getSplitPane() {
 		return splitPane;
 	}
-	
+	static public Escenografia getEsc() {
+		return escenografia;
+	}
 	public Object  getSelectedNameFile() {
 		return  lista.getSelectedValue();
 	}
