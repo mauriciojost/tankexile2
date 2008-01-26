@@ -34,7 +34,7 @@ public class PrePartida1 extends JFrame implements MouseListener{
 		panel.setPreferredSize(new Dimension(Finals.ANCHO_VENTANA-250,Finals.ALTO_VENTANA-500));
 		panel.setLayout(new GridLayout(2,1));
 		panel.setBackground(Color.LIGHT_GRAY);
-		
+		addWindowListener(null);
 		addWindowListener(new WindowAdapter() {
             @Override
 			public void windowClosing(WindowEvent e) {System.exit(0);}
@@ -70,7 +70,6 @@ public class PrePartida1 extends JFrame implements MouseListener{
 	
 		// Metodo que responde al evento sobre el boton Jugar.
 	public void Jugar() {
-		
 		this.dispose();
 		System.out.println("POR CONSTRUIR PARTIDA");
 
@@ -80,8 +79,8 @@ public class PrePartida1 extends JFrame implements MouseListener{
 		String circuito = new String("circuito2.txt");
 		Conexion conexion = new Conexion(null);
 
-		conexion.bindearMisArchivos();
-		
+		//conexion.bindearMisArchivos();
+		/*
 		do{
 			try{
 				conexion.ponerADisposicionArchivosRemotos();
@@ -90,7 +89,8 @@ public class PrePartida1 extends JFrame implements MouseListener{
 				try {Thread.sleep(1000);} catch (InterruptedException ex) {Logger.getLogger(Partida.class.getName()).log(Level.SEVERE, null, ex);}
 			}
 		}while(!conexion.archivosListo());
-		
+		*/
+		/*
 		try {
 			conexion.copiarDeHostRemoto("circuiton.txt", "copio.txt");
 			conexion.enviarAHostRemoto("circuiton.txt", "copio.txt");
@@ -98,7 +98,7 @@ public class PrePartida1 extends JFrame implements MouseListener{
 			System.err.println("Error al intentar copiar en el método de Conexion copiarDeHostRemoto.");
 			Logger.getLogger(Partida.class.getName()).log(Level.SEVERE, null, ex);
 		}
-		
+		*/
 		Partida tank_exile = new Partida(0, circuito, conexion);
 		tank_exile.jugar();
 
@@ -118,17 +118,17 @@ public class PrePartida1 extends JFrame implements MouseListener{
 	public void mouseClicked(MouseEvent e) {
 		try {
 			String nombre = new String(((JButton)e.getSource()).getText());
-			this.getClass().getMethod(nombre, null).invoke(this, null);
+			this.getClass().getMethod(nombre, (Class[])null).invoke(this, (Object[])null);
 		} catch (IllegalAccessException ex) {
-			//Logger.getLogger(PrePartida1.class.getName()).log(Level.SEVERE, null, ex);
+			Logger.getLogger(PrePartida1.class.getName()).log(Level.SEVERE, null, ex);
 		} catch (IllegalArgumentException ex) {
-			//Logger.getLogger(PrePartida1.class.getName()).log(Level.SEVERE, null, ex);
+			Logger.getLogger(PrePartida1.class.getName()).log(Level.SEVERE, null, ex);
 		} catch (InvocationTargetException ex) {
-			//Logger.getLogger(PrePartida1.class.getName()).log(Level.SEVERE, null, ex);
+			Logger.getLogger(PrePartida1.class.getName()).log(Level.SEVERE, null, ex);
 		} catch (NoSuchMethodException ex) {
-			//Logger.getLogger(PrePartida1.class.getName()).log(Level.SEVERE, null, ex);
+			Logger.getLogger(PrePartida1.class.getName()).log(Level.SEVERE, null, ex);
 		} catch (SecurityException ex) {
-			//Logger.getLogger(PrePartida1.class.getName()).log(Level.SEVERE, null, ex);
+			Logger.getLogger(PrePartida1.class.getName()).log(Level.SEVERE, null, ex);
 		}
 	}
 
