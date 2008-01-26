@@ -41,6 +41,7 @@ public class PrePartida1 extends JFrame implements MouseListener{
 		}); // Se define un objeto que escucha los eventos sobre la ventana.
 		
 		JButton b1 = new JButton("Jugar");
+		b1.setPreferredSize(new Dimension(110,30));
 		b1.addMouseListener(this);
 		
 		JPanel jp4 = new JPanel();
@@ -49,7 +50,8 @@ public class PrePartida1 extends JFrame implements MouseListener{
 		jp4.setPreferredSize(new Dimension(Finals.ANCHO_VENTANA-250,(Finals.ALTO_VENTANA-500)/2));
 		jp4.add(b1);
 		
-		JButton b2 = new JButton("Opciones");
+		JButton b2 = new JButton("Opciones"); 
+		b2.setPreferredSize(new Dimension(110,30));
 		b2.addMouseListener(this);
 		
 		JPanel jp5 = new JPanel();
@@ -71,8 +73,8 @@ public class PrePartida1 extends JFrame implements MouseListener{
 		
 		this.dispose();
 		System.out.println("POR CONSTRUIR PARTIDA");
-		
-		
+
+
 		String ipaca = new String("192.168.0.7"); 
 		String ipalla = new String("192.168.0.101"); //con 1
 		String circuito = new String("circuito2.txt");
@@ -99,17 +101,17 @@ public class PrePartida1 extends JFrame implements MouseListener{
 		
 		Partida tank_exile = new Partida(0, circuito, conexion);
 		tank_exile.jugar();
-		
+
 	}
     // Método que responder al evento sobre el boton Opciones.
-        public void Opciones() {
+	public void Opciones() {
 		
 		System.out.println("POR CONSTRUIR ESCENOGRAFIA");
 		escenografia =new Escenografia(prepartida1);
 		this.dispose();
-        }
+	}
         
-        static public PrePartida1 getPrePartida1() {
+	static public PrePartida1 getPrePartida1() {
 		return prepartida1;
 	}
         

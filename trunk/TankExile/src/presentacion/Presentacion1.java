@@ -82,6 +82,7 @@ public class Presentacion1 extends JFrame implements MouseListener {
 		jp2.add(ip_oponente);
 		
 		JButton b1 = new JButton("CONECTAR");
+		b1.setPreferredSize(new Dimension(110,30));
 		b1.addMouseListener(this);
 		
 		JPanel jp3 = new JPanel();

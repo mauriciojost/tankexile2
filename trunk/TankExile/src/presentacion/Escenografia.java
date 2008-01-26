@@ -1,5 +1,6 @@
 package presentacion;
 
+import paquete.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
@@ -25,16 +26,15 @@ public class Escenografia extends JFrame implements VentanaControlable, ListSele
     private File[] file = dir.listFiles();
     private PrePartida1 prepartida1;
     
-
     public Escenografia(PrePartida1 prepartida1) {
+
 		super("TankExile - Seleccionar Escenario");
-		//setBounds(x,y,400,400);
-		//setResizable(false);
+		//setBounds(cx,cy,Finals.ANCHO_VENTANA-200,Finals.ALTO_VENTANA-300);
 		//escenografia=new Escenografia();
                 this.prepartida1=prepartida1;
-                setBounds(5, 5, 400, 400);
-              
-		getContentPane().setPreferredSize(new Dimension(400,400));
+                setBounds(prepartida1.getX(), prepartida1.getY(), 400, 400);
+                setResizable(false);
+		getContentPane().setPreferredSize(new Dimension(Finals.ANCHO_VENTANA-200,Finals.ALTO_VENTANA-300));
 		getContentPane().setLayout(new GridLayout(3,1));
 		addWindowListener(new WindowAdapter() {
             @Override
@@ -78,17 +78,17 @@ public class Escenografia extends JFrame implements VentanaControlable, ListSele
 		// Create the list of images and put it in a scroll pane.
 		lista = new JList(fileNames);
 		lista.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		lista.setSelectedIndex(0); // Modifica cual es el primer marcado ??
+		lista.setSelectedIndex(0); // Determina en que posicion de la lista se establece inicialmente el foco.
 		lista.addListSelectionListener(this);
 		
 		JScrollPane jsp = new JScrollPane(lista);
-		
+		jsp.setPreferredSize(new Dimension(Finals.ANCHO_VENTANA-200, Finals.ALTO_VENTANA-300-100));
 		// Creamos Etiqueta.
 		JLabel jl1 = new JLabel("   Seleccion de Circuito    ");
-		jl1.setSize(70, 10);
 		jl1.setBackground(Color.LIGHT_GRAY);
 		
 		JPanel jp_titulo = new JPanel();
+		jp_titulo.setPreferredSize(new Dimension(Finals.ANCHO_VENTANA-200, Finals.ALTO_VENTANA-300-322));
 		jp_titulo.setLayout(new FlowLayout(FlowLayout.LEFT));
 		jp_titulo.setBackground(Color.LIGHT_GRAY);
 		jp_titulo.add(jl1);
@@ -96,13 +96,16 @@ public class Escenografia extends JFrame implements VentanaControlable, ListSele
 		// Creamos Botones.
 		// abrir
 		JButton abrir = new JButton("Seleccionar"/*, new ImageIcon("images/open.gif")*/);
+		abrir.setPreferredSize(new Dimension(110,30));
 		abrir.addActionListener(new OpenListener(lista));
 		
 		// cancelar
 		JButton cancelar = new JButton("Cancelar"/*, new ImageIcon("images/cancel.gif")*/);
+		cancelar.setPreferredSize(new Dimension(110,30));
 		cancelar.addActionListener(new CancelListener());
 		
 		JPanel jp_boton = new JPanel();
+		jp_boton.setPreferredSize(new Dimension(Finals.ANCHO_VENTANA-200, Finals.ANCHO_VENTANA-300-322));
 		jp_boton.setLayout(new FlowLayout(FlowLayout.CENTER));
 		jp_boton.setBackground(Color.LIGHT_GRAY);
 		jp_boton.add(abrir);
