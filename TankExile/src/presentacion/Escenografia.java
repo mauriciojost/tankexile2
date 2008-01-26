@@ -31,9 +31,9 @@ public class Escenografia extends JFrame implements VentanaControlable, ListSele
 		super("TankExile - Seleccionar Escenario");
 		//setBounds(cx,cy,Finals.ANCHO_VENTANA-200,Finals.ALTO_VENTANA-300);
 		//escenografia=new Escenografia();
-                this.prepartida1=prepartida1;
-                setBounds(prepartida1.getX(), prepartida1.getY(), Finals.ANCHO_VENTANA-200,Finals.ALTO_VENTANA-300);
-                setResizable(false);
+		this.prepartida1=prepartida1;
+        setBounds(prepartida1.getX(), prepartida1.getY(), Finals.ANCHO_VENTANA-200,Finals.ALTO_VENTANA-300);
+		setResizable(false);
 		getContentPane().setPreferredSize(new Dimension(Finals.ANCHO_VENTANA-200,Finals.ALTO_VENTANA-300));
 		getContentPane().setLayout(new GridLayout(3,1));
 		addWindowListener(new WindowAdapter() {
@@ -114,6 +114,9 @@ public class Escenografia extends JFrame implements VentanaControlable, ListSele
 		MouseListener mouseListener = new MouseAdapter() {
             @Override
 			public void mouseClicked(MouseEvent e) {
+				/////
+				///
+				
 				if (e.getClickCount() == 2) {
 					indeX = lista.locationToIndex(e.getPoint());
 					System.out.println("Double clicked on Item " + indeX);
@@ -129,9 +132,9 @@ public class Escenografia extends JFrame implements VentanaControlable, ListSele
                 
 		
 		setVisible(true);
-                escenografia=this;
-                //frame.add(escenografia.getEsc());
-                //frame.setVisible(true);
+		escenografia=this;
+		//frame.add(escenografia.getEsc());
+		//frame.setVisible(true);
                 
 	}
 	

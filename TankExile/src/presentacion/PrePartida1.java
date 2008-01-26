@@ -166,7 +166,11 @@ public class PrePartida1 extends JFrame implements MouseListener{
 	public void Opciones() {
 		
 		System.out.println("POR CONSTRUIR ESCENOGRAFIA");
-		escenografia =new Escenografia(prepartida1);
+		escenografia = new Escenografia(prepartida1);
+		
+		///
+		///
+		//
 		this.dispose();
 	}
         

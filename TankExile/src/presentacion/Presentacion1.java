@@ -19,12 +19,12 @@ import javax.swing.JTextArea;
 
 public class Presentacion1 extends JFrame implements MouseListener {
 	private PrePartida1 prePartida1;
-        private static  Presentacion1 presentacion1;
+    private static  Presentacion1 presentacion1;
 	// Constructor de la clase.
 	public Presentacion1(int x, int y){
 		super("TankExile - Presentación");
-                
-                setBounds(x,y, Finals.ANCHO_VENTANA-250, Finals.ALTO_VENTANA-500); // Reajusta tamaño de la ventana, sin modificar su posición.
+
+		setBounds(x,y, Finals.ANCHO_VENTANA-250, Finals.ALTO_VENTANA-500); // Reajusta tamaño de la ventana, sin modificar su posición.
 		setResizable(false);
 		
 		JPanel panel = (JPanel) getContentPane(); // Panel donde se grafican los objetos (bloques)que componen el escenario y los tanques que representan a cada jugador.
