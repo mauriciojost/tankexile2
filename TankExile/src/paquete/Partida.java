@@ -101,7 +101,10 @@ public class Partida extends Canvas implements Finals, Runnable{
 		jugador = new Jugador(tanquePropio); // Un jugador es creado para comandar el tanque propio del host.
 		this.addKeyListener(jugador); // El jugador comienza a escuchar el teclado.
 		this.addMouseListener(null);
-		conexion.start(); // El hilo conexion arranca a comandar al tanque remoto observando el comportamiento del tanque propio.
+		Thread hiloTanqueRemoto = new Thread(conexion.getHiloTanqueRemoto());
+		hiloTanqueRemoto.start();
+				
+				// El hilo conexion arranca a comandar al tanque remoto observando el comportamiento del tanque propio.
 		
 	}
 	
