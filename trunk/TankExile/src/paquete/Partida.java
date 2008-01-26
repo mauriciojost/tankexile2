@@ -1,5 +1,7 @@
 package paquete;
 
+import java.awt.Image;
+import presentacion.*;
 import presentacion.Conexion;
 import java.awt.Canvas;
 import java.awt.Color;
@@ -33,8 +35,8 @@ public class Partida extends Canvas implements Finals, Runnable{
 	//private String iPOponente; // Representa la dirección IP en la red del host del jugador oponente.
 	private Conexion conexion; // Objeto utilizado para todo lo relacionado a la comunicación entre ambos hosts.
 	private String nombreCircuitoTXT; // Atributo que representa el nombre del archivo del circuito.
+	//private JFrame ventana;
 	
- 
 	// Contstructor. Genera los elementos básicos de una aplicación del tipo juego.
 	public Partida(int yoID, String nombreCircuitoTXT, Conexion conexion) {
 		JFrame ventana = new JFrame("TankExile"); // Armado de la ventana.
@@ -47,7 +49,7 @@ public class Partida extends Canvas implements Finals, Runnable{
 		panel.setLayout(new GridLayout());
 		panel.add(this); // El panel pintará este canvas (definido por esta instancia de Partida).
 		
-		ventana.setBounds(0,0,Finals.ANCHO_VENTANA,Finals.ALTO_VENTANA); // Establecimiento de las dimensiones de la ventana.
+		ventana.setBounds(0,0,Finals.ANCHO_VENTANA+3,Finals.ALTO_VENTANA); // Establecimiento de las dimensiones de la ventana.
 		ventana.setVisible(true); // Ventana visible.
 		
 		
@@ -56,7 +58,7 @@ public class Partida extends Canvas implements Finals, Runnable{
 				System.exit(0);
 			}
 		});
-		
+
 		ventana.setResizable(false); // La ventana no es de tamaño ajustable.
 		this.createBufferStrategy(2); // Es creado sobre este canvas una estrategia de buffering, de dos buffers.
 		estrategia = getBufferStrategy(); // Sobre este objeto se aplicará el método de paint. Este realizará por sí mismo el doble buffering.
@@ -68,7 +70,6 @@ public class Partida extends Canvas implements Finals, Runnable{
 		//this.iPOponente = iPOponente;
 		this.nombreCircuitoTXT = nombreCircuitoTXT; // Asignación del nombre del archivo del circuito.
 	}
-	
 	// Método que arranca la escena de la partida. Involucra la inicialización de los elementos principales del juego en sí.
 	public void iniciarEscena() {
 		bloquesAPintar = new ArrayList<Bloque>(); // Conjunto de bloques del circuito que serán pintados en cada ciclo de actualización.
@@ -135,6 +136,7 @@ public class Partida extends Canvas implements Finals, Runnable{
 		iniciarEscena();
 		Thread hilo = new Thread(this);
 		hilo.start();
+
 	}
 
 		
