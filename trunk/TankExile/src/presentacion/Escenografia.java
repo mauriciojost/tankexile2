@@ -32,7 +32,7 @@ public class Escenografia extends JFrame implements VentanaControlable, ListSele
 		//setBounds(cx,cy,Finals.ANCHO_VENTANA-200,Finals.ALTO_VENTANA-300);
 		//escenografia=new Escenografia();
                 this.prepartida1=prepartida1;
-                setBounds(prepartida1.getX(), prepartida1.getY(), 400, 400);
+                setBounds(prepartida1.getX(), prepartida1.getY(), Finals.ANCHO_VENTANA-200,Finals.ALTO_VENTANA-300);
                 setResizable(false);
 		getContentPane().setPreferredSize(new Dimension(Finals.ANCHO_VENTANA-200,Finals.ALTO_VENTANA-300));
 		getContentPane().setLayout(new GridLayout(3,1));
