@@ -70,37 +70,44 @@ public class PrePartida1 extends JFrame implements MouseListener{
 	
 		// Metodo que responde al evento sobre el boton Jugar.
 	public void Jugar() {
-		this.dispose();
-		System.out.println("POR CONSTRUIR PARTIDA");
-
-
-		String ipaca = new String("192.168.0.7"); 
-		String ipalla = new String("192.168.0.101"); //con 1
-		String circuito = new String("circuito2.txt");
-		Conexion conexion = new Conexion(null);
-
-		//conexion.bindearMisArchivos();
-		/*
-		do{
-			try{
-				conexion.ponerADisposicionArchivosRemotos();
-			}catch(Exception e){
-				System.out.println("Intento fallido para obtener archivos remotos. Intentando de nuevo...");
-				try {Thread.sleep(1000);} catch (InterruptedException ex) {Logger.getLogger(Partida.class.getName()).log(Level.SEVERE, null, ex);}
-			}
-		}while(!conexion.archivosListo());
-		*/
-		/*
 		try {
+			this.dispose();
+			System.out.println("POR CONSTRUIR PARTIDA");
+
+
+			String ipaca = new String("192.168.0.7");
+			String ipalla = new String("192.168.0.101"); //con 1
+			String circuito = new String("circuito2.txt");
+			Conexion conexion = new Conexion(null);
+			do{
+				conexion.conectar();
+			}while(!conexion.conexionLista());
+			conexion.start();
+			//conexion.bindearMisArchivos();
+			/*
+			do{
+			try{
+			conexion.ponerADisposicionArchivosRemotos();
+			}catch(Exception e){
+			System.out.println("Intento fallido para obtener archivos remotos. Intentando de nuevo...");
+			try {Thread.sleep(1000);} catch (InterruptedException ex) {Logger.getLogger(Partida.class.getName()).log(Level.SEVERE, null, ex);}
+			}
+			}while(!conexion.archivosListo());
+			 */
+			/*
+			try {
 			conexion.copiarDeHostRemoto("circuiton.txt", "copio.txt");
 			conexion.enviarAHostRemoto("circuiton.txt", "copio.txt");
-		} catch (IOException ex) {
+			} catch (IOException ex) {
 			System.err.println("Error al intentar copiar en el método de Conexion copiarDeHostRemoto.");
 			Logger.getLogger(Partida.class.getName()).log(Level.SEVERE, null, ex);
+			}
+			*/
+			Partida tank_exile = new Partida(0, circuito, conexion);
+			tank_exile.jugar();
+		} catch (Exception ex) {
+			Logger.getLogger(PrePartida1.class.getName()).log(Level.SEVERE, null, ex);
 		}
-		*/
-		Partida tank_exile = new Partida(0, circuito, conexion);
-		tank_exile.jugar();
 
 	}
     // Método que responder al evento sobre el boton Opciones.
@@ -119,17 +126,9 @@ public class PrePartida1 extends JFrame implements MouseListener{
 		try {
 			String nombre = new String(((JButton)e.getSource()).getText());
 			this.getClass().getMethod(nombre, (Class[])null).invoke(this, (Object[])null);
-		} catch (IllegalAccessException ex) {
+		} catch (Exception ex) {
 			Logger.getLogger(PrePartida1.class.getName()).log(Level.SEVERE, null, ex);
-		} catch (IllegalArgumentException ex) {
-			Logger.getLogger(PrePartida1.class.getName()).log(Level.SEVERE, null, ex);
-		} catch (InvocationTargetException ex) {
-			Logger.getLogger(PrePartida1.class.getName()).log(Level.SEVERE, null, ex);
-		} catch (NoSuchMethodException ex) {
-			Logger.getLogger(PrePartida1.class.getName()).log(Level.SEVERE, null, ex);
-		} catch (SecurityException ex) {
-			Logger.getLogger(PrePartida1.class.getName()).log(Level.SEVERE, null, ex);
-		}
+		} 
 	}
 
 	public void mousePressed(MouseEvent e) { }

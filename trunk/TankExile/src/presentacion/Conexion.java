@@ -2,6 +2,7 @@ package presentacion;
 
 import java.awt.Component;
 import java.awt.event.MouseEvent;
+import java.rmi.NotBoundException;
 import paquete.*;
 import java.io.File;
 import java.io.FileReader;
@@ -11,11 +12,13 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 // Clase cuya función es establecer la comunicación entre los dos hosts.
-public class Conexion extends Thread implements Legible{
+public class Conexion extends Thread implements Legible, Conectable{
+	private Conectable conexionRemoto;
 	private Tanque tanquePropio; // Tanque correspondiente al host propio (o no-remoto).
 	private Controlable tanqueRemotoAControlar; // Interfaz con la que se controla el tanque propio remoto (en el host oponente).
 	private Legible archivosRemotos; // Interfaz con la que se realiza la lectura de los archivos remotos.
@@ -24,18 +27,44 @@ public class Conexion extends Thread implements Legible{
 	private final int PUERTO_VENTANA = 4052; // Puerto al que se asocia el registro de la ventana de selección de circuitos.
 	private final int PUERTO_ARCHIVOS = 4051; // Puerto al que se asocia el registro de archivos de circuitos.
 	private final int PUERTO_TANQUES = 4050; // Puerto al que se asocia el registro de tanques.
+	private final int PUERTO_CONEXION = 4049; // Puerto al que se asocia el registro de la instancia de Conexion.
 	private boolean archivosListo = false; // Indicador de la disponibilidad o no de los archivos remotos para el host local.
 	private boolean tanqueListo = false; // Indicador de la disponibilidad o no del tanque remoto para el host local.
 	private boolean ventanaLista = false; // Indicador de la disponibilidad o no de la ventana (de selección de circuito) remota para el host local.
+	private boolean conexionLista = false; //Indicador de la conexión con el host remoto.
+	private double clavePropia; // Valor numérico generado localmente para la inicialización del turno.
+	private double claveOponente; // Valor numérico enviado desde el oponente para iniciar el turno.
+	private boolean claveOponenteRecibida = false; // Indicador de la llegada de la clave del oponente.
+	private boolean miTurno = false; // Indicador de turno de este host.
+	
 	
 	// Constructor.
 	public Conexion(String iPOponente){
 		this.iPOponente = iPOponente;
-		MouseEvent a;
-		Component b;
-			
+		
+		try{
+			LocateRegistry.createRegistry(PUERTO_CONEXION); // Es tomado el puerto PUERTO_CONEXION y creado un registro asociado sobre él.
+			Conectable stub = (Conectable) UnicastRemoteObject.exportObject(this, PUERTO_CONEXION); // Es exportado el objeto instancia de Conexion.
+			Registry registry = LocateRegistry.getRegistry(PUERTO_CONEXION); // Es tomado el registro recientemente ligado al puerto PUERTO_CONEXION.
+			registry.bind("Clave conexion", stub); // El ligado el stub al registro.
+			System.out.println("Servidor de conexion listo.");
+		}catch(Exception e){
+			System.err.println("Excepción de servidor de conexion: " + e.toString());
+			e.printStackTrace();
+		}
+		
 	}
 	
+	public void conectar() throws Exception{
+		Registry registry = LocateRegistry.getRegistry(iPOponente,PUERTO_CONEXION);
+		this.conexionRemoto = (Conectable) registry.lookup("Clave conexion");    
+		System.out.println("Conexión exitosa.");
+		conexionLista = true;
+	}
+	
+	public boolean conexionLista(){
+		return conexionLista;
+	}
 	// Método que pone la ventana de selección de circuitos de este host a disposición del host oponente.
 	public void bindearMiVentana(Escenografia ventana){
 		try{
@@ -166,16 +195,20 @@ public class Conexion extends Thread implements Legible{
 		this.tanquePropio = tanquePropio;
 	}
 	
-	// Método de manejo del tanque remoto, mediante hilo aparte.
-	public void run(){
-		while(true){
-			try{
-				manejarTanqueRemoto();
-				Thread.sleep(Finals.PERIODO);
-			}catch(InterruptedException ex){
-				Logger.getLogger(Conexion.class.getName()).log(Level.SEVERE, null, ex);
+	public Runnable getHiloTanqueRemoto(){
+		return new Runnable(){
+			public void run() {
+				while(true){
+					try{
+						manejarTanqueRemoto();
+						Thread.sleep(Finals.PERIODO);
+					}catch(InterruptedException ex){
+						Logger.getLogger(Conexion.class.getName()).log(Level.SEVERE, null, ex);
+					}
+				}
 			}
-		}
+		};
+	
 	}
 	
 	// Método que pone a disposición al tanque local oponente, para que sea controlado remotamente.
@@ -195,5 +228,42 @@ public class Conexion extends Thread implements Legible{
 	}
 	public boolean tanqueListo(){
 		return tanqueListo;
+	}
+
+	public void setClaveOponente(double clave) throws RemoteException {
+		claveOponente = clave;
+		claveOponenteRecibida = true;
+	}
+	
+	public synchronized void darTurno() throws RemoteException {
+		miTurno = true;
+		this.notifyAll();
+		System.out.println("Cambio de turno...");
+	}
+	public void run(){
+		clavePropia = (new Random()).nextInt();
+		try{conexionRemoto.setClaveOponente(clavePropia);}catch(RemoteException e){e.printStackTrace();}
+		while (!claveOponenteRecibida){
+			try{this.sleep(Finals.PERIODO_DE_TURNO);}catch(InterruptedException e){e.printStackTrace();}
+		}
+		if (clavePropia > claveOponente){
+			miTurno = true;
+		}
+		
+		while(true){
+			
+				if (miTurno){
+					try{this.sleep(Finals.PERIODO_DE_TURNO);}catch(InterruptedException e){e.printStackTrace();}
+						synchronized(this){
+							miTurno=false;
+							try{conexionRemoto.darTurno();}catch(RemoteException e){e.printStackTrace();}
+						}
+				}else{
+					synchronized(this){
+						try{this.wait();}catch(InterruptedException e){e.printStackTrace();}
+					}
+				}
+			
+		}
 	}
 }

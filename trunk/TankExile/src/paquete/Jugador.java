@@ -13,7 +13,6 @@ public class Jugador implements KeyListener{
 	}
 	
 	public void keyReleased(KeyEvent e) {
-		System.out.println("keyreleased jugador");
 		try {
 			switch (e.getKeyCode()) {
 				case KeyEvent.VK_DOWN:
@@ -38,7 +37,6 @@ public class Jugador implements KeyListener{
 	}
 				
 	public void keyPressed(KeyEvent e) {			
-		System.out.println("keyrpressed jugador");
 		try {
 			switch (e.getKeyCode()) {
 				case KeyEvent.VK_UP:
@@ -62,7 +60,5 @@ public class Jugador implements KeyListener{
 		}
 	}
 		
-	public void keyTyped(KeyEvent e){
-		System.out.println("keytyped jugador");
-	}
+	public void keyTyped(KeyEvent e){}
 }
