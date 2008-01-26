@@ -14,7 +14,7 @@ import java.util.*;
 //SplitPaneDemo itself is not a visible component.
 
 public class Escenografia extends JFrame implements VentanaControlable, ListSelectionListener {
-    private Vector fileNames = new Vector();
+    private Vector<File> fileNames = new Vector<File>();
     private JList lista;
     private JSplitPane splitPane;
     private static Escenografia escenografia;
@@ -165,7 +165,7 @@ public class Escenografia extends JFrame implements VentanaControlable, ListSele
     }
 	
 	protected static Vector parseList(String theStringList) {
-		Vector v = new Vector(10);
+		Vector<String> v = new Vector<String>(10);
 		StringTokenizer tokenizer = new StringTokenizer(theStringList, " ");
 		while (tokenizer.hasMoreTokens()) {
 			String image = tokenizer.nextToken();

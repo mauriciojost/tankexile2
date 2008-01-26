@@ -22,7 +22,7 @@ public class Presentacion1 extends JFrame implements MouseListener {
         private Presentacion1 presentacion1;
 	// Constructor de la clase.
 	public Presentacion1(int x, int y){
-		super("TankExile - Presentacion");
+		super("TankExile - Presentación");
                 
                 setBounds(x,y, Finals.ANCHO_VENTANA-250, Finals.ALTO_VENTANA-500); // Reajusta tamaño de la ventana, sin modificar su posición.
 		setResizable(false);

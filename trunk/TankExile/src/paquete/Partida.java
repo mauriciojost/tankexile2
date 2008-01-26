@@ -5,6 +5,7 @@ import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
+import java.awt.GridLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
@@ -18,7 +19,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 // Clase que contiene en sí el hilo principal del juego. Genera el circuito y los tanques, los hace actuar, y se encarga de pintarlos.
-public class Partida extends Canvas implements Finals{
+public class Partida extends Canvas implements Finals, Runnable{
 	private BufferStrategy estrategia; // Atributo que permite establecer el Doble Buffering para pintar la pantalla.
 	private Circuito circuito; // Circuito a ser creado para correr la partida.
 	private ArrayList<Bloque> bloquesAPintar; // Conjunto de bloques pertenecientes al circuito a ser pintados.
@@ -41,18 +42,21 @@ public class Partida extends Canvas implements Finals{
 		this.setBounds(0,0,Finals.ANCHO_VENTANA,Finals.ALTO_VENTANA); // Establecimiento de las dimensiones de este objeto Partida.
 		
                 
-                
+		//panel.setBounds(0, 0, Finals.ANCHO_VENTANA,Finals.ALTO_VENTANA);
 		panel.setPreferredSize(new Dimension(Finals.ANCHO_VENTANA,Finals.ALTO_VENTANA)); // Establecimiento de las dimensiones del panel.
-		panel.setLayout(null);
+		panel.setLayout(new GridLayout());
 		panel.add(this); // El panel pintará este canvas (definido por esta instancia de Partida).
 		
 		ventana.setBounds(0,0,Finals.ANCHO_VENTANA,Finals.ALTO_VENTANA); // Establecimiento de las dimensiones de la ventana.
 		ventana.setVisible(true); // Ventana visible.
+		
+		
 		ventana.addWindowListener(new WindowAdapter() { // Ventana tiene escucha, una clase anónima, para el cierre.
 			public void windowClosing(WindowEvent e) {
 				System.exit(0);
 			}
 		});
+		
 		ventana.setResizable(false); // La ventana no es de tamaño ajustable.
 		this.createBufferStrategy(2); // Es creado sobre este canvas una estrategia de buffering, de dos buffers.
 		estrategia = getBufferStrategy(); // Sobre este objeto se aplicará el método de paint. Este realizará por sí mismo el doble buffering.
@@ -96,6 +100,7 @@ public class Partida extends Canvas implements Finals{
 		
 		jugador = new Jugador(tanquePropio); // Un jugador es creado para comandar el tanque propio del host.
 		this.addKeyListener(jugador); // El jugador comienza a escuchar el teclado.
+		this.addMouseListener(null);
 		conexion.start(); // El hilo conexion arranca a comandar al tanque remoto observando el comportamiento del tanque propio.
 		
 	}
@@ -123,18 +128,13 @@ public class Partida extends Canvas implements Finals{
 	}
 	
 	// Método que contiene el bucle de ejecución principal del juego.
-	public void jugar(){
+	public void  jugar(){
 		iniciarEscena();
-		while(isVisible()){
-			actualizarEscena();
-			pintarEscena();
-			try{ 
-				Thread.sleep(Finals.PERIODO);
-			}catch(InterruptedException e){}
-		}
+		Thread hilo = new Thread(this);
+		hilo.start();
 	}
 
-	//	
+		
 	/*
 	public static void main(String[] args) {
 		
@@ -166,5 +166,15 @@ public class Partida extends Canvas implements Finals{
 		tank_exile.jugar();
 		
 	}
-	//*/
+	*/
+	public void run() {
+		while(isVisible()){
+			actualizarEscena();
+			pintarEscena();
+			try{ 
+				Thread.sleep(Finals.PERIODO);
+			}catch(InterruptedException e){e.printStackTrace();}
+		}
+	}
+	
 }

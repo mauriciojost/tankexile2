@@ -11,7 +11,7 @@ import java.util.*;
 
 //SplitPaneDemo itself is not a visible component.
 public class SplitPane implements ListSelectionListener {
-    private Vector fileNames = new Vector();
+    private Vector<File> fileNames = new Vector<File>();
     private JList list;
     private JSplitPane splitPane;
     private File dir = new File("Circuitos");
@@ -156,7 +156,7 @@ public class SplitPane implements ListSelectionListener {
     }
 	
 	protected static Vector parseList(String theStringList) {
-		Vector v = new Vector(10);
+		Vector<String> v = new Vector<String>(10);
 		StringTokenizer tokenizer = new StringTokenizer(theStringList, " ");
 		while (tokenizer.hasMoreTokens()) {
 			String image = tokenizer.nextToken();
