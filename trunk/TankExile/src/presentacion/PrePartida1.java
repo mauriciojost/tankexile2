@@ -26,6 +26,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -36,9 +37,9 @@ public class PrePartida1 extends JFrame implements MouseListener{
 	private Presentacion1 presentacion1;
         private static PrePartida1 prepartida1;
         private Escenografia escenografia;
-        private String imageFilePath = "C:\\tank.jpg";
-        private ImageIcon ii = new ImageIcon(imageFilePath);
-       
+        //private String imageFilePath = "C:\\tank.jpg";
+        //private ImageIcon ii = new ImageIcon(imageFilePath);
+        private ImageIcon ii = new ImageIcon(getClass().getClassLoader().getResource("res/tank.jpg")); 
 	// Constructor de la clase.
 	public PrePartida1(int x, int y,Presentacion1 presentacion1){
 		super("Tank Exile - Pre Partida");
