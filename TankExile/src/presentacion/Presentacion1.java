@@ -19,7 +19,7 @@ import javax.swing.JTextArea;
 
 public class Presentacion1 extends JFrame implements MouseListener {
 	private PrePartida1 prePartida1;
-        private Presentacion1 presentacion1;
+        private static  Presentacion1 presentacion1;
 	// Constructor de la clase.
 	public Presentacion1(int x, int y){
 		super("TankExile - Presentación");
@@ -84,12 +84,18 @@ public class Presentacion1 extends JFrame implements MouseListener {
 		JButton b1 = new JButton("CONECTAR");
 		b1.setPreferredSize(new Dimension(110,30));
 		b1.addMouseListener(this);
+                
+                JButton exitButton = new JButton("Salir");
+                exitButton.setPreferredSize(new Dimension(110,30));
+                exitButton.addActionListener(new exitListener());
 		
 		JPanel jp3 = new JPanel();
 		jp3.setPreferredSize(new Dimension(Finals.ANCHO_VENTANA-250,(Finals.ALTO_VENTANA-500)/3));
-		jp3.setLayout(new FlowLayout(FlowLayout.CENTER));
+		jp3.setLayout(new FlowLayout(FlowLayout.TRAILING));
 		jp3.setBackground(Color.LIGHT_GRAY);
-		jp3.add(b1);
+		jp3.add(b1,0);
+                jp3.add(exitButton,1);
+               
 		
 		panel.add(jp1);
 		panel.add(jp2);
@@ -103,7 +109,7 @@ public class Presentacion1 extends JFrame implements MouseListener {
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
-  public Presentacion1 getPresentacion1() {
+  public static Presentacion1 getPresentacion1() {
         return presentacion1;
     }
 
