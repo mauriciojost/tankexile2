@@ -1,38 +1,55 @@
 
 package presentacion;
 
+import java.awt.BorderLayout;
 import java.awt.Button;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Rectangle;
+import java.awt.Shape;
 import java.awt.event.MouseEvent;
+import java.awt.image.ImageObserver;
 import java.lang.reflect.InvocationTargetException;
+import java.text.AttributedCharacterIterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import paquete.*;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Graphics;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.Image;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 public class PrePartida1 extends JFrame implements MouseListener{
 	private Presentacion1 presentacion1;
         private static PrePartida1 prepartida1;
         private Escenografia escenografia;
+        private String imageFilePath = "C:\\tank.jpg";
+        private ImageIcon ii = new ImageIcon(imageFilePath);
+       
 	// Constructor de la clase.
 	public PrePartida1(int x, int y,Presentacion1 presentacion1){
 		super("Tank Exile - Pre Partida");
                 this.presentacion1=presentacion1;
-		setBounds(x,y,Finals.ANCHO_VENTANA-250,Finals.ALTO_VENTANA-500); // Reajusta tamaño de la ventana, sin modificar su posición.
+		setBounds(x,y,Finals.ANCHO_VENTANA-250,Finals.ALTO_VENTANA-400); // Reajusta tamaño de la ventana, sin modificar su posición.
 		setResizable(false); // No se permite dar nuevo tamaño a la ventana.
 		
 		JPanel panel = (JPanel)this.getContentPane(); // Panel donde se grafican los objetos (bloques)que componen el escenario y los tanques que representan a cada jugador.
 		panel.setPreferredSize(new Dimension(Finals.ANCHO_VENTANA-250,Finals.ALTO_VENTANA-500));
-		panel.setLayout(new GridLayout(2,1));
+		panel.setLayout(new GridLayout(2,3));
+                //panel.setLayout(new BorderLayout());
 		panel.setBackground(Color.LIGHT_GRAY);
 		addWindowListener(null);
 		addWindowListener(new WindowAdapter() {
@@ -40,29 +57,63 @@ public class PrePartida1 extends JFrame implements MouseListener{
 			public void windowClosing(WindowEvent e) {System.exit(0);}
 		}); // Se define un objeto que escucha los eventos sobre la ventana.
 		
+               
+                
+               
 		JButton b1 = new JButton("Jugar");
 		b1.setPreferredSize(new Dimension(110,30));
 		b1.addMouseListener(this);
-		
-		JPanel jp4 = new JPanel();
-		jp4.setLayout(new FlowLayout());
-		jp4.setBackground(Color.LIGHT_GRAY);
-		jp4.setPreferredSize(new Dimension(Finals.ANCHO_VENTANA-250,(Finals.ALTO_VENTANA-500)/2));
-		jp4.add(b1);
-		
+                
+                JButton ipButton = new JButton("Cambiar ip");
+                ipButton.setPreferredSize(new Dimension(110,30));
+                ipButton.addActionListener(new ipBackListener());
+			
 		JButton b2 = new JButton("Opciones"); 
 		b2.setPreferredSize(new Dimension(110,30));
 		b2.addMouseListener(this);
-		
+                
+                JButton exitButton = new JButton("Salir");
+                exitButton.setPreferredSize(new Dimension(110,30));
+                exitButton.addActionListener(new exitListener());
+                
+                JButton exit2Button = new JButton("Salir2");
+                exit2Button.setPreferredSize(new Dimension(110,30));
+                exit2Button.addActionListener(new exitListener());
+                
+                JPanel jp4 = new JPanel();
+		jp4.setLayout(new GridLayout(4,1));
+		jp4.setBackground(Color.LIGHT_GRAY);
+		//jp4.setPreferredSize(new Dimension(Finals.ANCHO_VENTANA-500,(Finals.ALTO_VENTANA-1000)/2));
+		jp4.setPreferredSize(new Dimension(110,30));
+                jp4.setBounds(0, 0, 110, 30);
+                jp4.setSize(new Dimension(110,30));
+                
+                jp4.add(b1,0);
+                jp4.add(ipButton,1);
+		jp4.add(b2,2);
+                jp4.add(exitButton,3);
+                
+                
 		JPanel jp5 = new JPanel();
 		jp5.setLayout(new FlowLayout());
 		jp5.setBackground(Color.LIGHT_GRAY);
-		jp5.setPreferredSize(new Dimension(Finals.ANCHO_VENTANA-250,(Finals.ALTO_VENTANA-500)/2));
-		jp5.add(b2);
 		
-		panel.add(jp4);
-		panel.add(jp5);
+		jp5.setPreferredSize(new Dimension(400,300));
+            
+               //Creo icono para cargar imagen
+                JLabel iM = new JLabel();
+                iM.setIcon(ii);
+                iM.setOpaque(false);
+                iM.setSize(200, 200);
+                
+                
+                jp5.add(iM);
+		
+                 
+		panel.add(jp5,0);
+		panel.add(BorderLayout.CENTER,jp4);
 		setVisible(true);
+                
                 prepartida1=this;
 		System.out.println(" PASE POR CONSTRUCTOR DE PRE PARTIDA");
 	}
