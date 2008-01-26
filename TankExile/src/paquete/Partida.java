@@ -7,6 +7,7 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.awt.image.BufferStrategy;
 import java.io.IOException;
 import java.rmi.RemoteException;
@@ -132,7 +133,9 @@ public class Partida extends Canvas implements Finals{
 			}catch(InterruptedException e){}
 		}
 	}
-	
+
+	//	
+	/*
 	public static void main(String[] args) {
 		
 		String ipaca = new String("192.168.0.7"); 
@@ -163,4 +166,5 @@ public class Partida extends Canvas implements Finals{
 		tank_exile.jugar();
 		
 	}
+	//*/
 }
