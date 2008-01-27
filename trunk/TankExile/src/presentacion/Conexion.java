@@ -83,7 +83,7 @@ public class Conexion extends Thread implements Legible, Conectable{
 	public void ponerADisposicionVentanaRemota() throws Exception{	
 		Registry registry = LocateRegistry.getRegistry(iPOponente,PUERTO_VENTANA);
 		this.ventanaRemota = (VentanaControlable) registry.lookup("Clave ventana");    
-		System.out.println("Conexión de cliente exitosa. Ventana remota a disposición local.");
+		//System.out.println("Conexión de cliente exitosa. Ventana remota a disposición local.");
 		ventanaLista = true;
 	}
 	
@@ -154,7 +154,7 @@ public class Conexion extends Thread implements Legible, Conectable{
 		if (cadena != null){
 			out.write(cadena);
 		}else{
-			System.out.println("El archivo que se intentó copiar desde el host remoto estaba vacío.");
+			//System.out.println("El archivo que se intentó copiar desde el host remoto estaba vacío.");
 		}
 		out.close();
 	}
@@ -171,7 +171,7 @@ public class Conexion extends Thread implements Legible, Conectable{
 	// Método que pone al tanque remoto a disposición del host local, para su control.
 	// Es privado, sólo utilizado por el método establecerComunicacionTanqueRemoto().
 	private Controlable llamarTanqueRemoto() throws Exception{
-		System.out.println("Conexión llamando a TankRMI en el otro host (IP:" + iPOponente + "): esperando respuesta...");
+		//System.out.println("Conexión llamando a TankRMI en el otro host (IP:" + iPOponente + "): esperando respuesta...");
 		Registry registry = LocateRegistry.getRegistry(iPOponente, PUERTO_TANQUES); // *****
 		Controlable retorno = (Controlable) registry.lookup("Clave tanques");
 		System.out.println("Conexión de cliente exitosa. Tanque a disposición.");
@@ -238,7 +238,7 @@ public class Conexion extends Thread implements Legible, Conectable{
 	public synchronized void darTurno() throws RemoteException {
 		miTurno = true;
 		this.notifyAll();
-		System.out.println("Cambio de turno...");
+		//System.out.println("Cambio de turno...");
 	}
 	public void run(){
 		clavePropia = (new Random()).nextInt();
