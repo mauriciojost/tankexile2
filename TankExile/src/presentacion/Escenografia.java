@@ -35,7 +35,8 @@ public class Escenografia extends JFrame implements VentanaControlable, ListSele
         setBounds(prepartida1.getX(), prepartida1.getY(), Finals.ANCHO_VENTANA-200,Finals.ALTO_VENTANA-300);
 		setResizable(false);
 		getContentPane().setPreferredSize(new Dimension(Finals.ANCHO_VENTANA-200,Finals.ALTO_VENTANA-300));
-		getContentPane().setLayout(new GridLayout(3,1));
+		getContentPane().setLayout(new FlowLayout());
+		getContentPane().setBackground(Color.LIGHT_GRAY);
 		addWindowListener(new WindowAdapter() {
             @Override
 			public void windowClosing(WindowEvent e) {System.exit(0);}
@@ -66,7 +67,7 @@ public class Escenografia extends JFrame implements VentanaControlable, ListSele
 		//String[] children;
 		if (file == null) {
 			// Either dir does not exist or is not a directory.
-			System.out.println("no tiene nada"); 
+			//System.out.println("no tiene nada"); 
 		} else {
 			for (int i=0; i<file.length; i++) {
 				// Get filename of file or directory
@@ -82,17 +83,8 @@ public class Escenografia extends JFrame implements VentanaControlable, ListSele
 		lista.addListSelectionListener(this);
 		
 		JScrollPane jsp = new JScrollPane(lista);
-		jsp.setPreferredSize(new Dimension(Finals.ANCHO_VENTANA-200, Finals.ALTO_VENTANA-300-100));
-		// Creamos Etiqueta.
-		JLabel jl1 = new JLabel("   Seleccion de Circuito    ");
-		jl1.setBackground(Color.LIGHT_GRAY);
-		
-		JPanel jp_titulo = new JPanel();
-		jp_titulo.setPreferredSize(new Dimension(Finals.ANCHO_VENTANA-200, Finals.ALTO_VENTANA-300-322));
-		jp_titulo.setLayout(new FlowLayout(FlowLayout.LEFT));
-		jp_titulo.setBackground(Color.LIGHT_GRAY);
-		jp_titulo.add(jl1);
-		
+		jsp.setPreferredSize(new Dimension(Finals.ANCHO_VENTANA-210, Finals.ALTO_VENTANA-300-85));
+		jsp.setBackground(Color.LIGHT_GRAY);
 		// Creamos Botones.
 		// abrir
 		JButton abrir = new JButton("Seleccionar"/*, new ImageIcon("images/open.gif")*/);
@@ -105,7 +97,7 @@ public class Escenografia extends JFrame implements VentanaControlable, ListSele
 		cancelar.addActionListener(new CancelListener());
 		
 		JPanel jp_boton = new JPanel();
-		jp_boton.setPreferredSize(new Dimension(Finals.ANCHO_VENTANA-200, Finals.ANCHO_VENTANA-300-322));
+		jp_boton.setPreferredSize(new Dimension(Finals.ANCHO_VENTANA-200, Finals.ANCHO_VENTANA-300-290));
 		jp_boton.setLayout(new FlowLayout(FlowLayout.CENTER));
 		jp_boton.setBackground(Color.LIGHT_GRAY);
 		jp_boton.add(abrir);
@@ -126,7 +118,6 @@ public class Escenografia extends JFrame implements VentanaControlable, ListSele
 		};
 		lista.addMouseListener(mouseListener);
 		
-		getContentPane().add(jp_titulo);
 		getContentPane().add(jsp);
 		getContentPane().add(jp_boton);
                 

@@ -111,7 +111,7 @@ public class SplitPane implements ListSelectionListener {
 			public void mouseClicked(MouseEvent e) {
 				if (e.getClickCount() == 2) {
 					indeX = list.locationToIndex(e.getPoint());
-					System.out.println("Double clicked on Item " + indeX);
+					//System.out.println("Double clicked on Item " + indeX);
 					list.setSelectedIndex(indeX);
 				}
 			}
