@@ -15,7 +15,7 @@ import java.util.*;
 
 public class Escenografia extends JFrame implements VentanaControlable, ListSelectionListener {
     private Vector<File> fileNames = new Vector<File>();
-    private JList lista;
+    private static JList lista;
     private JSplitPane splitPane;
     private static Escenografia escenografia;
     private File dir = new File("Circuitos");
@@ -135,7 +135,7 @@ public class Escenografia extends JFrame implements VentanaControlable, ListSele
 	static public Escenografia getEsc() {
 		return escenografia;
 	}
-	public Object  getSelectedNameFile() {
+	public static Object  getSelectedNameFile() {
 		return  lista.getSelectedValue();
 	}
 	

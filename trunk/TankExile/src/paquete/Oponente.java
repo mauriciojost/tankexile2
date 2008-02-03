@@ -5,7 +5,8 @@ package paquete;
 import java.rmi.RemoteException;
 
 public class Oponente implements Controlable {
-	public Oponente(){
+	public static boolean coneccionOponente= false;//Este campo es verdadero cuando el oponente ha clikeado en jugar
+        public Oponente(){
 	}
 	
 
