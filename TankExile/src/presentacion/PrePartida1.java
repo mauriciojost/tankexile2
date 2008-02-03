@@ -26,8 +26,10 @@ public class PrePartida1 extends JFrame implements MouseListener{
 	//private String imageFilePath = "C:\\tank.jpg";
 	//private ImageIcon ii = new ImageIcon(imageFilePath);
 	private ImageIcon ii = new ImageIcon(getClass().getClassLoader().getResource("res/tank.jpg"));
-	
-	// Constructor de la clase.
+	private ImageIcon esp = new ImageIcon(getClass().getClassLoader().getResource("res/EsperaOponente.jpg"));
+	private JFrame ventanaEspera = new JFrame("Tank Exile - Esperando Oponente");
+        // Constructor de la clase.
+    @SuppressWarnings("static-access")
 	public PrePartida1(int x, int y,Presentacion1 presentacion1){
 		super("Tank Exile - Pre Partida");
 		this.presentacion1=presentacion1;
@@ -40,6 +42,7 @@ public class PrePartida1 extends JFrame implements MouseListener{
 		panel.setBackground(Color.LIGHT_GRAY);
 		
 		addWindowListener(new WindowAdapter() {
+            @Override
             public void windowClosing(WindowEvent e) {System.exit(0);}
 		}); // Se define un objeto que escucha los eventos sobre la ventana.
 		
@@ -77,12 +80,18 @@ public class PrePartida1 extends JFrame implements MouseListener{
 		jp5.setBackground(Color.LIGHT_GRAY);
 		jp5.setPreferredSize(new Dimension(Finals.ANCHO_VENTANA-250,Finals.ALTO_VENTANA-445));
 		
-		//Creo icono para cargar imagen
-		JLabel iM = new JLabel();
-		iM.setIcon(ii);
-		iM.setOpaque(false);
-		iM.setSize(200, 200);
-		jp5.add(iM);
+
+		jp5.setPreferredSize(new Dimension(400,300));
+            
+               //Creo una Etiqueta para cargar icono q contiene a la imagen
+                JLabel iM = new JLabel();
+                iM.setIcon(ii);
+                iM.setOpaque(false);
+                iM.setSize(200, 200);
+                
+                
+                jp5.add(iM);
+
 		
 		panel.add(jp5);
 		panel.add(jp4);
@@ -94,12 +103,52 @@ public class PrePartida1 extends JFrame implements MouseListener{
 	
 	// Metodo que responde al evento sobre el boton Jugar.
 	public void responderInicio() {
-		try {
-			this.dispose();
+        //coneccionOponente es un campo q indica si el oponente ya presiono en jugar(true) o todavia no(false)
+       //en cada caso respectivamente comenzara el juego o se mantendra esperando el inicio en un Frame    
+        System.out.println(" PASE POR responder inicio");
+           
+        //MOstrar pantalla de esperar oponente mientras Oponente.coneccionOponente sea Falso
+        //while(!Oponente.coneccionOponente){}
+        
+             try{this.dispose();
+             
+                
+		ventanaEspera.setBounds(100,50,Finals.ANCHO_VENTANA-250,Finals.ALTO_VENTANA-370);
+		setResizable(false); // No se permite dar nuevo tamaño a la ventana.
+		
+		JPanel panel = (JPanel)this.getContentPane(); // Panel donde se grafican los objetos (bloques)que componen el escenario y los tanques que representan a cada jugador.
+		panel.setPreferredSize(new Dimension(Finals.ANCHO_VENTANA-250,Finals.ALTO_VENTANA-370));
+		//panel.setLayout(new GridLayout(2,1));
+		panel.setBackground(Color.LIGHT_GRAY);
+		
+		addWindowListener(new WindowAdapter() {
+                @Override
+            public void windowClosing(WindowEvent e) {System.exit(0);}
+		}); // Se define un objeto que escucha los eventos sobre la ventana.
+		 
+                JLabel iM = new JLabel();
+                iM.setIcon(ii);
+                iM.setOpaque(false);
+                iM.setSize(200, 200);
+                panel.add(iM);
+                
+                ventanaEspera.setVisible(true);
+             }
+             catch (Exception ex2){
+             System.out.println("exception en responder inicio");
+             }
+         
+         /*while(!Oponente.coneccionOponente){
+            
+                                                          } */
+            try {
+			ventanaEspera.dispose();
+                        //this.dispose();
 			System.out.println("POR CONSTRUIR PARTIDA");
 			String ipaca = new String("192.168.0.7");
 			String ipalla = new String("192.168.0.101"); //con 1
-			String circuito = new String("circuito2.txt");
+			//String circuito = new String("circuito2.txt");
+                        String circuito = Escenografia.getSelectedNameFile().toString();
 			Conexion conexion = new Conexion(null);
 			do{
 				conexion.conectar();
@@ -125,6 +174,7 @@ public class PrePartida1 extends JFrame implements MouseListener{
 			Logger.getLogger(Partida.class.getName()).log(Level.SEVERE, null, ex);
 			}
 			*/
+                     
 			Partida tank_exile = new Partida(0, circuito, conexion);
 			tank_exile.jugar();
 			
@@ -132,6 +182,8 @@ public class PrePartida1 extends JFrame implements MouseListener{
 			Logger.getLogger(PrePartida1.class.getName()).log(Level.SEVERE, null, ex);
 		}
 	}
+        
+     
     // Método que responder al evento sobre el boton Opciones.
 	public void responderOpcion() {
 		System.out.println("POR CONSTRUIR ESCENOGRAFIA");
