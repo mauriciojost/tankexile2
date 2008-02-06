@@ -24,7 +24,6 @@ import javax.swing.JPanel;
 public class Partida extends Canvas implements Finals, Runnable{
 	private BufferStrategy estrategia; // Atributo que permite establecer el Doble Buffering para pintar la pantalla.
 	private Circuito circuito; // Circuito a ser creado para correr la partida.
-	private ArrayList<Bloque> bloquesAPintar; // Conjunto de bloques pertenecientes al circuito a ser pintados.
 	
 	private Tanque tanquePropio; // Tanque del jugador en el host.
 	private Tanque tanqueLocalLigadoOponente; // Tanque del oponente en el host.
@@ -72,9 +71,8 @@ public class Partida extends Canvas implements Finals, Runnable{
 	}
 	// Método que arranca la escena de la partida. Involucra la inicialización de los elementos principales del juego en sí.
 	public void iniciarEscena() {
-		bloquesAPintar = new ArrayList<Bloque>(); // Conjunto de bloques del circuito que serán pintados en cada ciclo de actualización.
 
-		circuito = new Circuito(bloquesAPintar, nombreCircuitoTXT); // Creación del circuito de juego.
+		circuito = new Circuito(nombreCircuitoTXT); // Creación del circuito de juego.
 		
 		tanquePropio = new Tanque(this, circuito, yoID); // Creación del tanque comandado por el jugador en este host.
 		tanqueLocalLigadoOponente = new Tanque(this, circuito, otroID); // Creación del tanque que será ligado al registro de RMI para ser comandado por el host remoto.
@@ -123,9 +121,8 @@ public class Partida extends Canvas implements Finals, Runnable{
 		g.setColor(Color.LIGHT_GRAY);
             
 		g.fillRect(0,0,this.getWidth(),this.getHeight());
-		for (int i = 0; i < bloquesAPintar.size(); i++) {
-			((Bloque)bloquesAPintar.get(i)).paint(g);
-		}
+		circuito.pintar(g);
+		
 		tanquePropio.pintar(g);
 		tanqueLocalLigadoOponente.pintar(g);
 		

@@ -1,4 +1,5 @@
 package paquete;
+import java.awt.Graphics2D;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -6,13 +7,11 @@ import java.util.ArrayList;
 public class Circuito {
 	private CargadorCircuitoTXT cargadorTXT; // Permite la conversión del archivo txt a circuito.
 	private Bloque matrizDeBloques[][] = new Bloque [Finals.BLOQUES_NUM][Finals.BLOQUES_NUM]; // Matriz que contiene los elementos Bloque que son mapeados en la pantalla.
-	private ArrayList<Bloque> bloquesQueGraficar; // Arreglo dinámico que contiene el conjunto de bloques a representar gráficamente en pantalla.
 	private Meta metas[] = new Meta[2];
 	
 	// Constructor de la clase.
-	public Circuito(ArrayList<Bloque> bloquesQueGraficar, String nombreCircuitoTXT){
+	public Circuito(String nombreCircuitoTXT){
 		cargadorTXT = new CargadorCircuitoTXT(nombreCircuitoTXT);
-		this.bloquesQueGraficar = bloquesQueGraficar;
 		Bloque bloque;
 		// Es recorrida secuencialmente cada posición del circuito para determinar según el archivo txt, si crear o no un muro o una meta, allí.
 		for (int j = 0; j < Finals.BLOQUES_NUM; j++) {
@@ -49,8 +48,16 @@ public class Circuito {
 	// Método privado que añade un bloque dado al circuito (tanto a la matriz como al grupo de objetos a representar).
 	private void agregarBloque(int i,int j, Bloque bloque){
 		this.setBloqueEnMatriz(i, j, bloque); // Es agregado a la matriz el bloque dado (o nada en caso de ser un null).
-		if (bloque!=null){
-			bloquesQueGraficar.add(bloque); // En caso de no ser un bloque, es agregado al conjunto para ser representado gráficamente.
+	}
+	
+	
+	public void pintar(Graphics2D g){
+		for (int i = 0; i < Finals.BLOQUES_NUM; i++) {
+			for (int j = 0; j < Finals.BLOQUES_NUM; j++) {
+				if (matrizDeBloques[i][j]!=null){
+					matrizDeBloques[i][j].paint(g);
+				}
+			}
 		}
 	}
 	

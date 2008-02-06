@@ -1,6 +1,8 @@
 package paquete;
 
 import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import javax.imageio.ImageIO;
@@ -9,9 +11,17 @@ import javax.imageio.ImageIO;
 public class Tanque implements Controlable{
 	private static final int TRAMAS_CHOQUE = 2; // Cantidad de imágenes del tanque.
 	private static final int PERIODO_CHOQUE = 50; // Duración de los efectos de un choque.
+	private static final int TRAMAS_MOVIMIENTO = 16; // Cantidad de imágenes del tanque.
+	private static final int PERIODO_MOVIMENTO = 1;
 	private int TRANCO_TANQUE = 1; // Tamaño del tranco de avance del tanque.
 	private int vX; // Velocidad horizontal del tanque.
 	private int vY; // Velocidad vertical del tanque.
+	private boolean teclasHabilitadas = true;
+	
+	private int temporizadorMovimento = 0;
+	
+	private int movimientoTrama = 0;
+	
 	
 	private boolean arriba,abajo,izquierda,derecha; // Booleanos representativas de la directiva de la dirección a adoptar.
 	private int direccion = Finals.ARRIBA; // Atributo representativo de la dirección actual del tanque.
@@ -45,7 +55,7 @@ public class Tanque implements Controlable{
 	
 	// Método que pinta en pantalla la imagen que corresponde al tanque y a su estado.
     public void pintar(Graphics2D g){
-		g.drawImage((BufferedImage)imagenes.get(new Integer(direccion * 10+ choqueTrama) ), X,Y, constantes);			
+		g.drawImage((BufferedImage)imagenes.get(new Integer(direccion * 10000 + choqueTrama * 100+ movimientoTrama)), X,Y, constantes);
     }
     
 	// Método que retorna la dirección actual del tanque.
@@ -53,6 +63,23 @@ public class Tanque implements Controlable{
 		return direccion;
     }
     
+	private String convertirDireccionAString(int direccion){
+		switch (direccion){
+			
+			/*
+				ABAJO		0
+				IZQUIERDA	1
+				DERECHA		2
+				ARRIBA		3
+			 */
+			case 0: return "abajo";
+			case 1: return "izquierda";
+			case 2: return "derecha";
+			case 3: return "arriba";
+			default: return "";
+		}
+	}
+	
 	// Constructor.
 	public Tanque(Finals constantes, Circuito circuito, int id) {
 		this.id = id;
@@ -62,14 +89,36 @@ public class Tanque implements Controlable{
 		// Carga de las imágenes estáticamente.
 		if (imagenes.isEmpty())
 			try{
-				imagenes.put(new Integer(30), ImageIO.read(getClass().getClassLoader().getResource("res/Tanque_up0.gif")));
-				imagenes.put(new Integer(31), ImageIO.read(getClass().getClassLoader().getResource("res/Tanque_up1.gif")));
-				imagenes.put(new Integer(00), ImageIO.read(getClass().getClassLoader().getResource("res/Tanque_down0.gif")));
-				imagenes.put(new Integer(01), ImageIO.read(getClass().getClassLoader().getResource("res/Tanque_down1.gif")));
-				imagenes.put(new Integer(20), ImageIO.read(getClass().getClassLoader().getResource("res/Tanque_right0.gif")));
-				imagenes.put(new Integer(21), ImageIO.read(getClass().getClassLoader().getResource("res/Tanque_right1.gif")));
-				imagenes.put(new Integer(10), ImageIO.read(getClass().getClassLoader().getResource("res/Tanque_left0.gif")));
-				imagenes.put(new Integer(11), ImageIO.read(getClass().getClassLoader().getResource("res/Tanque_left1.gif")));
+				for (int i = 0; i < this.TRAMAS_MOVIMIENTO;i++){
+					imagenes.put(new Integer(30000+i), ImageIO.read(getClass().getClassLoader().getResource("res/Tanque_arriba"+i+".gif")));
+					imagenes.put(new Integer(30100+i), ImageIO.read(getClass().getClassLoader().getResource("res/Tanque_arribac"+i+".gif")));
+				}
+				for (int i = 0; i < this.TRAMAS_MOVIMIENTO;i++){
+					imagenes.put(new Integer(Finals.ABAJO    *10000+ i), this.rotarImagen(imagenes.get(30000+ i),180));
+					imagenes.put(new Integer(Finals.ABAJO    *10000 + 100+ i), this.rotarImagen(imagenes.get(30100+ i),180));
+				}
+				for (int i = 0; i < this.TRAMAS_MOVIMIENTO;i++){
+					imagenes.put(new Integer(Finals.DERECHA  *10000+ i), this.rotarImagen(imagenes.get(30000+ i), 90));
+					imagenes.put(new Integer(Finals.DERECHA  *10000 + 100 + i), this.rotarImagen(imagenes.get(30100+ i), 90));
+				}
+				
+				for (int i = 0; i < this.TRAMAS_MOVIMIENTO;i++){
+					imagenes.put(new Integer(Finals.IZQUIERDA*10000+ i), this.rotarImagen(imagenes.get(30000+ i),-90));
+					imagenes.put(new Integer(Finals.IZQUIERDA*10000 + 100 + i), this.rotarImagen(imagenes.get(30100+ i),-90));
+				}
+				
+				
+				
+				/*
+				imagenes.put(new Integer(00000), ImageIO.read(getClass().getClassLoader().getResource("res/Tanque_down0.gif")));
+				imagenes.put(new Integer(00001), ImageIO.read(getClass().getClassLoader().getResource("res/Tanque_down1.gif")));
+				imagenes.put(new Integer(20000), ImageIO.read(getClass().getClassLoader().getResource("res/Tanque_right0.gif")));
+				imagenes.put(new Integer(20001), ImageIO.read(getClass().getClassLoader().getResource("res/Tanque_right1.gif")));
+				imagenes.put(new Integer(10000), ImageIO.read(getClass().getClassLoader().getResource("res/Tanque_left0.gif")));
+				imagenes.put(new Integer(10001), ImageIO.read(getClass().getClassLoader().getResource("res/Tanque_left1.gif")));
+				
+				*/
+				
 			}catch(Exception e){
 				System.out.println("Error: no se ha podido realizar la carga de imágenes de la clase Tanque, "+e.getClass().getName()+" "+e.getMessage());
 				e.printStackTrace();
@@ -77,32 +126,69 @@ public class Tanque implements Controlable{
 			}
 	}
 	
+	private BufferedImage rotarImagen(BufferedImage img, int grados){
+		AffineTransform rotation = new AffineTransform();
+		AffineTransformOp rotator;
+		rotation.rotate(Math.toRadians(grados), img.getWidth() / 2,
+		img.getHeight() / 2);
+		rotator = new AffineTransformOp(rotation,AffineTransformOp.TYPE_BILINEAR);
+		return rotator.filter(img, null);
+	}
+	
 	// Método de actuación del tanque.
 	public void actuar() {
 		
-		if(circuito.hayColision(this)){ // Detección de colisiones. Responsabilidades del circuito.
-			this.choque(); // En caso de haberla, sufrir efectos del mismo.
-		}
+		this.deshabilitarTeclas();
 		
-		if(circuito.llegueAMiMeta(this)){ // Detección de llegada a la meta.
-			this.choque();
-		}
-		
-		X+=vX; // Actualización de la posición.
+		X+=vX; // ActualizaciÃ³n de la posiciÃ³n.
 		Y+=vY;
+		
+		
+		if(circuito.hayColision(this)){ // DetecciÃ³n de colisiones. Responsabilidades del circuito.
+			this.choque();// En caso de haberla, sufrir efectos del mismo.
+		}
+		
+		//if(circuito.llegueAMiMeta(this)){ // DetecciÃ³n de llegada a la meta.
+		//	this.choque();
+		//}
+		
+		
+		this.habilitarTeclas();
 					
 		// Efectos del estado de choque.
 		if (choque){
-			choqueTrama=(choqueTrama+1)%TRAMAS_CHOQUE;
+			choqueTrama = (choqueTrama + 1) % TRAMAS_CHOQUE;
 			temporizadorChoque++;
-			if (temporizadorChoque==PERIODO_CHOQUE){
-				choque=false;
+			teclasHabilitadas = false;
+			if (temporizadorChoque == PERIODO_CHOQUE){
+				choque = false;
+				teclasHabilitadas = true;
+				choqueTrama = 0;
 			}
-		}else{
-			choqueTrama=0;
 		}
+		
+		if (arriba || abajo || derecha || izquierda){
+			temporizadorMovimento++;
+			if (temporizadorMovimento==PERIODO_MOVIMENTO){
+				temporizadorMovimento = 0;
+				movimientoTrama=(movimientoTrama+TRANCO_TANQUE)%TRAMAS_MOVIMIENTO;
+			}
+		}
+		
     }
     
+	public void deshabilitarTeclas(){
+		teclasHabilitadas = false;
+	}
+	
+	public void habilitarTeclas(){
+		teclasHabilitadas = true;
+	}
+	
+	public int getMovimientoTrama(){
+		return movimientoTrama;
+	}
+	
 	// Método que actualiza las velocidades según se tengan o no ciertas teclas presionadas.
 	private void actualizarVelocidades(){
 		vX=0; vY=0;
@@ -121,7 +207,7 @@ public class Tanque implements Controlable{
 	// Conjunto de métodos de respuesta al teclado.
 	public void irArriba(){
 		forzarTeclasSueltas();
-		if (!choque){
+		if (teclasHabilitadas){
 			arriba = true;
 			direccion = Finals.ARRIBA;
 		}
@@ -130,7 +216,7 @@ public class Tanque implements Controlable{
 	
 	public void irAbajo(){
 		forzarTeclasSueltas();
-		if (!choque){
+		if (teclasHabilitadas){
 			abajo  = true;
 			direccion = Finals.ABAJO;
 		}
@@ -139,7 +225,7 @@ public class Tanque implements Controlable{
 	
 	public void irIzquierda(){
 		forzarTeclasSueltas();
-		if (!choque){
+		if (teclasHabilitadas){
 			izquierda  = true;
 			direccion = Finals.IZQUIERDA;
 		}
@@ -148,7 +234,7 @@ public class Tanque implements Controlable{
 	
 	public void irDerecha(){
 		forzarTeclasSueltas();
-		if (!choque){
+		if (teclasHabilitadas){
 			derecha = true;
 			direccion = Finals.DERECHA;
 		}
@@ -187,10 +273,20 @@ public class Tanque implements Controlable{
 	
 	// Método que genera los efectos de un choque en el tanque.
 	public void choque(){
+		teclasHabilitadas = false;
 		choque = true;
 		forzarTeclasSueltas();
 		actualizarVelocidades();
 		temporizadorChoque=0;
 	}
-	
+	public void setTodo(int x, int y, int direccion, int movimientoTrama, int choqueTrama){
+		this.X = x;
+		this.Y = y;
+		this.direccion = direccion;
+		this.movimientoTrama = movimientoTrama;
+		this.choqueTrama = choqueTrama;
+	}
+	public int getChoqueTrama(){
+		return choqueTrama;
+	}
 }	
