@@ -68,7 +68,7 @@ public class Presentacion1 extends JFrame implements MouseListener {
 		try {
 
 
-			Thread.sleep(2500);
+			Thread.sleep(500);
 
 		} catch (InterruptedException ex) {
 			Logger.getLogger(Presentacion1.class.getName()).log(Level.SEVERE, null, ex);
@@ -201,4 +201,8 @@ public class Presentacion1 extends JFrame implements MouseListener {
 	public void mouseReleased(MouseEvent e) { }
 	public void mouseEntered(MouseEvent e) { }
 	public void mouseExited(MouseEvent e) { }
+	
+	public static void main(String args[]){
+		new Presentacion1(350,70);
+	}
 }
