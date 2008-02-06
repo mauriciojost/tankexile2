@@ -23,7 +23,7 @@ public class Escenografia extends JFrame implements VentanaControlable, ListSele
     private String names;
     private int indeX;
     final static String tec = "tec";
-    private File[] file = dir.listFiles();
+    private File[] file;//* = dir.listFiles();*/
     private PrePartida1 prepartida1;
     
     public Escenografia(PrePartida1 prepartida1) {
@@ -46,7 +46,7 @@ public class Escenografia extends JFrame implements VentanaControlable, ListSele
 		FileFilter fileFilter = new FileFilter() {
 			public boolean accept(File f) {
 				if (f.isDirectory()) {
-					return true;
+					return false;
 				}
 				String s = f.getName();
 				int i = s.lastIndexOf('.');
@@ -62,6 +62,7 @@ public class Escenografia extends JFrame implements VentanaControlable, ListSele
 				return false;
 		    }
 		};
+		
 		file = dir.listFiles(fileFilter);
 		//String[] children = dir.list();
 		//String[] children;
@@ -72,6 +73,7 @@ public class Escenografia extends JFrame implements VentanaControlable, ListSele
 			for (int i=0; i<file.length; i++) {
 				// Get filename of file or directory
 				fileNames.add(i, file[i]);
+				
 				// PAra borrarr
 				//System.out.println(file[i]+"texto");
 			}
@@ -94,7 +96,13 @@ public class Escenografia extends JFrame implements VentanaControlable, ListSele
 		// cancelar
 		JButton cancelar = new JButton("Cancelar"/*, new ImageIcon("images/cancel.gif")*/);
 		cancelar.setPreferredSize(new Dimension(110,30));
-		cancelar.addActionListener(new CancelListener());
+		cancelar.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e) {
+				Escenografia.getEsc().dispose();
+				PrePartida1.getPrePartida1().show();
+            //hay que implementar la vuelta atras a la pagina que la precede
+			}
+		});
 		
 		JPanel jp_boton = new JPanel();
 		jp_boton.setPreferredSize(new Dimension(Finals.ANCHO_VENTANA-200, Finals.ANCHO_VENTANA-300-290));
@@ -135,7 +143,7 @@ public class Escenografia extends JFrame implements VentanaControlable, ListSele
 	static public Escenografia getEsc() {
 		return escenografia;
 	}
-	public static Object  getSelectedNameFile() {
+	public static Object getSelectedNameFile() {
 		return  lista.getSelectedValue();
 	}
 	

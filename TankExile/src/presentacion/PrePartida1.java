@@ -2,7 +2,13 @@
 package presentacion;
 
 
+import java.awt.BorderLayout;
+
 import java.awt.event.MouseEvent;
+
+import java.lang.reflect.InvocationTargetException;
+
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import paquete.*;
@@ -13,7 +19,12 @@ import java.awt.GridLayout;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+
+import java.lang.reflect.Method;
+
+
 import javax.swing.ImageIcon;
+
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -21,6 +32,8 @@ import javax.swing.JPanel;
 
 public class PrePartida1 extends JFrame implements MouseListener{
 	private Presentacion1 presentacion1;
+
+		private Conexion conexion;
 	private static PrePartida1 prepartida1;
 	private Escenografia escenografia;
 	//private String imageFilePath = "C:\\tank.jpg";
@@ -30,7 +43,8 @@ public class PrePartida1 extends JFrame implements MouseListener{
 	private JFrame ventanaEspera = new JFrame("Tank Exile - Esperando Oponente");
         // Constructor de la clase.
     @SuppressWarnings("static-access")
-	public PrePartida1(int x, int y,Presentacion1 presentacion1){
+
+	public PrePartida1(int x, int y,Presentacion1 presentacion1, Conexion conexion){
 		super("Tank Exile - Pre Partida");
 		this.presentacion1=presentacion1;
 		setBounds(x,y,Finals.ANCHO_VENTANA-250,Finals.ALTO_VENTANA-370);
@@ -99,8 +113,52 @@ public class PrePartida1 extends JFrame implements MouseListener{
 		
 		this.prepartida1=this;
 		System.out.println(" PASE POR CONSTRUCTOR DE PRE PARTIDA");
+		this.conexion = conexion;
+		
+		
+		
+		
+		
+		//Mauricio
+		
+		
+		
+		
+		//conexion.bindearMisArchivos();
+		/*
+		do{
+		try{
+		conexion.ponerADisposicionArchivosRemotos();
+		}catch(Exception e){
+		System.out.println("Intento fallido para obtener archivos remotos. Intentando de nuevo...");
+		try {Thread.sleep(1000);} catch (InterruptedException ex) {Logger.getLogger(Partida.class.getName()).log(Level.SEVERE, null, ex);}
+		}
+		}while(!conexion.archivosListo());
+		 */
+		/*
+		try {
+		conexion.copiarDeHostRemoto("circuiton.txt", "copio.txt");
+		conexion.enviarAHostRemoto("circuiton.txt", "copio.txt");
+		} catch (IOException ex) {
+		System.err.println("Error al intentar copiar en el método de Conexion copiarDeHostRemoto.");
+		Logger.getLogger(Partida.class.getName()).log(Level.SEVERE, null, ex);
+		}
+		*/
+		//Mauricio
 	}
 	
+	
+		// Metodo que responde al evento sobre el boton Jugar.
+	public void Jugar() {
+		this.dispose();
+		
+		// Mauricio dice: donde dice circuito se ha de entregar el nombre del txt (en el directorio del jar).
+		// En caso de no estar en el lugar del jar, indicar de forma relativa a ese directorio que contiene al jar.
+		String circuito = new String("circuito2.txt");
+		Partida tank_exile = new Partida(circuito, conexion);
+		tank_exile.jugar();
+		
+}
 	// Metodo que responde al evento sobre el boton Jugar.
 	public void responderInicio() {
         //coneccionOponente es un campo q indica si el oponente ya presiono en jugar(true) o todavia no(false)
@@ -135,7 +193,7 @@ public class PrePartida1 extends JFrame implements MouseListener{
                 ventanaEspera.setVisible(true);
              }
              catch (Exception ex2){
-             System.out.println("exception en responder inicio");
+				System.out.println("exception en responder inicio");
              }
          
          /*while(!Oponente.coneccionOponente){
@@ -148,12 +206,12 @@ public class PrePartida1 extends JFrame implements MouseListener{
 			String ipaca = new String("192.168.0.7");
 			String ipalla = new String("192.168.0.101"); //con 1
 			//String circuito = new String("circuito2.txt");
-                        String circuito = Escenografia.getSelectedNameFile().toString();
-			Conexion conexion = new Conexion(null);
-			do{
+            String circuito = Escenografia.getSelectedNameFile().toString();
+			//Conexion conexion = new Conexion("0.0.0.0");
+			/*do{
 				conexion.conectar();
 			}while(!conexion.conexionLista());
-			conexion.start();
+			conexion.start();*/
 			//conexion.bindearMisArchivos();
 			/*
 			do{
@@ -175,12 +233,13 @@ public class PrePartida1 extends JFrame implements MouseListener{
 			}
 			*/
                      
-			Partida tank_exile = new Partida(0, circuito, conexion);
+			Partida tank_exile = new Partida(circuito, conexion);
 			tank_exile.jugar();
 			
 		} catch (Exception ex) {
 			Logger.getLogger(PrePartida1.class.getName()).log(Level.SEVERE, null, ex);
 		}
+
 	}
         
      
@@ -208,12 +267,20 @@ public class PrePartida1 extends JFrame implements MouseListener{
         
 	public void mouseClicked(MouseEvent e) {
 		try {
+
 			String nombre = new String(((JButton)e.getSource()).getText());
 			nombre = nombre.substring(0, 6);
+			System.out.println("Nombre: "+nombre);
 			this.getClass().getMethod("responder"+nombre, (Class[])null).invoke(this, (Object[])null);
 		} catch (Exception ex) {
+			System.out.println("Algo...");
+			ex.printStackTrace();
 			Logger.getLogger(PrePartida1.class.getName()).log(Level.SEVERE, null, ex);
 		} 
+		//} catch (Exception ex) {
+			//System.out.println("Error en la interpretación de la tecla: "+ (((JButton)e.getSource()).getText()));
+			//Logger.getLogger(PrePartida1.class.getName()).log(Level.SEVERE, null, ex);
+		//} 
 	}
 
 	public void mousePressed(MouseEvent e) { }

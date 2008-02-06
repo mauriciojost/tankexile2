@@ -5,6 +5,7 @@ import paquete.*;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -22,12 +23,18 @@ import javax.swing.JTextField;
 
 public class Presentacion1 extends JFrame implements MouseListener {
 	private PrePartida1 prePartida1;
+        
     private static  Presentacion1 presentacion1;
 	private JTextField area_ip;
 	// Constructor de la clase.
 	public Presentacion1(int x, int y){
 		super("TankExile - Presentación");
+
+		
 		setBounds(x,y, Finals.ANCHO_VENTANA-250, Finals.ALTO_VENTANA-500); // Reajusta tamaño de la ventana, sin modificar su posición.
+
+
+
 		setResizable(false); // Impide modificar tamaño de la ventana.
 		addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
@@ -35,11 +42,18 @@ public class Presentacion1 extends JFrame implements MouseListener {
 			}
 		}); // Se define un objeto que escucha y resonde a los eventos sobre la ventana.
 		
+
+		
+
 		JPanel panel = (JPanel) getContentPane(); // Panel donde se grafican la interface de usuario.
 		panel.setPreferredSize(new Dimension(Finals.ANCHO_VENTANA-250, Finals.ALTO_VENTANA-500)); // Establece tamaño para el panel.
 		panel.setLayout(new GridLayout(1,1)); // Establece manager layout para el panel.
 		panel.setBackground(Color.LIGHT_GRAY); // Establece el color de fondo del panel.
+
 		
+
+		
+
 		ImageIcon ii = new ImageIcon(getClass().getClassLoader().getResource("res/tankLoading.jpg"));
 		JLabel iM = new JLabel();
 		iM.setIcon(ii);
@@ -49,9 +63,13 @@ public class Presentacion1 extends JFrame implements MouseListener {
 		panel.add(iM);
 				
 		setVisible(true); // Se hace visible la ventana.
+
 		
 		try {
+
+
 			Thread.sleep(2500);
+
 		} catch (InterruptedException ex) {
 			Logger.getLogger(Presentacion1.class.getName()).log(Level.SEVERE, null, ex);
 		}
@@ -62,42 +80,57 @@ public class Presentacion1 extends JFrame implements MouseListener {
 		// Creacion de los componentes que conforman la interface de usuario.
 		JTextArea jta2 = new JTextArea("IP propio: ");
 		jta2.setEditable(false);
-		jta2.setBackground(Color.LIGHT_GRAY);
+		//jta2.setBackground(Color.LIGHT_GRAY);
+		jta2.setFont(new Font("Arial",Font.BOLD,15));
+		jta2.setBackground(Color.WHITE);
 		
 		JTextArea ip_propio = new JTextArea("192.168.0.2");
 		ip_propio.setEditable(false);
-		ip_propio.setBackground(Color.LIGHT_GRAY);
+		ip_propio.setBackground(Color.WHITE);
+		//ip_propio.setBackground(Color.LIGHT_GRAY);
 		
 		JPanel jp1 = new JPanel();
 		jp1.setPreferredSize(new Dimension(Finals.ANCHO_VENTANA-250,(Finals.ALTO_VENTANA-500)/3));
 		jp1.setLayout(new FlowLayout(FlowLayout.LEFT));
-		jp1.setBackground(Color.LIGHT_GRAY);
+		//jp1.setBackground(Color.LIGHT_GRAY);
+		jp1.setBackground(Color.WHITE);
 		jp1.add(jta2);
 		jp1.add(ip_propio);
 		
 		
 		JTextArea jta3 = new JTextArea("Ingrese IP de oponente:");
 		jta3.setEditable(false);
-		jta3.setBackground(Color.LIGHT_GRAY);
+		jta3.setFont(new Font("Arial",Font.BOLD,15));
+		//jta3.setBackground(Color.LIGHT_GRAY);
+		jta3.setBackground(Color.WHITE);
 				
+
+		
+
 		JTextField ip_oponente = new JTextField();
 		ip_oponente.setColumns(15);
 		ip_oponente.setToolTipText(" ");
 		ip_oponente.setFocusAccelerator('\132'); // Estabcle combinacion Alt+z para obtener focus.
+
 		
 		this.area_ip = ip_oponente;
 				
 		JPanel jp2 = new JPanel();
 		jp2.setPreferredSize(new Dimension(Finals.ANCHO_VENTANA-250, (Finals.ALTO_VENTANA-500)/3));
 		jp2.setLayout(new FlowLayout(FlowLayout.LEFT));
-		jp2.setBackground(Color.LIGHT_GRAY);
+		//jp2.setBackground(Color.LIGHT_GRAY);
+		jp2.setBackground(Color.WHITE);
 		jp2.add(jta3);
 		jp2.add(ip_oponente);
 		
+
+		
+
 		JButton b_conectar = new JButton("Conectar");
 		b_conectar.setPreferredSize(new Dimension(110,30));
 		b_conectar.addMouseListener(this);
 		b_conectar.setToolTipText("Intenta conexion con IP ingresado");
+
 		
 		JButton b_salida = new JButton("Salida");
 		b_salida.setPreferredSize(new Dimension(110,30));
@@ -107,7 +140,8 @@ public class Presentacion1 extends JFrame implements MouseListener {
 		JPanel jp3 = new JPanel();
 		jp3.setPreferredSize(new Dimension(Finals.ANCHO_VENTANA-250,(Finals.ALTO_VENTANA-500)/3));
 		jp3.setLayout(new FlowLayout(FlowLayout.TRAILING));
-		jp3.setBackground(Color.LIGHT_GRAY);
+		jp3.setBackground(Color.WHITE);
+		//jp3.setBackground(Color.LIGHT_GRAY);
 		jp3.add(b_conectar);
 		jp3.add(b_salida);
 		
@@ -118,6 +152,9 @@ public class Presentacion1 extends JFrame implements MouseListener {
 		setVisible(true);
 		presentacion1 = this;
 	}
+
+
+
 	
 	Presentacion1(JFrame ventana) {
 		throw new UnsupportedOperationException("Not yet implemented");
@@ -128,11 +165,22 @@ public class Presentacion1 extends JFrame implements MouseListener {
 	}
 	
 	public void responderConect(){
+
 		// Acciones relativas a la conexión. Seguramente se necesita de un objeto de la clase Conexion.
 		System.out.println(this.area_ip.getText()); // Se obtiene el IP del oponente tipeado en el cuadro de texto.
-		System.out.println("POR CONSTRUIR PRE PARTIDA");
+		
+		Conexion conexion = new Conexion(area_ip.getText());
+		do{
+			try{
+				conexion.conectar();
+			}catch(Exception ex){
+				System.out.println("Fallo en el intento. Intentando conexión nuevamente...");
+				try{Thread.sleep(1000);}catch(InterruptedException r){}
+			}
+		}while(!conexion.conexionLista());
 		this.dispose();
-		prePartida1 = new PrePartida1(this.getX(),this.getY(),presentacion1);
+		conexion.start();
+		prePartida1 = new PrePartida1(this.getX(),this.getY(),presentacion1, conexion);
 	}
 	
 	public void responderSalida(){
