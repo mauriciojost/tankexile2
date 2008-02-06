@@ -1,9 +1,5 @@
 package presentacion;
 
-import java.awt.Component;
-import java.awt.event.MouseEvent;
-import java.rmi.AccessException;
-import java.rmi.NotBoundException;
 import paquete.*;
 import java.io.File;
 import java.io.FileReader;
