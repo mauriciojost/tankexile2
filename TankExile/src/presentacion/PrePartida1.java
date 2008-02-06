@@ -147,18 +147,6 @@ public class PrePartida1 extends JFrame implements MouseListener{
 		//Mauricio
 	}
 	
-	
-		// Metodo que responde al evento sobre el boton Jugar.
-	public void Jugar() {
-		this.dispose();
-		
-		// Mauricio dice: donde dice circuito se ha de entregar el nombre del txt (en el directorio del jar).
-		// En caso de no estar en el lugar del jar, indicar de forma relativa a ese directorio que contiene al jar.
-		String circuito = new String("circuito2.txt");
-		Partida tank_exile = new Partida(circuito, conexion);
-		tank_exile.jugar();
-		
-}
 	// Metodo que responde al evento sobre el boton Jugar.
 	public void responderInicio() {
         //coneccionOponente es un campo q indica si el oponente ya presiono en jugar(true) o todavia no(false)
@@ -233,8 +221,8 @@ public class PrePartida1 extends JFrame implements MouseListener{
 			}
 			*/
                      
-			Partida tank_exile = new Partida(circuito, conexion);
-			tank_exile.jugar();
+			Partida partida = new Partida(circuito, conexion);
+			partida.jugar();
 			
 		} catch (Exception ex) {
 			Logger.getLogger(PrePartida1.class.getName()).log(Level.SEVERE, null, ex);
