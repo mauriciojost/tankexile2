@@ -78,7 +78,7 @@ public class Partida extends Canvas implements Finals, Runnable{
 		jugador = new Jugador(tanquePropio); // Un jugador es creado para comandar el tanque propio del host.
 		this.addKeyListener(jugador); // El jugador comienza a escuchar el teclado.
 		this.addMouseListener(null);
-		Thread hiloTanqueRemoto = new Thread(conexion.getHiloTanqueRemoto());
+		
 		
 		do{
 			try{
@@ -89,7 +89,7 @@ public class Partida extends Canvas implements Finals, Runnable{
 			}
 		}while(!conexion.tanqueListo());
 		
-		
+		Thread hiloTanqueRemoto = new Thread(conexion.getHiloTanqueRemoto());
 		// Ambos tanques son ubicados en sus metas correspondientes.
 		tanquePropio.setX(circuito.getMeta(yoID).getX());
 		tanquePropio.setY(circuito.getMeta(yoID).getY());

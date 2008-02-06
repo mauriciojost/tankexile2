@@ -11,14 +11,15 @@ import javax.imageio.ImageIO;
 
 public class Tanque implements Controlable{
 	private static final int TRAMAS_CHOQUE = 2; // Cantidad de imágenes del tanque.
-	private static final int PERIODO_CHOQUE = 50; // Duración de los efectos de un choque.
+	private static final int PERIODO_CHOQUE_CHICO = 50; // Duración de los efectos de un choque.
+	private static final int PERIODO_CHOQUE_GRANDE = 100; // Duración de los efectos de un choque.
 	private static final int TRAMAS_MOVIMIENTO = 16; // Cantidad de imágenes del tanque.
 	private static final int PERIODO_MOVIMENTO = 1;
 	private int TRANCO_TANQUE = 1; // Tamaño del tranco de avance del tanque.
 	private int vX; // Velocidad horizontal del tanque.
 	private int vY; // Velocidad vertical del tanque.
 	private boolean teclasHabilitadas = true;
-	
+	private boolean choqueGrande = false;
 	private int temporizadorMovimento = 0;
 	
 	private int movimientoTrama = 0;
@@ -146,7 +147,8 @@ public class Tanque implements Controlable{
 			choqueTrama = (choqueTrama + 1) % TRAMAS_CHOQUE;
 			temporizadorChoque++;
 			teclasHabilitadas = false;
-			if (temporizadorChoque == PERIODO_CHOQUE){
+			
+			if ((temporizadorChoque == (choqueGrande?PERIODO_CHOQUE_GRANDE:PERIODO_CHOQUE_CHICO))){
 				choque = false;
 				teclasHabilitadas = true;
 				choqueTrama = 0;
@@ -264,6 +266,7 @@ public class Tanque implements Controlable{
 		forzarTeclasSueltas();
 		actualizarVelocidades();
 		temporizadorChoque=0;
+		choqueGrande = (this.TRANCO_TANQUE==2);
 	}
 	public void setTodo(int x, int y, int direccion, int movimientoTrama, int choqueTrama){
 		this.X = x;

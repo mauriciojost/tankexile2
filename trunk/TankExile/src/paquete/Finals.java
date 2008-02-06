@@ -1,8 +1,6 @@
 package paquete;
 
-
-
-public interface Finals{	
+public interface Finals {	
 	public static final int PERIODO=10;
 	public static final int PERIODO_DE_TURNO=3000;
 	public static final int BLOQUES_NUM=32;
