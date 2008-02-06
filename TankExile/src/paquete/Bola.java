@@ -11,7 +11,6 @@ import javax.imageio.ImageIO;
 // AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 public class Bola{
 	protected int vx;
-	private Finals stage;
 	private BufferedImage imagen[] = new BufferedImage[2];
 	protected int x,y;
 	protected int width, heigth;
@@ -20,9 +19,8 @@ public class Bola{
 	private int periodoDeTrama=50;
 
 	private int currentFrame=0;
-	public Bola(Finals stage) {
+	public Bola() {
 		//super(stage);
-		this.stage = stage;
 		URL url=null;
 		 try {
 				url = getClass().getClassLoader().getResource("res/bicho0.gif");
@@ -40,7 +38,7 @@ public class Bola{
 	}
 
 	public void paint(Graphics2D g){
-		g.drawImage( imagen[currentFrame], x,y, stage );
+		g.drawImage( imagen[currentFrame], x,y, null);
 	}
 
 	public int getFrameSpeed() {return periodoDeTrama;	}

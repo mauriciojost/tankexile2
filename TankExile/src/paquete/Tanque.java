@@ -1,6 +1,7 @@
 package paquete;
 
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
@@ -30,7 +31,6 @@ public class Tanque implements Controlable{
 	private int temporizadorChoque = 0; // Temporizador que permite limitar en tiempo los efectos del choque.
 	private int choqueTrama = 0; // Índice auxiliar del arreglo las imágenes del tanque.
 	
-    private static Finals constantes; // Interfaz con constantes útiles.
     private int X, Y; // Coordenadas (en píxeles) del tanque.
     private static HashMap<Integer, BufferedImage> imagenes = new HashMap<Integer, BufferedImage>(); // Conjunto de imágenes del tanque, asociadas a una clave cada una mediante un HashMap.
     private static Circuito circuito; // Circuito en el cual está el tanque.
@@ -55,7 +55,7 @@ public class Tanque implements Controlable{
 	
 	// Método que pinta en pantalla la imagen que corresponde al tanque y a su estado.
     public void pintar(Graphics2D g){
-		g.drawImage((BufferedImage)imagenes.get(new Integer(direccion * 10000 + choqueTrama * 100+ movimientoTrama)), X,Y, constantes);
+		g.drawImage((BufferedImage)imagenes.get(new Integer(direccion * 10000 + choqueTrama * 100+ movimientoTrama)), X,Y, null);
     }
     
 	// Método que retorna la dirección actual del tanque.
@@ -81,10 +81,10 @@ public class Tanque implements Controlable{
 	}
 	
 	// Constructor.
-	public Tanque(Finals constantes, Circuito circuito, int id) {
+	@SuppressWarnings("static-access")
+	public Tanque(Circuito circuito, int id) {
 		this.id = id;
 		this.circuito = circuito;	
-		this.constantes = constantes;
 		
 		// Carga de las imágenes estáticamente.
 		if (imagenes.isEmpty())
@@ -101,24 +101,10 @@ public class Tanque implements Controlable{
 					imagenes.put(new Integer(Finals.DERECHA  *10000+ i), this.rotarImagen(imagenes.get(30000+ i), 90));
 					imagenes.put(new Integer(Finals.DERECHA  *10000 + 100 + i), this.rotarImagen(imagenes.get(30100+ i), 90));
 				}
-				
 				for (int i = 0; i < this.TRAMAS_MOVIMIENTO;i++){
 					imagenes.put(new Integer(Finals.IZQUIERDA*10000+ i), this.rotarImagen(imagenes.get(30000+ i),-90));
 					imagenes.put(new Integer(Finals.IZQUIERDA*10000 + 100 + i), this.rotarImagen(imagenes.get(30100+ i),-90));
 				}
-				
-				
-				
-				/*
-				imagenes.put(new Integer(00000), ImageIO.read(getClass().getClassLoader().getResource("res/Tanque_down0.gif")));
-				imagenes.put(new Integer(00001), ImageIO.read(getClass().getClassLoader().getResource("res/Tanque_down1.gif")));
-				imagenes.put(new Integer(20000), ImageIO.read(getClass().getClassLoader().getResource("res/Tanque_right0.gif")));
-				imagenes.put(new Integer(20001), ImageIO.read(getClass().getClassLoader().getResource("res/Tanque_right1.gif")));
-				imagenes.put(new Integer(10000), ImageIO.read(getClass().getClassLoader().getResource("res/Tanque_left0.gif")));
-				imagenes.put(new Integer(10001), ImageIO.read(getClass().getClassLoader().getResource("res/Tanque_left1.gif")));
-				
-				*/
-				
 			}catch(Exception e){
 				System.out.println("Error: no se ha podido realizar la carga de imágenes de la clase Tanque, "+e.getClass().getName()+" "+e.getMessage());
 				e.printStackTrace();
@@ -140,15 +126,15 @@ public class Tanque implements Controlable{
 		
 		this.deshabilitarTeclas();
 		
-		X+=vX; // ActualizaciÃ³n de la posiciÃ³n.
+		X+=vX; // Actualización de la posición.
 		Y+=vY;
 		
 		
-		if(circuito.hayColision(this)){ // DetecciÃ³n de colisiones. Responsabilidades del circuito.
+		if(circuito.hayColision(this)){ // Detección de colisiones. Responsabilidades del circuito.
 			this.choque();// En caso de haberla, sufrir efectos del mismo.
 		}
 		
-		//if(circuito.llegueAMiMeta(this)){ // DetecciÃ³n de llegada a la meta.
+		//if(circuito.llegueAMiMeta(this)){ // Detección de llegada a la meta.
 		//	this.choque();
 		//}
 		

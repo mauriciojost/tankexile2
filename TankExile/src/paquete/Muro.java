@@ -7,7 +7,6 @@ import javax.imageio.ImageIO;
 // Clase que representa a los muros en el circuito. 
 public class Muro extends Bloque{
 	private static BufferedImage imagenes[] = new BufferedImage[5]; // Conjunto de imágenes asociadas a la clase Muro.
-	private Finals constantes; // Interfaz que provee coherencia respecto de las constantes.
 	private int tramaActual = 0; // Atributo que representa al número de imagen x (en imagenes[x]) que se ha de representar para este bloque al pintarlo en la pantalla.
 	
 	public Muro(int x, int y){
@@ -27,7 +26,7 @@ public class Muro extends Bloque{
 	
 	// Método de dibujo del muro.
 	public void paint(Graphics2D g) {
-		g.drawImage(imagenes[tramaActual], super.getX(), super.getY(), constantes);
+		g.drawImage(imagenes[tramaActual], super.getX(), super.getY(), null);
 	}
 	
 	// Método que realiza una variación en la imagen a mostrar, dando un efecto de deterioro en el bloque.

@@ -1,6 +1,5 @@
 package paquete;
 
-import java.awt.Image;
 import presentacion.*;
 import presentacion.Conexion;
 import java.awt.Canvas;
@@ -10,11 +9,7 @@ import java.awt.Graphics2D;
 import java.awt.GridLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 import java.awt.image.BufferStrategy;
-import java.io.IOException;
-import java.rmi.RemoteException;
-import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
@@ -34,6 +29,7 @@ public class Partida extends Canvas implements Finals, Runnable{
 	//private String iPOponente; // Representa la dirección IP en la red del host del jugador oponente.
 	private Conexion conexion; // Objeto utilizado para todo lo relacionado a la comunicación entre ambos hosts.
 	private String nombreCircuitoTXT; // Atributo que representa el nombre del archivo del circuito.
+	
 	//private JFrame ventana;
 	
 	// Contstructor. Genera los elementos básicos de una aplicación del tipo juego.
@@ -74,8 +70,8 @@ public class Partida extends Canvas implements Finals, Runnable{
 
 		circuito = new Circuito(nombreCircuitoTXT); // Creación del circuito de juego.
 		
-		tanquePropio = new Tanque(this, circuito, yoID); // Creación del tanque comandado por el jugador en este host.
-		tanqueLocalLigadoOponente = new Tanque(this, circuito, otroID); // Creación del tanque que será ligado al registro de RMI para ser comandado por el host remoto.
+		tanquePropio = new Tanque(circuito, yoID); // Creación del tanque comandado por el jugador en este host.
+		tanqueLocalLigadoOponente = new Tanque(circuito, otroID); // Creación del tanque que será ligado al registro de RMI para ser comandado por el host remoto.
 		conexion.servirTanqueLocalOponente(tanqueLocalLigadoOponente); // El tanque anterior es puesto a disposición del host remoto.
 		conexion.setTanquePropio(tanquePropio); // La conexión esta lista para ser establecida, el hilo conexión observará al tanque y con sus parámetros comandará al tanque remoto puesto en el registro de RMI.
 		
@@ -99,8 +95,6 @@ public class Partida extends Canvas implements Finals, Runnable{
 		tanquePropio.setY(circuito.getMeta(yoID).getY());
 		tanqueLocalLigadoOponente.setX(circuito.getMeta(otroID).getX());
 		tanqueLocalLigadoOponente.setY(circuito.getMeta(otroID).getY());
-		
-		
 		
 		hiloTanqueRemoto.start();
 				
