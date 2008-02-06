@@ -7,7 +7,6 @@ import javax.imageio.ImageIO;
 // Clase cuyos objetos son parte del circuito, cada uno es partida para un tanque y llegada para el otro.
 public class Meta extends Bloque{
 	private static BufferedImage imagenes[] = new BufferedImage[2]; // Conjunto de imágenes asociadas a la clase Meta.
-	private Finals constantes; // Interfaz que provee coherencia respecto de las constantes.
 	private int numeroDeMeta; // Atributo que representa el número de meta.
 	
 	// Constructor de la clase.
@@ -27,7 +26,7 @@ public class Meta extends Bloque{
 	
 	// Método de dibujo.
 	public void paint(Graphics2D g) {
-		g.drawImage(imagenes[numeroDeMeta], super.getX(), super.getY(), constantes);
+		g.drawImage(imagenes[numeroDeMeta], super.getX(), super.getY(), null);
 	}
 	
 	// Método que retorna el número de meta de esta instancia.

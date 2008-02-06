@@ -1,7 +1,6 @@
 package paquete;
 import java.awt.Graphics2D;
 import java.io.IOException;
-import java.util.ArrayList;
 
 // Clase que contiene en sí la información sobre los elementos que componen el circuito de juego.
 public class Circuito {
