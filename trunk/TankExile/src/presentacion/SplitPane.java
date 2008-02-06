@@ -73,7 +73,14 @@ public class SplitPane implements ListSelectionListener {
 		
 		// cancelar
 		JButton cancelButton = new JButton("Cancelar"/*, new ImageIcon("images/cancel.gif")*/);
-		cancelButton.addActionListener(new CancelListener());
+		cancelButton.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e) {
+				Escenografia.getEsc().dispose();
+				PrePartida1.getPrePartida1().setVisible(true);
+            //hay que implementar la vuelta atras a la pagina que la precede
+			}
+		
+		});
 		
 		JPanel buttonPanel = new JPanel();
 		JPanel labelPanel = new JPanel();

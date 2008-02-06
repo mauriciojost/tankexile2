@@ -10,8 +10,8 @@ public class Tanque implements Controlable{
 	private static final int TRAMAS_CHOQUE = 2; // Cantidad de imágenes del tanque.
 	private static final int PERIODO_CHOQUE = 50; // Duración de los efectos de un choque.
 	private int TRANCO_TANQUE = 1; // Tamaño del tranco de avance del tanque.
-	private int vx; // Velocidad horizontal del tanque.
-	private int vy; // Velocidad vertical del tanque.
+	private int vX; // Velocidad horizontal del tanque.
+	private int vY; // Velocidad vertical del tanque.
 	
 	private boolean arriba,abajo,izquierda,derecha; // Booleanos representativas de la directiva de la dirección a adoptar.
 	private int direccion = Finals.ARRIBA; // Atributo representativo de la dirección actual del tanque.
@@ -21,7 +21,7 @@ public class Tanque implements Controlable{
 	private int choqueTrama = 0; // Índice auxiliar del arreglo las imágenes del tanque.
 	
     private static Finals constantes; // Interfaz con constantes útiles.
-    private int x, y; // Coordenadas (en píxeles) del tanque.
+    private int X, Y; // Coordenadas (en píxeles) del tanque.
     private static HashMap<Integer, BufferedImage> imagenes = new HashMap<Integer, BufferedImage>(); // Conjunto de imágenes del tanque, asociadas a una clave cada una mediante un HashMap.
     private static Circuito circuito; // Circuito en el cual está el tanque.
 	private int id; // Identificador del tanque.
@@ -45,7 +45,7 @@ public class Tanque implements Controlable{
 	
 	// Método que pinta en pantalla la imagen que corresponde al tanque y a su estado.
     public void pintar(Graphics2D g){
-		g.drawImage((BufferedImage)imagenes.get(new Integer(direccion * 10+ choqueTrama) ), x,y, constantes);			
+		g.drawImage((BufferedImage)imagenes.get(new Integer(direccion * 10+ choqueTrama) ), X,Y, constantes);			
     }
     
 	// Método que retorna la dirección actual del tanque.
@@ -88,8 +88,8 @@ public class Tanque implements Controlable{
 			this.choque();
 		}
 		
-		x+=vx; // Actualización de la posición.
-		y+=vy;
+		X+=vX; // Actualización de la posición.
+		Y+=vY;
 					
 		// Efectos del estado de choque.
 		if (choque){
@@ -105,18 +105,18 @@ public class Tanque implements Controlable{
     
 	// Método que actualiza las velocidades según se tengan o no ciertas teclas presionadas.
 	private void actualizarVelocidades(){
-		vx=0; vy=0;
-		if (abajo)		vy = +TRANCO_TANQUE;
-		if (arriba)		vy = -TRANCO_TANQUE;
-		if (izquierda)	vx = -TRANCO_TANQUE;
-		if (derecha)	vx = +TRANCO_TANQUE;
+		vX=0; vY=0;
+		if (abajo)		vY = +TRANCO_TANQUE;
+		if (arriba)		vY = -TRANCO_TANQUE;
+		if (izquierda)	vX = -TRANCO_TANQUE;
+		if (derecha)	vX = +TRANCO_TANQUE;
 	}
   
 	// Métodos básicos de posicionamiento.
-	public int getX(){return x;}
-	public int getY(){return y;}
-	public void setX(int i){x=i;}
-	public void setY(int i){y=i;}
+	public int getX(){return X;}
+	public int getY(){return Y;}
+	public void setX(int i){X=i;}
+	public void setY(int i){Y=i;}
 		
 	// Conjunto de métodos de respuesta al teclado.
 	public void irArriba(){

@@ -38,7 +38,7 @@ public class Partida extends Canvas implements Finals, Runnable{
 	//private JFrame ventana;
 	
 	// Contstructor. Genera los elementos básicos de una aplicación del tipo juego.
-	public Partida(int yoID, String nombreCircuitoTXT, Conexion conexion) {
+	public Partida(String nombreCircuitoTXT, Conexion conexion) {
 		JFrame ventana = new JFrame("TankExile"); // Armado de la ventana.
 		JPanel panel = (JPanel)ventana.getContentPane(); // Obtención de su JPanel.
 		this.setBounds(0,0,Finals.ANCHO_VENTANA,Finals.ALTO_VENTANA); // Establecimiento de las dimensiones de este objeto Partida.
@@ -64,9 +64,9 @@ public class Partida extends Canvas implements Finals, Runnable{
 		estrategia = getBufferStrategy(); // Sobre este objeto se aplicará el método de paint. Este realizará por sí mismo el doble buffering.
 		this.requestFocus(); // El foco es tomado.
 		
-		this.yoID = yoID%2; // Son asignados los valores de ID e IP del oponente.
-		this.otroID = (yoID+1)%2;
 		this.conexion = conexion;
+		this.yoID = conexion.getID()%2; // Son asignados los valores de ID e IP del oponente.
+		this.otroID = (conexion.getID()+1)%2;
 		//this.iPOponente = iPOponente;
 		this.nombreCircuitoTXT = nombreCircuitoTXT; // Asignación del nombre del archivo del circuito.
 	}
@@ -81,6 +81,10 @@ public class Partida extends Canvas implements Finals, Runnable{
 		conexion.servirTanqueLocalOponente(tanqueLocalLigadoOponente); // El tanque anterior es puesto a disposición del host remoto.
 		conexion.setTanquePropio(tanquePropio); // La conexión esta lista para ser establecida, el hilo conexión observará al tanque y con sus parámetros comandará al tanque remoto puesto en el registro de RMI.
 		
+		jugador = new Jugador(tanquePropio); // Un jugador es creado para comandar el tanque propio del host.
+		this.addKeyListener(jugador); // El jugador comienza a escuchar el teclado.
+		this.addMouseListener(null);
+		Thread hiloTanqueRemoto = new Thread(conexion.getHiloTanqueRemoto());
 		
 		do{
 			try{
@@ -99,10 +103,7 @@ public class Partida extends Canvas implements Finals, Runnable{
 		tanqueLocalLigadoOponente.setY(circuito.getMeta(otroID).getY());
 		
 		
-		jugador = new Jugador(tanquePropio); // Un jugador es creado para comandar el tanque propio del host.
-		this.addKeyListener(jugador); // El jugador comienza a escuchar el teclado.
-		this.addMouseListener(null);
-		Thread hiloTanqueRemoto = new Thread(conexion.getHiloTanqueRemoto());
+		
 		hiloTanqueRemoto.start();
 				
 				// El hilo conexion arranca a comandar al tanque remoto observando el comportamiento del tanque propio.

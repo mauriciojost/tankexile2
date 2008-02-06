@@ -2,6 +2,7 @@ package presentacion;
 
 import java.awt.Component;
 import java.awt.event.MouseEvent;
+import java.rmi.AccessException;
 import java.rmi.NotBoundException;
 import paquete.*;
 import java.io.File;
@@ -36,7 +37,7 @@ public class Conexion extends Thread implements Legible, Conectable{
 	private double claveOponente; // Valor numérico enviado desde el oponente para iniciar el turno.
 	private boolean claveOponenteRecibida = false; // Indicador de la llegada de la clave del oponente.
 	private boolean miTurno = false; // Indicador de turno de este host.
-	
+	private int miID = 0;
 	
 	// Constructor.
 	public Conexion(String iPOponente){
@@ -44,9 +45,13 @@ public class Conexion extends Thread implements Legible, Conectable{
 		
 		try{
 			LocateRegistry.createRegistry(PUERTO_CONEXION); // Es tomado el puerto PUERTO_CONEXION y creado un registro asociado sobre él.
+		}catch(Exception e){
+			System.out.println("Registro de la conexión realizado anteriormente.");
+		}
+		try{
 			Conectable stub = (Conectable) UnicastRemoteObject.exportObject(this, PUERTO_CONEXION); // Es exportado el objeto instancia de Conexion.
 			Registry registry = LocateRegistry.getRegistry(PUERTO_CONEXION); // Es tomado el registro recientemente ligado al puerto PUERTO_CONEXION.
-			registry.bind("Clave conexion", stub); // El ligado el stub al registro.
+			registry.rebind("Clave conexion", stub); // El ligado el stub al registro.
 			System.out.println("Servidor de conexion listo.");
 		}catch(Exception e){
 			System.err.println("Excepción de servidor de conexion: " + e.toString());
@@ -56,10 +61,13 @@ public class Conexion extends Thread implements Legible, Conectable{
 	}
 	
 	public void conectar() throws Exception{
-		Registry registry = LocateRegistry.getRegistry(iPOponente,PUERTO_CONEXION);
-		this.conexionRemoto = (Conectable) registry.lookup("Clave conexion");    
-		System.out.println("Conexión exitosa.");
-		conexionLista = true;
+		
+			Registry registry = LocateRegistry.getRegistry(iPOponente, PUERTO_CONEXION);
+			this.conexionRemoto = (Conectable) registry.lookup("Clave conexion");
+			System.out.println("Conexión exitosa.");
+			conexionLista = true;
+		
+		
 	}
 	
 	public boolean conexionLista(){
@@ -67,11 +75,16 @@ public class Conexion extends Thread implements Legible, Conectable{
 	}
 	// Método que pone la ventana de selección de circuitos de este host a disposición del host oponente.
 	public void bindearMiVentana(Escenografia ventana){
+		
 		try{
 			LocateRegistry.createRegistry(PUERTO_VENTANA); // Es tomado el puerto PUERTO_VENTANA y creado un registro asociado sobre él.
+		}catch(Exception e){
+			System.out.println("Registro de la ventana realizado anteriormente.");
+		}
+		try{
 			presentacion.VentanaControlable stub = (VentanaControlable) UnicastRemoteObject.exportObject(ventana, PUERTO_VENTANA); // Es exportado el objeto instancia de Conexion.
 			Registry registry = LocateRegistry.getRegistry(PUERTO_VENTANA); // Es tomado el registro recientemente ligado al puerto PUERTO_VENTANA.
-			registry.bind("Clave ventana", stub); // El ligado el stub al registro.
+			registry.rebind("Clave ventana", stub); // El ligado el stub al registro.
 			System.out.println("Servidor de ventana de circuito listo.");
 		}catch(Exception e){
 			System.err.println("Excepción de servidor de ventana de circuito: " + e.toString());
@@ -95,9 +108,13 @@ public class Conexion extends Thread implements Legible, Conectable{
 	public void bindearMisArchivos(){
 		try{
 			LocateRegistry.createRegistry(PUERTO_ARCHIVOS); // Es tomado el puerto PUERTO_ARCHIVOS y creado un registro asociado sobre él.
+		}catch(Exception e){
+			System.out.println("Registro de los archivos realizado anteriormente.");
+		}		
+		try{	
 			Legible stub = (Legible) UnicastRemoteObject.exportObject(this, 0); // Es exportado el objeto instancia de Conexion.
 			Registry registry = LocateRegistry.getRegistry(PUERTO_ARCHIVOS); // Es tomado el registro recientemente ligado al puerto PUERTO_ARCHIVOS.
-			registry.bind("Clave archivos", stub); // El ligado el stub al registro.
+			registry.rebind("Clave archivos", stub); // El ligado el stub al registro.
 			System.out.println("Servidor de archivos de circuito listo.");
 		}catch(Exception e){
 			System.err.println("Excepción de servidor de archivos de circuito: " + e.toString());
@@ -186,7 +203,7 @@ public class Conexion extends Thread implements Legible, Conectable{
 			tanqueRemotoAControlar.setY(tanquePropio.getY());
 			tanqueRemotoAControlar.setDireccion(tanquePropio.getDireccion());
 		} catch (RemoteException ex) {
-			System.out.println("Error en el manejo del tanque remoto, clase Conexion.");
+			System.out.println("Error en el manejo del tanque remoto, clase Conexion. El oponente ha finalizado la sesión.");
 			Logger.getLogger(Conexion.class.getName()).log(Level.SEVERE, null, ex);
 		}
 	}
@@ -215,9 +232,14 @@ public class Conexion extends Thread implements Legible, Conectable{
 	public Tanque servirTanqueLocalOponente(Tanque tanqueLocalLigadoOponente){	
 		try{
 			LocateRegistry.createRegistry(PUERTO_TANQUES);
+		}catch(Exception e){
+			System.out.println("Registro de los tanques realizado anteriormente.");
+		}
+		try{
+			
 			Controlable stub = (Controlable) UnicastRemoteObject.exportObject(tanqueLocalLigadoOponente, tanqueLocalLigadoOponente.getID());		
 			Registry registry = LocateRegistry.getRegistry(PUERTO_TANQUES);
-			registry.bind("Clave tanques", stub);
+			registry.rebind("Clave tanques", stub);
 			System.out.println("Servidor de tanque local listo.");
 			return tanqueLocalLigadoOponente;
 		}catch(Exception e){
@@ -238,25 +260,31 @@ public class Conexion extends Thread implements Legible, Conectable{
 	public synchronized void darTurno() throws RemoteException {
 		miTurno = true;
 		this.notifyAll();
+		System.out.print("1");
+
 		//System.out.println("Cambio de turno...");
+
 	}
 	public void run(){
-		clavePropia = (new Random()).nextInt();
+		clavePropia = (new Random()).nextDouble();
 		try{conexionRemoto.setClaveOponente(clavePropia);}catch(RemoteException e){e.printStackTrace();}
 		while (!claveOponenteRecibida){
 			try{this.sleep(Finals.PERIODO_DE_TURNO);}catch(InterruptedException e){e.printStackTrace();}
 		}
-		if (clavePropia > claveOponente){
+		if (clavePropia >= claveOponente){
 			miTurno = true;
+			miID = 1;
 		}
 		
 		while(true){
-			
 				if (miTurno){
-					try{this.sleep(Finals.PERIODO_DE_TURNO);}catch(InterruptedException e){e.printStackTrace();}
-						synchronized(this){
-							miTurno=false;
-							try{conexionRemoto.darTurno();}catch(RemoteException e){e.printStackTrace();}
+					try{this.sleep(Finals.PERIODO_DE_TURNO);}catch(InterruptedException e){e.printStackTrace();}		
+						miTurno=false;
+						try{
+							conexionRemoto.darTurno();
+							System.out.print("0");
+						}catch(RemoteException e){
+							e.printStackTrace();
 						}
 				}else{
 					synchronized(this){
@@ -265,5 +293,8 @@ public class Conexion extends Thread implements Legible, Conectable{
 				}
 			
 		}
+	}
+	public int getID(){
+		return this.miID;
 	}
 }
