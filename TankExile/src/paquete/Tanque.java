@@ -125,22 +125,23 @@ public class Tanque implements Controlable{
 	// Método de actuación del tanque.
 	public void actuar() {
 		
-		this.deshabilitarTeclas();
+		
 		
 		X+=vX; // Actualización de la posición.
 		Y+=vY;
+		
 		
 		
 		if(circuito.hayColision(this)){ // Detección de colisiones. Responsabilidades del circuito.
 			this.choque();// En caso de haberla, sufrir efectos del mismo.
 		}
 		
-		//if(circuito.llegueAMiMeta(this)){ // Detección de llegada a la meta.
-		//	this.choque();
-		//}
+		if(circuito.llegueAMiMeta(this)){ // Detección de llegada a la meta.
+			this.choque();
+		}
 		
 		
-		this.habilitarTeclas();
+		
 					
 		// Efectos del estado de choque.
 		if (choque){
@@ -165,14 +166,6 @@ public class Tanque implements Controlable{
 		
     }
     
-	public void deshabilitarTeclas(){
-		teclasHabilitadas = false;
-	}
-	
-	public void habilitarTeclas(){
-		teclasHabilitadas = true;
-	}
-	
 	public int getMovimientoTrama(){
 		return movimientoTrama;
 	}
