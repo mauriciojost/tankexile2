@@ -128,7 +128,7 @@ public class PrePartida1 extends JFrame implements MouseListener{
 				conexion.ponerADisposicionArchivosRemotos();
 			}catch(Exception e){
 				System.out.println("Intento fallido para obtener archivos remotos. Intentando de nuevo...");
-				try {Thread.sleep(1000);} catch (InterruptedException ex) {Logger.getLogger(Partida.class.getName()).log(Level.SEVERE, null, ex);}
+				try {Thread.sleep(Finals.ESPERA_CONEXION);} catch (InterruptedException ex) {Logger.getLogger(Partida.class.getName()).log(Level.SEVERE, null, ex);}
 			}
 		}while(!conexion.archivosListo());
 		 */
@@ -244,14 +244,13 @@ public class PrePartida1 extends JFrame implements MouseListener{
         
 	public void setCircuitoSeleccionado(File circuitoSeleccionado){
 		this.circuitoSeleccionado = circuitoSeleccionado;
+		b_inicio.setEnabled(true);
 	}
     // Método que responder al evento sobre el boton Opciones.
 	public void responderElegir() {
 		System.out.println("POR CONSTRUIR ESCENOGRAFIA");
 		this.escenografia = new Escenografia(prepartida1);
-		
 		this.dispose();
-		b_inicio.setEnabled(true);
 	}
 	
 	//

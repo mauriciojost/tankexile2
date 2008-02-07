@@ -25,7 +25,7 @@ public class Meta extends Bloque{
 	}
 	
 	// Método de dibujo.
-	public void paint(Graphics2D g) {
+	public void pintar(Graphics2D g) {
 		g.drawImage(imagenes[numeroDeMeta], super.getX(), super.getY(), null);
 	}
 	
