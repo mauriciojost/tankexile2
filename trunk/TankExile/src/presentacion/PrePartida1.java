@@ -234,9 +234,8 @@ public class PrePartida1 extends JFrame implements MouseListener{
 			Logger.getLogger(Partida.class.getName()).log(Level.SEVERE, null, ex);
 			}
 			*/
-			Partida partida = new Partida(this.circuitoSeleccionado.getPath(), conexion);
+			new Partida(this.circuitoSeleccionado.getPath(), conexion);
 			ventanaEspera.dispose();
-			partida.jugar();
 			
 		} catch (Exception ex) {
 			Logger.getLogger(PrePartida1.class.getName()).log(Level.SEVERE, null, ex);

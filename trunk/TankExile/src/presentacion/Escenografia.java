@@ -179,18 +179,22 @@ public class Escenografia extends JFrame implements MouseListener, VentanaContro
         }*/
     }
 	
-	
 	public void metodoDeControl() throws RemoteException {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 	
 	public void responderSelecc(){
-		//VALIDAR CIRCUITO!!
-		prePartida.setCircuitoSeleccionado((File)lista.getSelectedValue());
-		this.dispose();
-		prePartida.setLocation(this.getX(), this.getY());
-		prePartida.setEstado("Estado: Se ha seleccionado un circuito.");
-		prePartida.setVisible(true);
+		File archivo = (File)lista.getSelectedValue();
+		if (paquete.CargadorCircuitoTXT.validarCircuito(archivo.getPath())){
+			prePartida.setCircuitoSeleccionado(archivo);
+			this.dispose();
+			prePartida.setLocation(this.getX(), this.getY());
+			prePartida.setEstado("Estado: Se ha seleccionado un circuito.");
+			prePartida.setVisible(true);
+			System.out.println("Circuito validado correctamente.");
+		}else{
+			System.out.println("Circuito no válido.");
+		}
 		
 	}
 	
