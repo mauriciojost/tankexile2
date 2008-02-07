@@ -12,14 +12,12 @@ import java.rmi.RemoteException;
 import java.util.*;
 
 //SplitPaneDemo itself is not a visible component.
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-public class Escenografia extends JFrame implements MouseListener, VentanaControlable, ListSelectionListener {
+public class OldEscenografia extends JFrame implements VentanaControlable, ListSelectionListener {
     private Vector<File> fileNames = new Vector<File>();
     private static JList lista;
     private JSplitPane splitPane;
-    private static Escenografia escenografia;
+    private static OldEscenografia escenografia;
     private File dir = new File("Circuitos");
     private  File file;
     private String names;
@@ -28,11 +26,11 @@ public class Escenografia extends JFrame implements MouseListener, VentanaContro
     private File[] vector_de_archivos;//* = dir.listFiles();*/
     private PrePartida1 prePartida;
     
-	private JButton b_seleccion;
+	private JButton b_abrir;
 	private JButton b_cancelar;
 	
 	
-    public Escenografia(PrePartida1 prepartida) {
+    public OldEscenografia(PrePartida1 prepartida) {
 
 		super("TankExile - Seleccionar Escenario");
 		//setBounds(cx,cy,Finals.ANCHO_VENTANA-200,Finals.ALTO_VENTANA-300);
@@ -51,15 +49,39 @@ public class Escenografia extends JFrame implements MouseListener, VentanaContro
 		// Filtrado de archivos del tipo circuito.
 		FileFilter fileFilter = new FileFilter() {
 			public boolean accept(File f) {
-				if (f.isDirectory() || (!tec.equals(f.getName().substring((f.getName().length())-4)))) {
+				if (f.isDirectory()) {
 					return false;
-				} else {
-					return true;
 				} 
-			}
+				//int i = f.getName().lastIndexOf('.');
+				//if (i > 0 &&  i < f.getName().length() - 1) {
+				//	String extension = s.substring(i+1).toLowerCase();
+				if (tec.equals(f.getName().substring((f.getName().length())-4))) {
+						return true;
+					} else {
+						return false;
+					}
+				}
+				//return false;
+		    //}
 		};
 		
 		vector_de_archivos = dir.listFiles(fileFilter); // Se aplica el filtro para que solo sean visibles los archivos .tec de la carpeta Circuitos.
+		//String[] children = dir.list();
+		//String[] children;
+		if (vector_de_archivos == null) {
+			// Either dir does not exist or is not a directory.
+			//System.out.println("no tiene nada"); 
+		} else {
+			for (int i=0; i<vector_de_archivos.length; i++) {
+				// Get filename of file or directory
+				fileNames.add(i, vector_de_archivos[i]);
+				
+				// PAra borrarr
+				//System.out.println(file[i]+"texto");
+			}
+		}
+		// Create the list of images and put it in a scroll pane.
+		//lista = new JList(fileNames);
 		lista = new JList(vector_de_archivos);
 		lista.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		lista.setSelectedIndex(0); // Determina en que posicion de la lista se establece inicialmente el foco.
@@ -68,53 +90,48 @@ public class Escenografia extends JFrame implements MouseListener, VentanaContro
 		JScrollPane jsp = new JScrollPane(lista);
 		jsp.setPreferredSize(new Dimension(Finals.ANCHO_VENTANA-210, Finals.ALTO_VENTANA-300-85));
 		jsp.setBackground(Color.LIGHT_GRAY);
-		
 		// Creamos Botones.
-		b_seleccion = new JButton("Seleccionar");
-		b_seleccion.setPreferredSize(new Dimension(110,30));
-		b_seleccion.addMouseListener(this);
-		/*
-		b_seleccion.addActionListener(
+		// abrir
+		b_abrir = new JButton("Seleccionar"/*, new ImageIcon("images/open.gif")*/);
+		b_abrir.setPreferredSize(new Dimension(110,30));
+		/*b_abrir.addActionListener(new OpenListener(lista));*/ //REVISAR: yo comenté, Mauricio
+		b_abrir.addActionListener(
 			new ActionListener(){
 				public void actionPerformed(ActionEvent e) {
-					System.out.println("1 - " + lista.getSelectedValue());
-					System.out.println("2 - "+ lista.getSelectedIndex());
-					// LINEA REEE IMPORTANTE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-					prePartida.setCircuitoSeleccionado((File)lista.getSelectedValue());
-					// LINEA REEE IMPORTANTE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-					Escenografia.getEsc().dispose();
+					System.out.println(lista.getSelectedValue());
+					System.out.println(lista.getSelectedIndex());
 					
+					prePartida.setCircuitoSeleccionado((File)lista.getSelectedValue());
+					Escenografia.getEsc().dispose();
 					PrePartida1.getPrePartida1().setVisible(true);
 				}
 			}
 		);
-		*/
+		
 		// cancelar
 		b_cancelar = new JButton("Cancelar"/*, new ImageIcon("images/cancel.gif")*/);
 		b_cancelar.setPreferredSize(new Dimension(110,30));
-		b_cancelar.addMouseListener(this);
-		/*
 		b_cancelar.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e) {
-				Escenografia.getEsc().dispose();
-
+				Escenografia.getEsc().dispose();/*
+<<<<<<< .mine
 				PrePartida1.getPrePartida1().setLocation(Escenografia.getEsc().getX(), Escenografia.getEsc().getY());
-
+				PrePartida1.getPrePartida1().show();
+=======
 				PrePartida1.getPrePartida1().setVisible(true);
-
+>>>>>>> .r27*/
 				PrePartida1.getPrePartida1().setEstado("Estado: Se ha seleccionado un circuito.");
             //hay que implementar la vuelta atras a la pagina que la precede
 			}
 		});
-		*/
+		
 		JPanel jp_boton = new JPanel();
 		jp_boton.setPreferredSize(new Dimension(Finals.ANCHO_VENTANA-200, Finals.ANCHO_VENTANA-300-290));
 		jp_boton.setLayout(new FlowLayout(FlowLayout.CENTER));
 		jp_boton.setBackground(Color.LIGHT_GRAY);
-		jp_boton.add(b_seleccion);
+		jp_boton.add(b_abrir);
 		jp_boton.add(b_cancelar);
 		
-		/*
 		MouseListener mouseListener = new MouseAdapter() {
             @Override
 			public void mouseClicked(MouseEvent e) {
@@ -137,8 +154,7 @@ public class Escenografia extends JFrame implements MouseListener, VentanaContro
 			}
 		};
 		lista.addMouseListener(mouseListener);
-		*/
-		//lista.addMouseListener(this);
+		
 		getContentPane().add(jsp);
 		getContentPane().add(jp_boton);
                 
@@ -153,7 +169,7 @@ public class Escenografia extends JFrame implements MouseListener, VentanaContro
 	public JSplitPane getSplitPane() {
 		return splitPane;
 	}
-	static public Escenografia getEsc() {
+	static public OldEscenografia getEsc() {
 		return escenografia;
 	}
 	public static Object getSelectedNameFile() {
@@ -179,43 +195,17 @@ public class Escenografia extends JFrame implements MouseListener, VentanaContro
         }*/
     }
 	
-	
+	protected static Vector parseList(String theStringList) {
+		Vector<String> v = new Vector<String>(10);
+		StringTokenizer tokenizer = new StringTokenizer(theStringList, " ");
+		while (tokenizer.hasMoreTokens()) {
+			String image = tokenizer.nextToken();
+			v.addElement(image);
+		}
+		return v;
+	}
 	public void metodoDeControl() throws RemoteException {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
-	
-	public void responderSelecc(){
-		//VALIDAR CIRCUITO!!
-		prePartida.setCircuitoSeleccionado((File)lista.getSelectedValue());
-		this.dispose();
-		prePartida.setLocation(this.getX(), this.getY());
-		prePartida.setEstado("Estado: Se ha seleccionado un circuito.");
-		prePartida.setVisible(true);
-		
-	}
-	
-	public void responderCancel(){
-		this.dispose();
-		prePartida.setLocation(this.getX(), this.getY());
-		prePartida.setEstado("Estado: Esperando seleccion de circuito por parte del oponente.");
-		prePartida.setVisible(true);
-		// ACA SE DEBE ASIGNAR LA RESPONSABILIDAD DE ELEGIR CIRCUITO AL OPONENTE!!!!
-	}
-	
-	public void mouseClicked(MouseEvent e) {
-		try {
-			String nombre = new String(((JButton)e.getSource()).getText());
-			nombre = nombre.substring(0, 6);
-			this.getClass().getMethod("responder"+nombre, (Class[])null).invoke(this, (Object[])null);
-		} catch (Exception ex) {	
-			ex.printStackTrace();
-			Logger.getLogger(PrePartida1.class.getName()).log(Level.SEVERE, null, ex);
-		}		
-	}
-
-	public void mousePressed(MouseEvent e) { }
-	public void mouseReleased(MouseEvent e) { }
-	public void mouseEntered(MouseEvent e) { }
-	public void mouseExited(MouseEvent e) { }
 }
 
