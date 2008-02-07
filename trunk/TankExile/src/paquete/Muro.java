@@ -6,18 +6,17 @@ import javax.imageio.ImageIO;
 
 // Clase que representa a los muros en el circuito. 
 public class Muro extends Bloque{
-	private static BufferedImage imagenes[] = new BufferedImage[5]; // Conjunto de imágenes asociadas a la clase Muro.
+	private static final int NUMERO_DE_IMAGENES=5;
+	private static BufferedImage imagenes[] = new BufferedImage[NUMERO_DE_IMAGENES]; // Conjunto de imágenes asociadas a la clase Muro.
 	private int tramaActual = 0; // Atributo que representa al número de imagen x (en imagenes[x]) que se ha de representar para este bloque al pintarlo en la pantalla.
 	
 	public Muro(int x, int y){
 		super(x,y); // Constructor del bloque.
 		try {
 			// Carga de las imágenes en la Clase (puesto que son las mismas para cada objeto de la misma).
-			if (imagenes[0]==null) imagenes[0] = ImageIO.read(getClass().getClassLoader().getResource("res/muro0.gif"));
-			if (imagenes[1]==null) imagenes[1] = ImageIO.read(getClass().getClassLoader().getResource("res/muro1.gif"));
-			if (imagenes[2]==null) imagenes[2] = ImageIO.read(getClass().getClassLoader().getResource("res/muro2.gif"));
-			if (imagenes[3]==null) imagenes[3] = ImageIO.read(getClass().getClassLoader().getResource("res/muro3.gif"));
-			if (imagenes[4]==null) imagenes[4] = ImageIO.read(getClass().getClassLoader().getResource("res/muro4.gif"));
+			for (int i = 0; i < NUMERO_DE_IMAGENES; i++){
+				if (imagenes[i]==null) imagenes[i] = ImageIO.read(getClass().getClassLoader().getResource("res/muro"+i+".gif"));
+			}
 		} catch (Exception e) {
 			System.out.println("Error: no se ha podido realizar la carga de imágenes de la clase Muro, " + e.getClass().getName()+" "+e.getMessage());
 			System.exit(0);
@@ -25,7 +24,7 @@ public class Muro extends Bloque{
 	}
 	
 	// Método de dibujo del muro.
-	public void paint(Graphics2D g) {
+	public void pintar(Graphics2D g) {
 		g.drawImage(imagenes[tramaActual], super.getX(), super.getY(), null);
 	}
 	

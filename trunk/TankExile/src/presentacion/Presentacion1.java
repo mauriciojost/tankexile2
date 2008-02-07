@@ -156,7 +156,7 @@ public class Presentacion1 extends JFrame implements MouseListener {
 				conexion.conectar();
 			}catch(Exception ex){
 				System.out.println("Fallo en el intento. Intentando conexión nuevamente...");
-				try{Thread.sleep(1000);}catch(InterruptedException r){}
+				try{Thread.sleep(Finals.ESPERA_CONEXION);}catch(InterruptedException r){}
 			}
 		}while(!conexion.conexionLista());
 		this.dispose();

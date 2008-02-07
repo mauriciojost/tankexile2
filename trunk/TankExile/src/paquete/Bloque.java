@@ -13,7 +13,7 @@ public abstract class Bloque{
 	}
 	
 	// Método que brinda la imagen a mostrar para este bloque. Abstracto.
-	public abstract void paint(Graphics2D g);
+	public abstract void pintar(Graphics2D g);
 	
 	// Métodos que permiten obtener la posición real (en pixeles desde la esquina superior izquierda) del bloque.
 	public int getX(){return x;}

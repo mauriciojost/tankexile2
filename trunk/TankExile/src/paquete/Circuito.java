@@ -54,7 +54,7 @@ public class Circuito {
 		for (int i = 0; i < Finals.BLOQUES_NUM; i++) {
 			for (int j = 0; j < Finals.BLOQUES_NUM; j++) {
 				if (matrizDeBloques[i][j]!=null){
-					matrizDeBloques[i][j].paint(g);
+					matrizDeBloques[i][j].pintar(g);
 				}
 			}
 		}

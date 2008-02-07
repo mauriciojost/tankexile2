@@ -4,67 +4,72 @@ package paquete;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.net.URL;
+import java.rmi.RemoteException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.imageio.ImageIO;
-// MODIFICACION DE FEDE
 
-// AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-// AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-public class Bola{
-	protected int vx;
+public class Bola extends Thread implements BolaControlable{
+	private int vx = 1;
+	private int vy = 1;
 	private BufferedImage imagen[] = new BufferedImage[2];
 	protected int x,y;
-	protected int width, heigth;
-	private int contador=0;
+	protected int width = 20, heigth = 20;
+	
+	private boolean buena;
+	
 
-	private int periodoDeTrama=50;
-
-	private int currentFrame=0;
-	public Bola() {
-		//super(stage);
-		URL url=null;
-		 try {
-				url = getClass().getClassLoader().getResource("res/bicho0.gif");
-			   imagen[0] = ImageIO.read(url);
-						url = getClass().getClassLoader().getResource("res/bicho1.gif");
-			   imagen[1] = ImageIO.read(url);
-			} catch (Exception e) {
-			
+	private int currentFrame;
+	public Bola(boolean buena) {
+		this.buena = buena;
+		if (buena)
+			x = x + 20;
+		currentFrame = (buena?0:1);
+		try {
+			imagen[0] = ImageIO.read(getClass().getClassLoader().getResource("res/bolaBuena.gif"));
+			imagen[1] = ImageIO.read(getClass().getClassLoader().getResource("res/bolaMala.gif"));
+		} catch (Exception e) {
 			System.out.println("Error: no se ha podido realizar la carga de imágenes de la clase Bola, "+e.getClass().getName()+" "+e.getMessage());
 			System.exit(0);
-		
-	  }
-		
-		setFrameSpeed(35);
+		}
 	}
 
-	public void paint(Graphics2D g){
+	public void pintar(Graphics2D g){
 		g.drawImage( imagen[currentFrame], x,y, null);
 	}
 
-	public int getFrameSpeed() {return periodoDeTrama;	}
-	public void setFrameSpeed(int i) {periodoDeTrama = i;	}
-	public int getX()  { return x; }
-	public void setX(int i) {	x = i; }
-
-	public int getY() {	return y; }
-	public void setY(int i) { y = i; }
+	public int getX ( ) { return x; }
+	public int getY ( ) { return y; }
+	public void setX (int i) { x = i; }
+	public void setY (int i) { y = i; }
 	
+	public void run(){
+		while(true){
+			actuar();
+			try {
+				this.sleep(Finals.PERIODO);
+			} catch (InterruptedException ex) {
+				Logger.getLogger(Bola.class.getName()).log(Level.SEVERE, null, ex);
+			}
+		}
+	}
 	
 	public void actuar() {
-		//super.act();
-		//acá esta mi comentario (Mauricio)
-					contador ++;
-		if (contador == periodoDeTrama){
-						contador =0;
-						currentFrame = (currentFrame+1) % imagen.length;
-	}
-					
-					
 		x+=vx;
-		if (x < 0 || x > Finals.ANCHO_VENTANA)
+		y+=vy;
+		
+					
+		if (x < 0 || x > Finals.ANCHO_VENTANA-width)
 		  vx = -vx;
+		if (y < 0 || y > Finals.ALTO_VENTANA-heigth)
+		  vy = -vy;
 	}
 
 	public int getVx() { return vx; }
 	public void setVx(int i) {vx = i;	}
+
+	public void setTodo(int x, int y) throws RemoteException {
+		this.x = x;
+		this.y = y;
+	}
 }
