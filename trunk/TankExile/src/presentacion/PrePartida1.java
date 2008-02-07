@@ -30,27 +30,32 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 public class PrePartida1 extends JFrame implements MouseListener{
 	private Presentacion1 presentacion1;
 
+
 	private Conexion conexion;
+
 	private static PrePartida1 prepartida1;
 	private Escenografia escenografia;
+	private JTextField estado = new JTextField("Estado: ");
 	//private String imageFilePath = "C:\\tank.jpg";
 	//private ImageIcon ii = new ImageIcon(imageFilePath);
 	private ImageIcon ii = new ImageIcon(getClass().getClassLoader().getResource("res/tank.JPG"));
 	private ImageIcon esp = new ImageIcon(getClass().getClassLoader().getResource("res/EsperaOponente.jpg"));
 	private JFrame ventanaEspera = new JFrame("Tank Exile - Esperando Oponente");
+
 	private JButton b_inicio;
 	private File circuitoSeleccionado;
     
 	// Constructor de la clase.
     @SuppressWarnings("static-access")
-	public PrePartida1(int x, int y,Presentacion1 presentacion1, Conexion conexion){
+	public PrePartida1(Presentacion1 presentacion1, Conexion conexion){
 		super("Tank Exile - Pre Partida");
 		this.presentacion1=presentacion1;
-		setBounds(x,y,Finals.ANCHO_VENTANA-250,Finals.ALTO_VENTANA-370);
+		setBounds(presentacion1.getX(),presentacion1.getY(),Finals.ANCHO_VENTANA-250,Finals.ALTO_VENTANA-370);
 		setResizable(false); // No se permite dar nuevo tamaño a la ventana.
 		
 		JPanel panel = (JPanel)this.getContentPane(); // Panel donde se grafican los objetos (bloques)que componen el escenario y los tanques que representan a cada jugador.
@@ -72,47 +77,43 @@ public class PrePartida1 extends JFrame implements MouseListener{
 		b_cambia_ip.setPreferredSize(new Dimension(110,30));
 		b_cambia_ip.addMouseListener(this);
 		
-		JButton b_opciones = new JButton("Opciones");
-		b_opciones.setPreferredSize(new Dimension(110,30));
-		b_opciones.addMouseListener(this);
-		
+		JButton b_elegir_circuito = new JButton("Elegir Circuito");
+		b_elegir_circuito.setPreferredSize(new Dimension(110,30));
+		b_elegir_circuito.addMouseListener(this);
+				
 		JButton b_salida = new JButton("Salida");
 		b_salida.setPreferredSize(new Dimension(110,30));
 		b_salida.addMouseListener(this);
 		
-		JButton exit2Button = new JButton("Salir2");
-		exit2Button.setPreferredSize(new Dimension(110,30));
-		exit2Button.addMouseListener(this);
+		estado.setEditable(false);
+		estado.setBackground(Finals.colorFondo);
 		
-		JPanel jp4 = new JPanel();
-		jp4.setLayout(new GridLayout(4,1));
-		jp4.setBackground(Color.LIGHT_GRAY);
-		jp4.setPreferredSize(new Dimension(Finals.ANCHO_VENTANA-250,Finals.ALTO_VENTANA-200));
-		jp4.add(b_inicio);
-		jp4.add(b_cambia_ip);
-		jp4.add(b_opciones);
-		jp4.add(b_salida);
+		JPanel panel_botones = new JPanel();
+		panel_botones.setLayout(new GridLayout(5,1));
+		panel_botones.setBackground(Finals.colorFondo);
+		panel_botones.setPreferredSize(new Dimension(Finals.ANCHO_VENTANA-250,Finals.ALTO_VENTANA-200));
+		panel_botones.add(b_inicio);
+		panel_botones.add(b_cambia_ip);
+		panel_botones.add(b_elegir_circuito);
+		panel_botones.add(b_salida);
+		panel_botones.add(estado);
 		
-		JPanel jp5 = new JPanel();
-		jp5.setLayout(new FlowLayout());
-		jp5.setBackground(Color.LIGHT_GRAY);
-		jp5.setPreferredSize(new Dimension(Finals.ANCHO_VENTANA-250,Finals.ALTO_VENTANA-445));
+		JPanel panel_icono = new JPanel();
+		panel_icono.setLayout(new FlowLayout());
+		panel_icono.setBackground(Finals.colorFondo);
+		panel_icono.setPreferredSize(new Dimension(Finals.ANCHO_VENTANA-250,Finals.ALTO_VENTANA-445));
 		
 
-		jp5.setPreferredSize(new Dimension(400,300));
-            
-        //Crea una etiqueta para cargar el ícono que contiene a la imagen.
-        JLabel iM = new JLabel();
-        iM.setIcon(ii);
-        iM.setOpaque(false);
-        iM.setSize(200, 200);
-                
-                
-        jp5.add(iM);
+		//Creo una Etiqueta para cargar icono q contiene a la imagen
+		JLabel iM = new JLabel();
+		iM.setIcon(ii);
+		iM.setOpaque(false);
+		iM.setSize(200, 200);
+		panel_icono.add(iM);
 
 		
-		panel.add(jp5);
-		panel.add(jp4);
+		panel.add(panel_icono);
+		panel.add(panel_botones);
 		setVisible(true);
 		
 		this.prepartida1=this;
@@ -143,6 +144,25 @@ public class PrePartida1 extends JFrame implements MouseListener{
 		//Mauricio
 	}
 	
+
+	public void setEstado(String noticia){
+		estado.setText(noticia);
+	}
+	
+	/*	
+	// Metodo que responde al evento sobre el boton Jugar.
+	public void Jugar() {
+		this.dispose();
+		
+		// Mauricio dice: donde dice circuito se ha de entregar el nombre del txt (en el directorio del jar).
+		// En caso de no estar en el lugar del jar, indicar de forma relativa a ese directorio que contiene al jar.
+		String circuito = new String("circuito2.txt");
+		Partida tank_exile = new Partida(circuito, conexion);
+		tank_exile.jugar();
+	}
+	*/
+	
+
 	// Metodo que responde al evento sobre el boton Jugar.
 	public void responderInicio() {
         //coneccionOponente es un campo q indica si el oponente ya presiono en jugar(true) o todavia no(false)
@@ -185,8 +205,10 @@ public class PrePartida1 extends JFrame implements MouseListener{
         /*while(!Oponente.coneccionOponente){
             
                                                           } */
+
         try {
 			
+
 			//Conexion conexion = new Conexion("0.0.0.0");
 			/*do{
 				conexion.conectar();
@@ -225,7 +247,7 @@ public class PrePartida1 extends JFrame implements MouseListener{
 		this.circuitoSeleccionado = circuitoSeleccionado;
 	}
     // Método que responder al evento sobre el boton Opciones.
-	public void responderOpcion() {
+	public void responderElegir() {
 		System.out.println("POR CONSTRUIR ESCENOGRAFIA");
 		this.escenografia = new Escenografia(prepartida1);
 		
@@ -237,6 +259,7 @@ public class PrePartida1 extends JFrame implements MouseListener{
 	public void responderCambia(){
 		System.out.println("responde Cambia");
 		this.dispose();
+		presentacion1.setLocation(this.getX(), this.getY());
 		presentacion1.setVisible(true);
 	}
 	
@@ -256,7 +279,7 @@ public class PrePartida1 extends JFrame implements MouseListener{
 		} catch (Exception ex) {	
 			ex.printStackTrace();
 			Logger.getLogger(PrePartida1.class.getName()).log(Level.SEVERE, null, ex);
-		} 
+		}
 	}
 
 	public void mousePressed(MouseEvent e) { }

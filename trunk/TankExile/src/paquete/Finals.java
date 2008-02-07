@@ -1,6 +1,9 @@
 package paquete;
 
-public interface Finals {	
+import java.awt.Color;
+
+public interface Finals{	
+
 	public static final int PERIODO=10;
 	public static final int PERIODO_DE_TURNO=3000;
 	public static final int BLOQUES_NUM=32;
@@ -12,4 +15,6 @@ public interface Finals {
 	public static final int IZQUIERDA =	1;
 	public static final int DERECHA =	2;
 	public static final int ARRIBA =	3;
+	
+	public static Color colorFondo = Color.LIGHT_GRAY;
 }

@@ -2,7 +2,6 @@
 package presentacion;
 
 import paquete.*;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -11,6 +10,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ImageIcon;
@@ -20,21 +21,18 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.event.ListSelectionListener;
 
 public class Presentacion1 extends JFrame implements MouseListener {
 	private PrePartida1 prePartida1;
         
     private static  Presentacion1 presentacion1;
 	private JTextField area_ip;
+	
 	// Constructor de la clase.
 	public Presentacion1(int x, int y){
 		super("TankExile - Presentación");
-
-		
 		setBounds(x,y, Finals.ANCHO_VENTANA-250, Finals.ALTO_VENTANA-500); // Reajusta tamaño de la ventana, sin modificar su posición.
-
-
-
 		setResizable(false); // Impide modificar tamaño de la ventana.
 		addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
@@ -42,17 +40,10 @@ public class Presentacion1 extends JFrame implements MouseListener {
 			}
 		}); // Se define un objeto que escucha y resonde a los eventos sobre la ventana.
 		
-
-		
-
-		JPanel panel = (JPanel) getContentPane(); // Panel donde se grafican la interface de usuario.
+		JPanel panel = (JPanel) getContentPane(); // Panel donde se grafica la interface de usuario.
 		panel.setPreferredSize(new Dimension(Finals.ANCHO_VENTANA-250, Finals.ALTO_VENTANA-500)); // Establece tamaño para el panel.
 		panel.setLayout(new GridLayout(1,1)); // Establece manager layout para el panel.
-		panel.setBackground(Color.LIGHT_GRAY); // Establece el color de fondo del panel.
-
-		
-
-		
+		panel.setBackground(Finals.colorFondo); // Establece el color de fondo del panel.
 
 		ImageIcon ii = new ImageIcon(getClass().getClassLoader().getResource("res/tankLoading.jpg"));
 		JLabel iM = new JLabel();
@@ -64,68 +55,61 @@ public class Presentacion1 extends JFrame implements MouseListener {
 				
 		setVisible(true); // Se hace visible la ventana.
 
-		
 		try {
-
-
 			Thread.sleep(500);
-
 		} catch (InterruptedException ex) {
 			Logger.getLogger(Presentacion1.class.getName()).log(Level.SEVERE, null, ex);
 		}
 		
 		panel.removeAll(); // Se remueven los objetos que se encontrataban contenidos en el panel.
-		panel.setLayout(new GridLayout(3,1)); // Establece manager layout para el panel.
+		panel.setLayout(new GridLayout(4,1)); // Establece manager layout para el panel.
 		
 		// Creacion de los componentes que conforman la interface de usuario.
-		JTextArea jta2 = new JTextArea("IP propio: ");
-		jta2.setEditable(false);
-		//jta2.setBackground(Color.LIGHT_GRAY);
-		jta2.setFont(new Font("Arial",Font.BOLD,15));
-		jta2.setBackground(Color.WHITE);
 		
-		JTextArea ip_propio = new JTextArea("192.168.0.2");
-		ip_propio.setEditable(false);
-		ip_propio.setBackground(Color.WHITE);
-		//ip_propio.setBackground(Color.LIGHT_GRAY);
+		JTextArea titulo_ip_propio = new JTextArea("IP propio: ");
+		titulo_ip_propio.setEditable(false);
+		titulo_ip_propio.setBackground(Finals.colorFondo);
+		titulo_ip_propio.setFont(new Font("Arial",Font.BOLD,15));
 		
-		JPanel jp1 = new JPanel();
-		jp1.setPreferredSize(new Dimension(Finals.ANCHO_VENTANA-250,(Finals.ALTO_VENTANA-500)/3));
-		jp1.setLayout(new FlowLayout(FlowLayout.LEFT));
-		//jp1.setBackground(Color.LIGHT_GRAY);
-		jp1.setBackground(Color.WHITE);
-		jp1.add(jta2);
-		jp1.add(ip_propio);
+		JPanel panel_ip_propio = new JPanel(); // Se crea el primer panel.
+		panel_ip_propio.setPreferredSize(new Dimension(Finals.ANCHO_VENTANA-250,(Finals.ALTO_VENTANA-500)/3));
+		panel_ip_propio.setLayout(new FlowLayout(FlowLayout.LEFT));
+		panel_ip_propio.setBackground(Finals.colorFondo);
 		
+		panel_ip_propio.add(titulo_ip_propio);
 		
-		JTextArea jta3 = new JTextArea("Ingrese IP de oponente:");
-		jta3.setEditable(false);
-		jta3.setFont(new Font("Arial",Font.BOLD,15));
-		//jta3.setBackground(Color.LIGHT_GRAY);
-		jta3.setBackground(Color.WHITE);
-				
-
+		try {
+			JTextArea ip_propio = new JTextArea(InetAddress.getLocalHost().getHostAddress());
+			ip_propio.setEditable(false);
+			ip_propio.setBackground(Finals.colorFondo);
+			panel_ip_propio.add(ip_propio);
+		} catch (UnknownHostException ex) {
+			Logger.getLogger(Presentacion1.class.getName()).log(Level.SEVERE, null, ex);
+		}
 		
-
+		///////////////////////////////////////////////////////
+		
+		JTextArea titulo_ip_oponente = new JTextArea("Ingrese IP de oponente:");
+		titulo_ip_oponente.setEditable(false);
+		titulo_ip_oponente.setFont(new Font("Arial",Font.BOLD,15));
+		titulo_ip_oponente.setBackground(Finals.colorFondo);
+		
 		JTextField ip_oponente = new JTextField();
 		ip_oponente.setColumns(15);
 		ip_oponente.setToolTipText(" ");
-		ip_oponente.setFocusAccelerator('\132'); // Estabcle combinacion Alt+z para obtener focus.
+		ip_oponente.setFocusAccelerator('\132'); // Establece combinacion Alt+z para obtener focus.
 
-		
 		this.area_ip = ip_oponente;
 				
-		JPanel jp2 = new JPanel();
-		jp2.setPreferredSize(new Dimension(Finals.ANCHO_VENTANA-250, (Finals.ALTO_VENTANA-500)/3));
-		jp2.setLayout(new FlowLayout(FlowLayout.LEFT));
-		//jp2.setBackground(Color.LIGHT_GRAY);
-		jp2.setBackground(Color.WHITE);
-		jp2.add(jta3);
-		jp2.add(ip_oponente);
+		JPanel panel_ip_oponente = new JPanel(); // Se crea el segundo panel.
+		panel_ip_oponente.setPreferredSize(new Dimension(Finals.ANCHO_VENTANA-250, (Finals.ALTO_VENTANA-500)/3));
+		panel_ip_oponente.setLayout(new FlowLayout(FlowLayout.LEFT));
+		panel_ip_oponente.setBackground(Finals.colorFondo);
+		panel_ip_oponente.add(titulo_ip_oponente);
+		panel_ip_oponente.add(ip_oponente);
 		
-
+		///////////////////////////////////////////////////////
 		
-
 		JButton b_conectar = new JButton("Conectar");
 		b_conectar.setPreferredSize(new Dimension(110,30));
 		b_conectar.addMouseListener(this);
@@ -137,29 +121,26 @@ public class Presentacion1 extends JFrame implements MouseListener {
 		b_salida.addMouseListener(this);
 		b_salida.setToolTipText("Cerrar");
 		
-		JPanel jp3 = new JPanel();
-		jp3.setPreferredSize(new Dimension(Finals.ANCHO_VENTANA-250,(Finals.ALTO_VENTANA-500)/3));
-		jp3.setLayout(new FlowLayout(FlowLayout.TRAILING));
-		jp3.setBackground(Color.WHITE);
-		//jp3.setBackground(Color.LIGHT_GRAY);
-		jp3.add(b_conectar);
-		jp3.add(b_salida);
+		JPanel panel_botones = new JPanel(); // Se crea el tercer panel.
+		panel_botones.setPreferredSize(new Dimension(Finals.ANCHO_VENTANA-250,(Finals.ALTO_VENTANA-500)/3));
+		panel_botones.setLayout(new FlowLayout(FlowLayout.TRAILING));
+		panel_botones.setBackground(Finals.colorFondo);
+		panel_botones.add(b_conectar);
+		panel_botones.add(b_salida);
 		
-		panel.add(jp1);
-		panel.add(jp2);
-		panel.add(jp3);
+		JTextField estado = new JTextField("Estado: ");
+		estado.setEditable(false);
+		estado.setBackground(Finals.colorFondo);
+		
+		panel.add(panel_ip_propio);
+		panel.add(panel_ip_oponente);
+		panel.add(panel_botones);
+		panel.add(estado);
 		
 		setVisible(true);
 		presentacion1 = this;
 	}
 
-
-
-	
-	Presentacion1(JFrame ventana) {
-		throw new UnsupportedOperationException("Not yet implemented");
-	}
-	
 	public static Presentacion1 getPresentacion1() {
 		return presentacion1;
 	}
@@ -180,7 +161,8 @@ public class Presentacion1 extends JFrame implements MouseListener {
 		}while(!conexion.conexionLista());
 		this.dispose();
 		conexion.start();
-		prePartida1 = new PrePartida1(this.getX(),this.getY(),presentacion1, conexion);
+		prePartida1 = new PrePartida1(presentacion1, conexion);
+		prePartida1.setEstado("Estado: Conexion establecida exitosamente");
 	}
 	
 	public void responderSalida(){
