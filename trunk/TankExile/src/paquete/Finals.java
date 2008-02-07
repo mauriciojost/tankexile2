@@ -16,6 +16,6 @@ public interface Finals{
 	public static final int DERECHA =			2;
 	public static final int ARRIBA =			3;
 	
-	public static final int ESPERA_CONEXION =	200;
+	public static final int ESPERA_CONEXION =	100;
 	public static final Color colorFondo = Color.lightGray;
 }

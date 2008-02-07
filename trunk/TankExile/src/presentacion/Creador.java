@@ -6,6 +6,7 @@ import java.awt.LayoutManager;
 import java.awt.event.MouseListener;
 import javax.swing.JButton;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import paquete.Finals;
 
@@ -35,6 +36,11 @@ public class Creador {
 		JTextField campo = new JTextField();
 		return campo;
 	
+	}
+	
+	public JTextArea crearArea(Dimension d, String nombre){
+		JTextArea area = new JTextArea(nombre);
+		return area;
 	}
 
 }

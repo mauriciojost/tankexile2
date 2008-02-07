@@ -31,11 +31,12 @@ public class Partida extends Canvas implements Finals, Runnable{
     //private String iPOponente; // Representa la dirección IP en la red del host del jugador oponente.
     private Conexion conexion; // Objeto utilizado para todo lo relacionado a la comunicación entre ambos hosts.
     private String nombreCircuitoTXT; // Atributo que representa el nombre del archivo del circuito.
-
+	private PrePartida1 prePartida;
     //private JFrame ventana;
 
     // Contstructor. Genera los elementos básicos de una aplicación del tipo juego.
-    public Partida(String nombreCircuitoTXT, Conexion conexion) {
+    public Partida(String nombreCircuitoTXT, Conexion conexion, PrePartida1 prePartida) {
+		this.prePartida = prePartida;
 	JFrame ventana = new JFrame("TankExile"); // Armado de la ventana.
 	JPanel panel = (JPanel)ventana.getContentPane(); // Obtención de su JPanel.
 	this.setBounds(0,0,Finals.ANCHO_VENTANA,Finals.ALTO_VENTANA); // Establecimiento de las dimensiones de este objeto Partida.
@@ -49,12 +50,17 @@ public class Partida extends Canvas implements Finals, Runnable{
 	ventana.setBounds(0,0,Finals.ANCHO_VENTANA+3,Finals.ALTO_VENTANA); // Establecimiento de las dimensiones de la ventana.
 	ventana.setVisible(true); // Ventana visible.
 
-
+	
 	ventana.addWindowListener(
 	    new WindowAdapter() { // Ventana tiene escucha, una clase anónima, para el cierre.
-		public void windowClosing(WindowEvent e) {
-		    System.exit(0);
-		}
+			public void windowClosing(WindowEvent e) {
+				try {
+					getPrePartida().setVisible(true);
+					finalize();
+				} catch (Throwable ex) {
+					Logger.getLogger(Partida.class.getName()).log(Level.SEVERE, null, ex);
+				}
+			}
 	    }
 	);
 
@@ -126,7 +132,10 @@ public class Partida extends Canvas implements Finals, Runnable{
 		tanquePropio.actuar();
 		//tanqueLocalLigadoOponente.actuar(); // Mauricio: ¿Realmente hace falta?.
     }
-
+	
+	public PrePartida1 getPrePartida(){
+		return	prePartida;
+	}
     // Método encargado de brindar la imagen correcta (representativa del estado del tanque) para que esta sea pintada en pantalla.
     public void pintarEscena() {
 		Graphics2D g = (Graphics2D)estrategia.getDrawGraphics();
