@@ -64,6 +64,7 @@ public class Partida extends Canvas implements Finals, Runnable{
 		this.otroID = (conexion.getID()+1)%2;
 		//this.iPOponente = iPOponente;
 		this.nombreCircuitoTXT = nombreCircuitoTXT; // Asignación del nombre del archivo del circuito.
+		this.jugar();
 	}
 	// Método que arranca la escena de la partida. Involucra la inicialización de los elementos principales del juego en sí.
 	public void iniciarEscena() {
@@ -124,10 +125,10 @@ public class Partida extends Canvas implements Finals, Runnable{
 	}
 	
 	// Método que contiene el bucle de ejecución principal del juego.
-	public void  jugar(){
+	private void jugar(){
 		iniciarEscena();
-		Thread hilo = new Thread(this);
-		hilo.start();
+		Thread hiloJuego = new Thread(this);
+		hiloJuego.start();
 
 	}
 

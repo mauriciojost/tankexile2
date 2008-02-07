@@ -9,23 +9,76 @@ import java.util.logging.Logger;
 
 // Clase que permite la traducción de un archivo txt a un circuito de juego del programa.
 public class CargadorCircuitoTXT {
-	private File TextFile; // Objeto que permite manipular el archivo txt que contiene al circuito.
-	private FileReader TextIn; // Objeto que permite manipular específicamente los archivos extesión txt.
+	private File textFile; // Objeto que permite manipular el archivo txt que contiene al circuito.
+	private FileReader textIn; // Objeto que permite manipular específicamente los archivos extesión txt.
 	private boolean meta1=false, meta0=false; // Atributos que indican si se ha hallado determinada meta, o no, para luego indicar si hubo error en la carga del circuito.
 	public CargadorCircuitoTXT(String nombre){
 		try {
-			TextFile = new File(nombre); // El archivo indicado es abierto.
-			TextIn = new FileReader(TextFile); // Ahora es susceptible de ser leído.
+			textFile = new File(nombre); // El archivo indicado es abierto.
+			textIn = new FileReader(textFile); // Ahora es susceptible de ser leído.
 		} catch (FileNotFoundException ex) {
-			System.out.println("Error al cargar el circuito (" + TextFile.getName()+").");
+			System.out.println("Error al cargar el circuito (" + textFile.getName()+").");
 			Logger.getLogger(CargadorCircuitoTXT.class.getName()).log(Level.SEVERE, null, ex);
 		}
+	}
+	
+	public static boolean validarCircuito(String nombre){
+		File textFile = null;
+		FileReader textIn = null;
+		try{
+			textFile = new File(nombre); // El archivo indicado es abierto.
+			textIn = new FileReader(textFile); // Ahora es susceptible de ser leído.
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		
+		boolean hayMeta1 = false, hayMeta2 = false;
+		boolean correctoLongitud = false;
+		try {
+			for (int j = 0; j < Finals.BLOQUES_NUM-2; j++) {
+				for (int i = 0; i < Finals.BLOQUES_NUM-2; i++) {
+					int caracter;
+					do {
+						caracter = getCaracter(textIn);
+						//System.out.println("Caracter leído: '" + (char)caracter + "' (" + caracter +").");
+					} while ((((char)caracter) != '0')&&(((char)caracter) != '1')&&(((char)caracter) != '2')&&(((char)caracter) != '3'));
+					//System.out.println("Es caracter válido para analizar: (i;j)=("+i+";"+ j+").");
+					switch ((char)caracter) {
+						case '0': break;
+						case '1': break;
+						case '2': hayMeta1=true; break;
+						case '3': hayMeta2=true; break;
+						
+					}
+					//System.out.println("Variables hM1 y hM2: '" + hayMeta1 + "' y '" +hayMeta2 +"'.");
+				}
+			}
+			//System.out.println("Circuito correcto.");
+			correctoLongitud = true;
+		} catch (IOException ex) {
+			correctoLongitud = false;
+		}
+		return (correctoLongitud && hayMeta1 && hayMeta2);
+	}
+	
+	
+	// Método que secuencialmente brinda los caracteres (como enteros) leídos en el archivo.
+	private static int getCaracter(FileReader textIn) throws IOException{
+		int caracter;
+		caracter = textIn.read(); // Lectura del archivo.
+		if (caracter ==-1) { // En caso de finalización del archivo, se produce una excepción.
+			// Este método debe ser llamado, al menos, tantas veces como bloques tenga el circuito. 
+			// Han de saltarse caracteres de: salto de línea (10) y retorno de carro(13).
+			// Si en esas llamadas se llega al fin del archivo, se dice que este archivo de circuito está 'incompleto'.
+			throw new IOException("El archivo del circuito finalizó inesperadamente, antes de completar la cantidad de bloques requeridos por el circuito.");
+		}
+		return caracter;
 	}
 	
 	// Método que cierra el archivo abierto en la construcción de los objetos de esta clase.
 	public void cerrarArchivo(){
 		try {
-			TextIn.close(); // El archivo anteriormente abierto ahora es cerrado.
+			textIn.close(); // El archivo anteriormente abierto ahora es cerrado.
 		} catch (IOException ex) {
 			Logger.getLogger(CargadorCircuitoTXT.class.getName()).log(Level.SEVERE, null, ex);
 		}
@@ -34,7 +87,7 @@ public class CargadorCircuitoTXT {
 	// Método que secuencialmente brinda los caracteres (como enteros) leídos en el archivo.
 	private int getCaracterLeido() throws IOException{
 		int caracter;
-		caracter = TextIn.read(); // Lectura del archivo.
+		caracter = textIn.read(); // Lectura del archivo.
 		if (caracter ==-1) { // En caso de finalización del archivo, se produce una excepción.
 			// Este método debe ser llamado, al menos, tantas veces como bloques tenga el circuito. 
 			// Han de saltarse caracteres de: salto de línea (10) y retorno de carro(13).
