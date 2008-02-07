@@ -68,42 +68,28 @@ public class PrePartida1 extends JFrame implements MouseListener{
             public void windowClosing(WindowEvent e) {System.exit(0);}
 		}); // Se define un objeto que escucha los eventos sobre la ventana.
 		
-		b_inicio = new JButton("Inicio");
-		b_inicio.setPreferredSize(new Dimension(110,30));
-		b_inicio.addMouseListener(this);
+		Creador creador = new Creador();
+		b_inicio = creador.crearBoton("Inicio", "Comienza la partida", this);
 		b_inicio.setEnabled(false);
 		
-		JButton b_cambia_ip = new JButton("Cambiar IP");
-		b_cambia_ip.setPreferredSize(new Dimension(110,30));
-		b_cambia_ip.addMouseListener(this);
-		
-		JButton b_elegir_circuito = new JButton("Elegir Circuito");
-		b_elegir_circuito.setPreferredSize(new Dimension(110,30));
-		b_elegir_circuito.addMouseListener(this);
+		JButton b_cambia_ip = creador.crearBoton("Cambiar IP", "Realiza nueva conexion", this);
 				
-		JButton b_salida = new JButton("Salida");
-		b_salida.setPreferredSize(new Dimension(110,30));
-		b_salida.addMouseListener(this);
+		JButton b_elegir_circuito = creador.crearBoton("Elegir Circuito", "Permite seleccion de circuito", this);
+				
+		JButton b_salida = creador.crearBoton("Salida", "Cerrar", this);
 		
 		estado.setEditable(false);
 		estado.setBackground(Finals.colorFondo);
 		
-		JPanel panel_botones = new JPanel();
-		panel_botones.setLayout(new GridLayout(5,1));
-		panel_botones.setBackground(Finals.colorFondo);
-		panel_botones.setPreferredSize(new Dimension(Finals.ANCHO_VENTANA-250,Finals.ALTO_VENTANA-200));
+		JPanel panel_botones = creador.crearPanel(new Dimension(Finals.ANCHO_VENTANA-250,Finals.ALTO_VENTANA-200), new GridLayout(5,1));
 		panel_botones.add(b_inicio);
 		panel_botones.add(b_cambia_ip);
 		panel_botones.add(b_elegir_circuito);
 		panel_botones.add(b_salida);
 		panel_botones.add(estado);
 		
-		JPanel panel_icono = new JPanel();
-		panel_icono.setLayout(new FlowLayout());
-		panel_icono.setBackground(Finals.colorFondo);
-		panel_icono.setPreferredSize(new Dimension(Finals.ANCHO_VENTANA-250,Finals.ALTO_VENTANA-445));
+		JPanel panel_icono = creador.crearPanel(new Dimension(Finals.ANCHO_VENTANA-250,Finals.ALTO_VENTANA-445), new FlowLayout());
 		
-
 		//Creo una Etiqueta para cargar icono q contiene a la imagen
 		JLabel iM = new JLabel();
 		iM.setIcon(ii);
@@ -111,7 +97,6 @@ public class PrePartida1 extends JFrame implements MouseListener{
 		iM.setSize(200, 200);
 		panel_icono.add(iM);
 
-		
 		panel.add(panel_icono);
 		panel.add(panel_botones);
 		setVisible(true);
