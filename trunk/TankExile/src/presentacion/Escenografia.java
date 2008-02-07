@@ -61,13 +61,14 @@ public class Escenografia extends JFrame implements MouseListener, VentanaContro
 		
 		vector_de_archivos = dir.listFiles(fileFilter); // Se aplica el filtro para que solo sean visibles los archivos .tec de la carpeta Circuitos.
 		lista = new JList(vector_de_archivos);
+		lista.setPreferredSize(new Dimension(Finals.ANCHO_VENTANA-210,Finals.ALTO_VENTANA-300-110));
 		lista.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		lista.setSelectedIndex(0); // Determina en que posicion de la lista se establece inicialmente el foco.
+		//lista.setSelectedIndex(0); // Determina en que posicion de la lista se establece inicialmente el foco.
 		lista.addListSelectionListener(this);
 		
 		JScrollPane jsp = new JScrollPane(lista);
-		jsp.setPreferredSize(new Dimension(Finals.ANCHO_VENTANA-210, Finals.ALTO_VENTANA-300-85));
-		jsp.setBackground(Color.LIGHT_GRAY);
+		jsp.setPreferredSize(new Dimension(Finals.ANCHO_VENTANA-210, Finals.ALTO_VENTANA-300-110));
+		jsp.setBackground(Finals.colorFondo);
 		
 		// Creamos Botones.
 		b_seleccion = new JButton("Seleccionar");
@@ -108,9 +109,9 @@ public class Escenografia extends JFrame implements MouseListener, VentanaContro
 		});
 		*/
 		JPanel jp_boton = new JPanel();
-		jp_boton.setPreferredSize(new Dimension(Finals.ANCHO_VENTANA-200, Finals.ANCHO_VENTANA-300-290));
+		jp_boton.setPreferredSize(new Dimension(Finals.ANCHO_VENTANA-200, Finals.ANCHO_VENTANA-300-272));
 		jp_boton.setLayout(new FlowLayout(FlowLayout.CENTER));
-		jp_boton.setBackground(Color.LIGHT_GRAY);
+		jp_boton.setBackground(Finals.colorFondo);
 		jp_boton.add(b_seleccion);
 		jp_boton.add(b_cancelar);
 		

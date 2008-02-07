@@ -1,6 +1,9 @@
 
 package presentacion;
 
+import java.awt.Component;
+import java.awt.Graphics;
+import java.awt.Insets;
 import paquete.*;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -50,7 +53,6 @@ public class Presentacion1 extends JFrame implements MouseListener {
 		iM.setIcon(ii);
 		iM.setOpaque(false);
 		iM.setSize(Finals.ANCHO_VENTANA-250, Finals.ALTO_VENTANA-500);
-		panel.setPreferredSize(new Dimension(Finals.ANCHO_VENTANA-250, Finals.ALTO_VENTANA-500)); // Establece tamaño para el panel.
 		panel.add(iM);
 				
 		setVisible(true); // Se hace visible la ventana.
@@ -65,17 +67,14 @@ public class Presentacion1 extends JFrame implements MouseListener {
 		panel.setLayout(new GridLayout(4,1)); // Establece manager layout para el panel.
 		
 		// Creacion de los componentes que conforman la interface de usuario.
+		Creador creador = new Creador();
 		
-		JTextArea titulo_ip_propio = new JTextArea("IP propio: ");
+		JTextField titulo_ip_propio = new JTextField("IP propio: ");//Cambie esta linea
 		titulo_ip_propio.setEditable(false);
 		titulo_ip_propio.setBackground(Finals.colorFondo);
 		titulo_ip_propio.setFont(new Font("Arial",Font.BOLD,15));
 		
-		JPanel panel_ip_propio = new JPanel(); // Se crea el primer panel.
-		panel_ip_propio.setPreferredSize(new Dimension(Finals.ANCHO_VENTANA-250,(Finals.ALTO_VENTANA-500)/3));
-		panel_ip_propio.setLayout(new FlowLayout(FlowLayout.LEFT));
-		panel_ip_propio.setBackground(Finals.colorFondo);
-		
+		JPanel panel_ip_propio = creador.crearPanel(new Dimension(Finals.ANCHO_VENTANA-250,(Finals.ALTO_VENTANA-500)/3),new FlowLayout(FlowLayout.LEFT));
 		panel_ip_propio.add(titulo_ip_propio);
 		
 		try {
@@ -101,32 +100,14 @@ public class Presentacion1 extends JFrame implements MouseListener {
 
 		this.area_ip = ip_oponente;
 				
-		JPanel panel_ip_oponente = new JPanel(); // Se crea el segundo panel.
-		panel_ip_oponente.setPreferredSize(new Dimension(Finals.ANCHO_VENTANA-250, (Finals.ALTO_VENTANA-500)/3));
-		panel_ip_oponente.setLayout(new FlowLayout(FlowLayout.LEFT));
-		panel_ip_oponente.setBackground(Finals.colorFondo);
+		JPanel panel_ip_oponente = creador.crearPanel(new Dimension(Finals.ANCHO_VENTANA-250, (Finals.ALTO_VENTANA-500)/3),new FlowLayout(FlowLayout.LEFT));
 		panel_ip_oponente.add(titulo_ip_oponente);
 		panel_ip_oponente.add(ip_oponente);
 		
-		///////////////////////////////////////////////////////
+		JPanel panel_botones = creador.crearPanel(new Dimension(Finals.ANCHO_VENTANA-250,(Finals.ALTO_VENTANA-500)/3), new FlowLayout(FlowLayout.TRAILING));
+		panel_botones.add(creador.crearBoton("Conectar", "Intenta conexion con IP ingresado", this));
+		panel_botones.add(creador.crearBoton("Salida", "Cerrar", this));
 		
-		JButton b_conectar = new JButton("Conectar");
-		b_conectar.setPreferredSize(new Dimension(110,30));
-		b_conectar.addMouseListener(this);
-		b_conectar.setToolTipText("Intenta conexion con IP ingresado");
-
-		
-		JButton b_salida = new JButton("Salida");
-		b_salida.setPreferredSize(new Dimension(110,30));
-		b_salida.addMouseListener(this);
-		b_salida.setToolTipText("Cerrar");
-		
-		JPanel panel_botones = new JPanel(); // Se crea el tercer panel.
-		panel_botones.setPreferredSize(new Dimension(Finals.ANCHO_VENTANA-250,(Finals.ALTO_VENTANA-500)/3));
-		panel_botones.setLayout(new FlowLayout(FlowLayout.TRAILING));
-		panel_botones.setBackground(Finals.colorFondo);
-		panel_botones.add(b_conectar);
-		panel_botones.add(b_salida);
 		
 		JTextField estado = new JTextField("Estado: ");
 		estado.setEditable(false);
