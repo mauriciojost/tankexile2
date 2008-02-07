@@ -14,6 +14,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 // Clase cuya función es establecer la comunicación entre los dos hosts.
+import javax.swing.JOptionPane;
 public class Conexion extends Thread implements Legible, Conectable{
 	private Conectable conexionRemoto;
 	private Tanque tanquePropio; // Tanque correspondiente al host propio (o no-remoto).
@@ -232,6 +233,8 @@ public class Conexion extends Thread implements Legible, Conectable{
 		} catch (RemoteException ex) {
 			System.out.println("Error en el manejo del tanque remoto, clase Conexion. El oponente ha finalizado la sesión.");
 			Logger.getLogger(Conexion.class.getName()).log(Level.SEVERE, null, ex);
+			JOptionPane.showMessageDialog(null, "El oponente abandono conexión");
+			System.exit(0);
 		}
 	}
 	
@@ -312,6 +315,8 @@ public class Conexion extends Thread implements Legible, Conectable{
 		} catch (RemoteException ex) {
 			System.out.println("Error en el manejo de bolas remotas, clase Conexion. El oponente ha finalizado la sesión.");
 			Logger.getLogger(Conexion.class.getName()).log(Level.SEVERE, null, ex);
+			JOptionPane.showMessageDialog(null, "El oponente abandono conexión");
+			System.exit(0);
 		}
 	}
 	

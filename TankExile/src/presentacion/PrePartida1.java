@@ -182,9 +182,9 @@ public class PrePartida1 extends JFrame implements MouseListener{
             iM.setIcon(ii);
             iM.setOpaque(false);
             iM.setSize(200, 200);
-            panel.add(iM);
+            //panel.add(iM);
                 
-            ventanaEspera.setVisible(true);
+            //ventanaEspera.setVisible(true);
 		}catch (Exception ex){ex.printStackTrace();}
          
         /*while(!Oponente.coneccionOponente){
@@ -219,7 +219,7 @@ public class PrePartida1 extends JFrame implements MouseListener{
 			Logger.getLogger(Partida.class.getName()).log(Level.SEVERE, null, ex);
 			}
 			*/
-			new Partida(this.circuitoSeleccionado.getPath(), conexion);
+			new Partida(this.circuitoSeleccionado.getPath(), conexion, this);
 			ventanaEspera.dispose();
 			
 		} catch (Exception ex) {
@@ -231,7 +231,7 @@ public class PrePartida1 extends JFrame implements MouseListener{
 		this.circuitoSeleccionado = circuitoSeleccionado;
 		b_inicio.setEnabled(true);
 	}
-    // Método que responder al evento sobre el boton Opciones.
+    // Método que responde al evento sobre el boton Elegir Circuito.
 	public void responderElegir() {
 		System.out.println("POR CONSTRUIR ESCENOGRAFIA");
 		this.escenografia = new Escenografia(prepartida1);

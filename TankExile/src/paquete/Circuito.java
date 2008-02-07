@@ -3,6 +3,7 @@ import java.awt.Graphics2D;
 import java.io.IOException;
 
 // Clase que contiene en sí la información sobre los elementos que componen el circuito de juego.
+import javax.swing.JOptionPane;
 public class Circuito {
 	private CargadorCircuitoTXT cargadorTXT; // Permite la conversión del archivo txt a circuito.
 	private Bloque matrizDeBloques[][] = new Bloque [Finals.BLOQUES_NUM][Finals.BLOQUES_NUM]; // Matriz que contiene los elementos Bloque que son mapeados en la pantalla.
@@ -72,7 +73,8 @@ public class Circuito {
 	// Metodo que indica si el tanque dado ha llegado a su objetivo (meta del oponente).
 	public boolean llegueAMiMeta(Tanque tanque){
 		Meta meta = metas[Math.abs((tanque.getID()+1)%2)];
-		if (((tanque.getX() > (meta.getX() - 20))&&(tanque.getX() < (meta.getX() + 20)))&&((tanque.getY() > (meta.getY() - 20))&&(tanque.getY() < (meta.getY() + 20)))){			
+		if (((tanque.getX() > (meta.getX() - 20))&&(tanque.getX() < (meta.getX() + 20)))&&((tanque.getY() > (meta.getY() - 20))&&(tanque.getY() < (meta.getY() + 20)))){
+			//JOptionPane
 			return true;
 		}
 		return false;
