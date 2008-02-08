@@ -15,7 +15,7 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class Escenografia extends JFrame implements MouseListener, VentanaControlable, ListSelectionListener {
+public class Escenografia extends JFrame implements MouseListener, ListSelectionListener {
     private Vector<File> fileNames = new Vector<File>();
     private static JList lista;
     private JSplitPane splitPane;
@@ -65,6 +65,7 @@ public class Escenografia extends JFrame implements MouseListener, VentanaContro
 		lista.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		//lista.setSelectedIndex(0); // Determina en que posicion de la lista se establece inicialmente el foco.
 		lista.addListSelectionListener(this);
+		lista.setSelectedIndex(0);
 		
 		JScrollPane jsp = new JScrollPane(lista);
 		jsp.setPreferredSize(new Dimension(Finals.ANCHO_VENTANA-210, Finals.ALTO_VENTANA-300-110));
@@ -187,7 +188,9 @@ public class Escenografia extends JFrame implements MouseListener, VentanaContro
 	public void responderSelecc(){
 		File archivo = (File)lista.getSelectedValue();
 		if (paquete.CargadorCircuitoTXT.validarCircuito(archivo.getPath())){
-			prePartida.setCircuitoSeleccionado(archivo,true);
+			//////////////////MAURICIO//////////////////////////////////
+			// Esta parte ha de ser modificada. Donde el true se ha de especificar si el archivo es propio o remoto (ver con qué criterio).
+			prePartida.setCircuitoSeleccionado(archivo,true); // <<<----
 			ultimoArchivoElegido = archivo;
 			this.dispose();
 			prePartida.setLocation(this.getX(), this.getY());

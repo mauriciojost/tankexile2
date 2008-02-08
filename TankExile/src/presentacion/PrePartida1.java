@@ -1,6 +1,7 @@
 package presentacion;
 
 import java.awt.event.MouseEvent;
+import java.rmi.RemoteException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import paquete.*;
@@ -20,7 +21,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-public class PrePartida1 extends JFrame implements MouseListener{
+public class PrePartida1 extends JFrame implements MouseListener, VentanaControlable{
 	private final String NOMBRE_CIRCUITO_TEMPORAL = "temporal.tmp";
 	private Presentacion1 presentacion1;
 
@@ -38,7 +39,8 @@ public class PrePartida1 extends JFrame implements MouseListener{
 
 	private JButton b_inicio;
 	private File circuitoSeleccionado;
-    
+    private JButton b_elegir_circuito;
+	
 	// Constructor de la clase.
     @SuppressWarnings("static-access")
 	public PrePartida1(Presentacion1 presentacion1, Conexion conexion){
@@ -63,7 +65,7 @@ public class PrePartida1 extends JFrame implements MouseListener{
 		
 		JButton b_cambia_ip = creador.crearBoton("Cambiar IP", "Realiza nueva conexion", this);
 				
-		JButton b_elegir_circuito = creador.crearBoton("Elegir Circuito", "Permite seleccion de circuito", this);
+		b_elegir_circuito = creador.crearBoton("Elegir Circuito", "Permite seleccion de circuito", this);
 				
 		JButton b_salida = creador.crearBoton("Salida", "Cerrar", this);
 		
@@ -94,26 +96,11 @@ public class PrePartida1 extends JFrame implements MouseListener{
 		this.conexion = conexion;
 		
 	}
-	
 
 	public void setEstado(String noticia){
 		estado.setText(noticia);
 	}
 	
-	/*	
-	// Metodo que responde al evento sobre el boton Jugar.
-	public void Jugar() {
-		this.dispose();
-		
-		// Mauricio dice: donde dice circuito se ha de entregar el nombre del txt (en el directorio del jar).
-		// En caso de no estar en el lugar del jar, indicar de forma relativa a ese directorio que contiene al jar.
-		String circuito = new String("circuito2.txt");
-		Partida tank_exile = new Partida(circuito, conexion);
-		tank_exile.jugar();
-	}
-	*/
-	
-
 	// Metodo que responde al evento sobre el boton Jugar.
 	public void responderInicio() {
 		//coneccionOponente es un campo q indica si el oponente ya presiono en jugar(true) o todavia no(false)
@@ -217,4 +204,12 @@ public class PrePartida1 extends JFrame implements MouseListener{
 	public void mouseReleased(MouseEvent e) { }
 	public void mouseEntered(MouseEvent e) { }
 	public void mouseExited(MouseEvent e) { }
+
+	public void metodoDeControl() throws RemoteException {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	public void setSeleccionHabilitada(boolean habilitada) throws RemoteException {
+		b_elegir_circuito.setEnabled(habilitada);
+	}
 }
