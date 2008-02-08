@@ -7,6 +7,7 @@ import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import javax.imageio.ImageIO;
+import javax.swing.JOptionPane;
 
 
 public class Tanque implements Controlable{

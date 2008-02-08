@@ -30,7 +30,7 @@ public class Escenografia extends JFrame implements MouseListener, VentanaContro
     
 	private JButton b_seleccion;
 	private JButton b_cancelar;
-	
+	private File ultimoArchivoElegido;
 	
     public Escenografia(PrePartida1 prepartida) {
 
@@ -187,13 +187,15 @@ public class Escenografia extends JFrame implements MouseListener, VentanaContro
 	public void responderSelecc(){
 		File archivo = (File)lista.getSelectedValue();
 		if (paquete.CargadorCircuitoTXT.validarCircuito(archivo.getPath())){
-			prePartida.setCircuitoSeleccionado(archivo);
+			prePartida.setCircuitoSeleccionado(archivo,true);
+			ultimoArchivoElegido = archivo;
 			this.dispose();
 			prePartida.setLocation(this.getX(), this.getY());
-			prePartida.setEstado("Estado: Se ha seleccionado un circuito.");
 			prePartida.setVisible(true);
 			System.out.println("Circuito validado correctamente.");
+			this.prePartida.setEstado("Circuito: '"+ultimoArchivoElegido+"'.");
 		}else{
+			JOptionPane.showMessageDialog(null, "Circuito no válido.");
 			System.out.println("Circuito no válido.");
 		}
 		
@@ -202,8 +204,10 @@ public class Escenografia extends JFrame implements MouseListener, VentanaContro
 	public void responderCancel(){
 		this.dispose();
 		prePartida.setLocation(this.getX(), this.getY());
-		prePartida.setEstado("Estado: Esperando seleccion de circuito por parte del oponente.");
 		prePartida.setVisible(true);
+		if (ultimoArchivoElegido!=null){
+			this.prePartida.setEstado("Circuito: '"+ultimoArchivoElegido+"'.");
+		}
 		// ACA SE DEBE ASIGNAR LA RESPONSABILIDAD DE ELEGIR CIRCUITO AL OPONENTE!!!!
 	}
 	

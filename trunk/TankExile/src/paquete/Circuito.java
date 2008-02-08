@@ -75,8 +75,11 @@ public class Circuito {
 		Meta meta = metas[Math.abs((tanque.getID()+1)%2)];
 		if (((tanque.getX() > (meta.getX() - 20))&&(tanque.getX() < (meta.getX() + 20)))&&((tanque.getY() > (meta.getY() - 20))&&(tanque.getY() < (meta.getY() + 20)))){
 			//JOptionPane
+			JOptionPane.showMessageDialog(null, "Mensaje de llegada.");
+			Partida.getPartida().finalizar();
 			return true;
 		}
+		
 		return false;
 	}
 	

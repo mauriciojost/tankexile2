@@ -8,6 +8,7 @@ public interface Finals{
 	public static final int PERIODO_DE_TURNO =	3000;
 	public static final int BLOQUES_NUM =		32;
 	public static final int BLOQUE_LADO_LONG =	20;
+	public static final int CANTIDAD_DE_INTENTOS_DE_CONEXION = 3;
 	public static final int ANCHO_VENTANA = BLOQUES_NUM * BLOQUE_LADO_LONG + 6;
 	public static final int ALTO_VENTANA = BLOQUES_NUM * BLOQUE_LADO_LONG + 32;
 	

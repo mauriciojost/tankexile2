@@ -1,9 +1,6 @@
 
 package presentacion;
 
-import java.awt.Component;
-import java.awt.Graphics;
-import java.awt.Insets;
 import paquete.*;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -21,16 +18,18 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.event.ListSelectionListener;
 
 public class Presentacion1 extends JFrame implements MouseListener {
-	private PrePartida1 prePartida1;
-        
-    private static  Presentacion1 presentacion1;
+	private PrePartida1 prePartida;
+    private static Presentacion1 presentacion1;
 	private JTextField area_ip;
+	private JTextField estado;
+	private Conexion conexion;
+	private JButton bConectar;
 	
 	// Constructor de la clase.
 	public Presentacion1(int x, int y){
@@ -105,11 +104,11 @@ public class Presentacion1 extends JFrame implements MouseListener {
 		panel_ip_oponente.add(ip_oponente);
 		
 		JPanel panel_botones = creador.crearPanel(new Dimension(Finals.ANCHO_VENTANA-250,(Finals.ALTO_VENTANA-500)/3), new FlowLayout(FlowLayout.TRAILING));
-		panel_botones.add(creador.crearBoton("Conectar", "Intenta conexion con IP ingresado", this));
+		panel_botones.add(this.bConectar = creador.crearBoton("Conectar", "Intenta conexion con IP ingresado", this));
 		panel_botones.add(creador.crearBoton("Salida", "Cerrar", this));
 		
 		
-		JTextField estado = new JTextField("Estado: ");
+		estado = new JTextField(" ");
 		estado.setEditable(false);
 		estado.setBackground(Finals.colorFondo);
 		
@@ -121,29 +120,52 @@ public class Presentacion1 extends JFrame implements MouseListener {
 		setVisible(true);
 		presentacion1 = this;
 	}
+	
+	public void setEstado(String estado){
+		this.estado.setText(estado);
+	}
 
 	public static Presentacion1 getPresentacion1() {
 		return presentacion1;
 	}
 	
 	public void responderConect(){
-
-		// Acciones relativas a la conexión. Seguramente se necesita de un objeto de la clase Conexion.
-		System.out.println(this.area_ip.getText()); // Se obtiene el IP del oponente tipeado en el cuadro de texto.
+		if (!bConectar.isEnabled()) return;
 		
-		Conexion conexion = new Conexion(area_ip.getText());
-		do{
-			try{
-				conexion.conectar();
-			}catch(Exception ex){
-				System.out.println("Fallo en el intento. Intentando conexión nuevamente...");
-				try{Thread.sleep(Finals.ESPERA_CONEXION);}catch(InterruptedException r){}
+		this.conexion = new Conexion(area_ip.getText());
+		
+		Runnable hilito = new Runnable(){
+			public void run(){
+				bConectar.setEnabled(false);
+				area_ip.setEnabled(false);
+				int intentos = Finals.CANTIDAD_DE_INTENTOS_DE_CONEXION;
+				do{
+					String mensaje = "Intentando establecer conexión (intento "+(Finals.CANTIDAD_DE_INTENTOS_DE_CONEXION-intentos+1)+"/"+Finals.CANTIDAD_DE_INTENTOS_DE_CONEXION+")...";
+					System.out.println(mensaje);
+					setEstado(mensaje); 
+					try{
+						conexion.conectar();
+					}catch(Exception ex){
+						System.out.println("Fallo en el intento. Intentando conexión nuevamente...");
+						//ex.printStackTrace();
+						try{Thread.sleep(Finals.ESPERA_CONEXION);}catch(InterruptedException r){}
+					}
+				}while(!conexion.conexionLista() && ((--intentos)>0));
+		
+				if (intentos==0){
+					JOptionPane.showMessageDialog(null, "No se ha podido establecer la comunicación con el host remoto.");
+					setEstado("Comunicación no establecida."); 
+				}else{
+					dispose();
+					conexion.start();
+					prePartida = new PrePartida1(presentacion1, conexion);
+					prePartida.setEstado("Estado: Conexion establecida exitosamente");
+				}
+				area_ip.setEnabled(true);
+				bConectar.setEnabled(true);
 			}
-		}while(!conexion.conexionLista());
-		this.dispose();
-		conexion.start();
-		prePartida1 = new PrePartida1(presentacion1, conexion);
-		prePartida1.setEstado("Estado: Conexion establecida exitosamente");
+		};
+		(new Thread(hilito)).start();
 	}
 	
 	public void responderSalida(){

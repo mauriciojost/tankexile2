@@ -32,11 +32,16 @@ public class Partida extends Canvas implements Finals, Runnable{
     private Conexion conexion; // Objeto utilizado para todo lo relacionado a la comunicación entre ambos hosts.
     private String nombreCircuitoTXT; // Atributo que representa el nombre del archivo del circuito.
 	private PrePartida1 prePartida;
+	private Thread hiloTanqueRemoto;
+	private Thread hiloBolasRemotas;
+	private boolean correrHilos = true;
+	private static Partida instanciaPartida;
     //private JFrame ventana;
 
     // Contstructor. Genera los elementos básicos de una aplicación del tipo juego.
     public Partida(String nombreCircuitoTXT, Conexion conexion, PrePartida1 prePartida) {
 		this.prePartida = prePartida;
+		instanciaPartida = this;
 	JFrame ventana = new JFrame("TankExile"); // Armado de la ventana.
 	JPanel panel = (JPanel)ventana.getContentPane(); // Obtención de su JPanel.
 	this.setBounds(0,0,Finals.ANCHO_VENTANA,Finals.ALTO_VENTANA); // Establecimiento de las dimensiones de este objeto Partida.
@@ -50,19 +55,15 @@ public class Partida extends Canvas implements Finals, Runnable{
 	ventana.setBounds(0,0,Finals.ANCHO_VENTANA+3,Finals.ALTO_VENTANA); // Establecimiento de las dimensiones de la ventana.
 	ventana.setVisible(true); // Ventana visible.
 
-	
+
 	ventana.addWindowListener(
 	    new WindowAdapter() { // Ventana tiene escucha, una clase anónima, para el cierre.
 			public void windowClosing(WindowEvent e) {
-				try {
-					getPrePartida().setVisible(true);
-					finalize();
-				} catch (Throwable ex) {
-					Logger.getLogger(Partida.class.getName()).log(Level.SEVERE, null, ex);
-				}
+				finalizar();
 			}
 	    }
 	);
+
 
 	ventana.setResizable(false); // La ventana no es de tamaño ajustable.
 	this.createBufferStrategy(2); // Es creado sobre este canvas una estrategia de buffering, de dos buffers.
@@ -96,7 +97,7 @@ public class Partida extends Canvas implements Finals, Runnable{
 			}
 		}while(!conexion.tanqueListo());
 
-		Thread hiloTanqueRemoto = new Thread(conexion.getHiloManejadorDeTanqueRemoto());
+		hiloTanqueRemoto = new Thread(conexion.getHiloManejadorDeTanqueRemoto());
 		// Ambos tanques son ubicados en sus metas correspondientes.
 		tanquePropio.setX(circuito.getMeta(yoID).getX());
 		tanquePropio.setY(circuito.getMeta(yoID).getY());
@@ -122,7 +123,8 @@ public class Partida extends Canvas implements Finals, Runnable{
 				}
 			}while(!conexion.bolasListo());
 			System.out.println("Bolas remotas a disposición.");
-			(new Thread(conexion.getHiloManejadorDeBolas())).start();
+			hiloBolasRemotas = new Thread(conexion.getHiloManejadorDeBolas());
+			hiloBolasRemotas.start();
 		}
 		// El hilo conexion arranca a comandar al tanque remoto observando el comportamiento del tanque propio.
     }
@@ -158,47 +160,36 @@ public class Partida extends Canvas implements Finals, Runnable{
 		hiloJuego.start();
     }
 
-
-    /*
-    public static void main(String[] args) {
-
-    String ipaca = new String("192.168.0.7"); 
-    String ipalla = new String("192.168.0.101"); //con 1
-    String circuito = new String("circuito2.txt");
-    Conexion conexion = new Conexion(null);
-
-    conexion.bindearMisArchivos();
-
-    do{
-    try{
-    conexion.ponerADisposicionArchivosRemotos();
-    }catch(Exception e){
-    System.out.println("Intento fallido para obtener archivos remotos. Intentando de nuevo...");
-    try {Thread.sleep(1000);} catch (InterruptedException ex) {Logger.getLogger(Partida.class.getName()).log(Level.SEVERE, null, ex);}
-    }
-    }while(!conexion.archivosListo());
-
-    try {
-    conexion.copiarDeHostRemoto("circuiton.txt", "copio.txt");
-    conexion.enviarAHostRemoto("circuiton.txt", "copio.txt");
-    } catch (IOException ex) {
-    System.err.println("Error al intentar copiar en el método de Conexion copiarDeHostRemoto.");
-    Logger.getLogger(Partida.class.getName()).log(Level.SEVERE, null, ex);
-    }
-
-    Partida tank_exile = new Partida(0, circuito, conexion);
-    tank_exile.jugar();
-
-    }
-    */
+	public void stopHilos(){
+		correrHilos = false;
+	}
+	
     public void run() {
-		while(isVisible()){
+		
+		while(correrHilos){
 			actualizarEscena();
 			pintarEscena();
 			try{ 
 				Thread.sleep(Finals.PERIODO);
 			}catch(InterruptedException e){e.printStackTrace();}
 		}
+		conexion.stopHilos();
+		
+		this.bolaBuena.stopHilo();
+		this.bolaMala.stopHilo();
     }
-
+	public static Partida getPartida(){
+		return instanciaPartida;
+	}
+	public void finalizar(){
+		try {
+			
+			this.getPrePartida().setVisible(true);
+			this.stopHilos();
+			this.finalize();
+			this.circuito = null;
+		} catch (Throwable ex) {
+			Logger.getLogger(Partida.class.getName()).log(Level.SEVERE, null, ex);
+		}
+	}
 }
