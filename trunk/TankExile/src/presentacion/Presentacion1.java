@@ -34,7 +34,7 @@ public class Presentacion1 extends JFrame implements MouseListener {
 	// Constructor de la clase.
 	public Presentacion1(int x, int y){
 		super("TankExile - Presentación");
-		setBounds(x,y, Finals.ANCHO_VENTANA-250, Finals.ALTO_VENTANA-500); // Reajusta tamaño de la ventana, sin modificar su posición.
+		setBounds(x,y, Finals.ANCHO_VENTANA-250, Finals.ALTO_VENTANA-450); // Reajusta tamaño de la ventana, sin modificar su posición.
 		setResizable(false); // Impide modificar tamaño de la ventana.
 		addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
@@ -75,9 +75,9 @@ public class Presentacion1 extends JFrame implements MouseListener {
 		
 		JPanel panel_ip_propio = creador.crearPanel(new Dimension(Finals.ANCHO_VENTANA-250,(Finals.ALTO_VENTANA-500)/3),new FlowLayout(FlowLayout.LEFT));
 		panel_ip_propio.add(titulo_ip_propio);
-		
+		JTextArea ip_propio = null;
 		try {
-			JTextArea ip_propio = new JTextArea(InetAddress.getLocalHost().getHostAddress());
+			ip_propio = new JTextArea(InetAddress.getLocalHost().getHostAddress());
 			ip_propio.setEditable(false);
 			ip_propio.setBackground(Finals.colorFondo);
 			panel_ip_propio.add(ip_propio);
@@ -94,7 +94,7 @@ public class Presentacion1 extends JFrame implements MouseListener {
 		
 		JTextField ip_oponente = new JTextField();
 		ip_oponente.setColumns(15);
-		ip_oponente.setToolTipText(" ");
+		ip_oponente.setToolTipText("Aquí ingrese la dirección IP del host oponente.");
 		ip_oponente.setFocusAccelerator('\132'); // Establece combinacion Alt+z para obtener focus.
 
 		this.area_ip = ip_oponente;
@@ -119,6 +119,9 @@ public class Presentacion1 extends JFrame implements MouseListener {
 		
 		setVisible(true);
 		presentacion1 = this;
+		this.area_ip.setText(ip_propio.getText().substring(0,ip_propio.getText().lastIndexOf('.')+1));
+		this.area_ip.requestFocus();
+		this.area_ip.selectAll();
 	}
 	
 	public void setEstado(String estado){

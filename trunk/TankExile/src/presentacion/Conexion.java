@@ -29,10 +29,7 @@ public class Conexion extends Thread implements Conectable{
 	private Bola bolaMalaLocal;
 	private VentanaControlable ventanaRemota; // Interfaz con la que se hace la manipulación de la ventana remota de selección de circuitos.
 	private String iPOponente; // Ip del host oponente.
-	private final int PUERTO_VENTANA = 4049; // Puerto al que se asocia el registro de la ventana de selección de circuitos.
-	private final int PUERTO_TANQUES = 4049; // Puerto al que se asocia el registro de tanques.
-	private final int PUERTO_CONEXION = 4049; // Puerto al que se asocia el registro de la instancia de Conexion.
-	private final int PUERTO_BOLAS = 4049; // Puerto al que se asocia el registro de bolas.
+	private final int PUERTO = 4049; // Puerto al que se asocian todos los registros.
 	private boolean tanqueListo = false; // Indicador de la disponibilidad o no del tanque remoto para el host local.
 	private boolean ventanaLista = false; // Indicador de la disponibilidad o no de la ventana (de selección de circuito) remota para el host local.
 	private boolean conexionLista = false; //Indicador de la conexión con el host remoto.
@@ -44,7 +41,9 @@ public class Conexion extends Thread implements Conectable{
 	private boolean miTurno = false; // Indicador de turno de este host.
 	private int miID = 0;
 	private boolean correrHilos = true;
-	
+	private boolean circuitoListo = false;
+	private CircuitoControlable circuitoRemotoAControlar;
+	private Circuito circuitoPropio;
 	
 	/* Formato de presentación:
 			1. Bindeo.
@@ -58,13 +57,13 @@ public class Conexion extends Thread implements Conectable{
 		this.iPOponente = iPOponente;
 		
 		try{
-			LocateRegistry.createRegistry(PUERTO_CONEXION); // Es tomado el puerto PUERTO_CONEXION y creado un registro asociado sobre él.
+			LocateRegistry.createRegistry(PUERTO); // Es tomado el puerto PUERTO y creado un registro asociado sobre él.
 		}catch(Exception e){
 			System.out.println("Registro de la conexión realizado anteriormente.");
 		}
 		try{
-			Conectable stub = (Conectable) UnicastRemoteObject.exportObject(this, PUERTO_CONEXION); // Es exportado el objeto instancia de Conexion.
-			Registry registry = LocateRegistry.getRegistry(PUERTO_CONEXION); // Es tomado el registro recientemente ligado al puerto PUERTO_CONEXION.
+			Conectable stub = (Conectable) UnicastRemoteObject.exportObject(this, PUERTO); // Es exportado el objeto instancia de Conexion.
+			Registry registry = LocateRegistry.getRegistry(PUERTO); // Es tomado el registro recientemente ligado al puerto PUERTO.
 			registry.rebind("Clave conexion", stub); // El ligado el stub al registro.
 			System.out.println("Servidor de conexion listo.");
 		}catch(Exception e){
@@ -75,7 +74,7 @@ public class Conexion extends Thread implements Conectable{
 	}
 	
 	public void conectar() throws Exception{
-		Registry registry = LocateRegistry.getRegistry(iPOponente, PUERTO_CONEXION);
+		Registry registry = LocateRegistry.getRegistry(iPOponente, PUERTO);
 		this.conexionRemoto = (Conectable) registry.lookup("Clave conexion");
 		System.out.println("Conexión exitosa.");
 		conexionLista = true;	
@@ -86,16 +85,16 @@ public class Conexion extends Thread implements Conectable{
 	}
 	
 	// Método que pone la ventana de selección de circuitos de este host a disposición del host oponente.
-	public void bindearMiVentana(Escenografia ventana){
+	public void bindearMiVentana(PrePartida1 ventana){
 		
 		try{
-			LocateRegistry.createRegistry(PUERTO_VENTANA); // Es tomado el puerto PUERTO_VENTANA y creado un registro asociado sobre él.
+			LocateRegistry.createRegistry(PUERTO); // Es tomado el puerto PUERTO y creado un registro asociado sobre él.
 		}catch(Exception e){
 			System.out.println("Registro de la ventana realizado anteriormente.");
 		}
 		try{
-			presentacion.VentanaControlable stub = (VentanaControlable) UnicastRemoteObject.exportObject(ventana, PUERTO_VENTANA); // Es exportado el objeto instancia de Conexion.
-			Registry registry = LocateRegistry.getRegistry(PUERTO_VENTANA); // Es tomado el registro recientemente ligado al puerto PUERTO_VENTANA.
+			presentacion.VentanaControlable stub = (VentanaControlable) UnicastRemoteObject.exportObject(ventana, PUERTO); // Es exportado el objeto instancia de Conexion.
+			Registry registry = LocateRegistry.getRegistry(PUERTO); // Es tomado el registro recientemente ligado al puerto PUERTO.
 			registry.rebind("Clave ventana", stub); // El ligado el stub al registro.
 			System.out.println("Servidor de ventana de circuito listo.");
 		}catch(Exception e){
@@ -106,7 +105,7 @@ public class Conexion extends Thread implements Conectable{
 
 	// Método que pone la ventana de selección de circuitos remota a disposición de este host.
 	public void ponerADisposicionVentanaRemota() throws Exception{	
-		Registry registry = LocateRegistry.getRegistry(iPOponente,PUERTO_VENTANA);
+		Registry registry = LocateRegistry.getRegistry(iPOponente,PUERTO);
 		this.ventanaRemota = (VentanaControlable) registry.lookup("Clave ventana");    
 		//System.out.println("Conexión de cliente exitosa. Ventana remota a disposición local.");
 		ventanaLista = true;
@@ -164,14 +163,14 @@ public class Conexion extends Thread implements Conectable{
 	// Método que pone a disposición al tanque local oponente, para que sea controlado remotamente.
 	public Tanque bindearTanqueLocalOponente(Tanque tanqueLocalLigadoOponente){	
 		try{
-			LocateRegistry.createRegistry(PUERTO_TANQUES);
+			LocateRegistry.createRegistry(PUERTO);
 		}catch(Exception e){
 			System.out.println("Registro de los tanques realizado anteriormente.");
 		}
 		try{
 			
-			Controlable stub = (Controlable) UnicastRemoteObject.exportObject(tanqueLocalLigadoOponente, PUERTO_TANQUES/*tanqueLocalLigadoOponente.getID()*/);		
-			Registry registry = LocateRegistry.getRegistry(PUERTO_TANQUES);
+			Controlable stub = (Controlable) UnicastRemoteObject.exportObject(tanqueLocalLigadoOponente, PUERTO);		
+			Registry registry = LocateRegistry.getRegistry(PUERTO);
 			registry.rebind("Clave tanques", stub);
 			System.out.println("Servidor de tanque local listo.");
 			return tanqueLocalLigadoOponente;
@@ -187,7 +186,7 @@ public class Conexion extends Thread implements Conectable{
 	
 	public void ponerADisposicionTanqueRemoto() throws Exception{
 		//System.out.println("Conexión llamando a TankRMI en el otro host (IP:" + iPOponente + "): esperando respuesta...");
-		Registry registry = LocateRegistry.getRegistry(iPOponente, PUERTO_TANQUES); // *****
+		Registry registry = LocateRegistry.getRegistry(iPOponente, PUERTO);
 		Controlable retorno = (Controlable) registry.lookup("Clave tanques");
 		System.out.println("Conexión de cliente exitosa. Tanque a disposición.");
 		this.tanqueListo = true;
@@ -238,7 +237,7 @@ public class Conexion extends Thread implements Conectable{
 	// Método que pone a disposición las bolas locales, para que sean controladas remotamente.
 	public void bindearBolasLocales(){	
 		try{
-			LocateRegistry.createRegistry(PUERTO_BOLAS);
+			LocateRegistry.createRegistry(PUERTO);
 		}catch(Exception e){
 			System.out.println("Registro de las bolas realizado anteriormente.");
 		}
@@ -246,13 +245,13 @@ public class Conexion extends Thread implements Conectable{
 			Registry registry;
 			BolaControlable stub;
 			
-			stub = (BolaControlable) UnicastRemoteObject.exportObject(this.bolaBuenaLocal, PUERTO_BOLAS);
-			registry = LocateRegistry.getRegistry(PUERTO_BOLAS);
+			stub = (BolaControlable) UnicastRemoteObject.exportObject(this.bolaBuenaLocal, PUERTO);
+			registry = LocateRegistry.getRegistry(PUERTO);
 			registry.rebind("Clave bolaBuena", stub);
 			
 			
-			stub = (BolaControlable) UnicastRemoteObject.exportObject(this.bolaMalaLocal, PUERTO_BOLAS);		
-			registry = LocateRegistry.getRegistry(PUERTO_BOLAS);
+			stub = (BolaControlable) UnicastRemoteObject.exportObject(this.bolaMalaLocal, PUERTO);		
+			registry = LocateRegistry.getRegistry(PUERTO);
 			registry.rebind("Clave bolaMala", stub);
 			
 			System.out.println("Servidor de bolas locales listo.");
@@ -268,7 +267,7 @@ public class Conexion extends Thread implements Conectable{
 	// Es privado, sólo utilizado por el método establecerComunicacionBolasRemotas().
 	public void ponerADisposicionBolasRemotas() throws Exception{
 		//System.out.println("Conexión llamando a TankRMI en el otro host (IP:" + iPOponente + "): esperando respuesta...");
-		Registry registry = LocateRegistry.getRegistry(iPOponente, PUERTO_BOLAS); // *****
+		Registry registry = LocateRegistry.getRegistry(iPOponente, PUERTO);
 		this.bolaBuenaAControlar = (BolaControlable) registry.lookup("Clave bolaBuena");
 		this.bolaMalaAControlar = (BolaControlable) registry.lookup("Clave bolaMala");
 		System.out.println("Conexión de cliente exitosa. Tanque a disposición.");
@@ -318,6 +317,101 @@ public class Conexion extends Thread implements Conectable{
 			}
 		};
 	}	
+	
+	
+	
+	
+	
+	
+	
+	
+	/////////CIRCUITO///////
+	// Método que pone a disposición al circuito local, para que sea controlado remotamente.
+	public void bindearCircuitoLocal(Circuito circuitoLocal){	
+		try{
+			LocateRegistry.createRegistry(PUERTO);
+		}catch(Exception e){
+			System.out.println("Registro de los tanques realizado anteriormente.");
+		}
+		try{
+			
+			CircuitoControlable stub = (CircuitoControlable) UnicastRemoteObject.exportObject(circuitoLocal, PUERTO);		
+			Registry registry = LocateRegistry.getRegistry(PUERTO);
+			registry.rebind("Clave circuito", stub);
+			System.out.println("Servidor de circuito local listo.");
+			
+		}catch(Exception e){
+			System.err.println("Excepción de servidor de circuito local: " + e.toString());
+			e.printStackTrace();
+		}
+	}
+	
+	// Método que establece la comunicación con el circuito remoto.
+	// Pone al circuito remoto a disposición del host local, para su control.
+	public void ponerADisposicionCircuitoRemoto() throws Exception{
+		
+		Registry registry = LocateRegistry.getRegistry(iPOponente, PUERTO);
+		CircuitoControlable retorno = (CircuitoControlable) registry.lookup("Clave circiuto");
+		System.out.println("Conexión de circuito exitosa. Circuito remoto a disposición.");
+		this.circuitoListo = true;
+		this.circuitoRemotoAControlar = retorno;
+	}
+	
+	public boolean circuitoListo(){
+		return circuitoListo;
+	}
+	
+	// Método utilizado por el hilo de conexión para lograr el control del tanque propio remoto.
+	public void manejarCircuitoRemoto(){
+		try {
+			tanqueRemotoAControlar.setTodo(tanquePropio.getX(), tanquePropio.getY(), tanquePropio.getDireccion(), tanquePropio.getMovimientoTrama(), tanquePropio.getChoqueTrama());
+		} catch (RemoteException ex) {
+			System.out.println("Error en el manejo del tanque remoto, clase Conexion. El oponente ha finalizado la sesión.");
+			Logger.getLogger(Conexion.class.getName()).log(Level.SEVERE, null, ex);
+
+			JOptionPane.showMessageDialog(null, "El oponente abandono conexión");
+			System.exit(0);
+
+		}
+	}
+	
+	public void setCircuitoPropio(Circuito circuitoPropio){
+		this.circuitoPropio = circuitoPropio;
+	}
+	
+	public Runnable getHiloManejadorDeCircuitoRemoto(){
+		correrHilos = true;
+		return new Runnable(){
+			public void run() {
+				while(correrHilos){
+					try{
+						manejarCircuitoRemoto();
+						Thread.sleep(Finals.PERIODO);
+					}catch(InterruptedException ex){
+						Logger.getLogger(Conexion.class.getName()).log(Level.SEVERE, null, ex);
+					}
+				}
+			}
+		};
+	}
+
+	
+	/////////CIRCIUTO///////
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	public void setClaveOponente(double clave) throws RemoteException {
 		claveOponente = clave;

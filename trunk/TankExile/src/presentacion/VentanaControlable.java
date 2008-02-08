@@ -14,4 +14,5 @@ import java.rmi.RemoteException;
  */
 public interface VentanaControlable extends Remote {
 	public void metodoDeControl() throws RemoteException;
+	public void setSeleccionHabilitada(boolean habilitada) throws RemoteException;
 }

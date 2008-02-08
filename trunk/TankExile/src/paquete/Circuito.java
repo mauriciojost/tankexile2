@@ -3,8 +3,9 @@ import java.awt.Graphics2D;
 import java.io.IOException;
 
 // Clase que contiene en sí la información sobre los elementos que componen el circuito de juego.
+import java.rmi.RemoteException;
 import javax.swing.JOptionPane;
-public class Circuito {
+public class Circuito implements CircuitoControlable {
 	private CargadorCircuitoTXT cargadorTXT; // Permite la conversión del archivo txt a circuito.
 	private Bloque matrizDeBloques[][] = new Bloque [Finals.BLOQUES_NUM][Finals.BLOQUES_NUM]; // Matriz que contiene los elementos Bloque que son mapeados en la pantalla.
 	private Meta metas[] = new Meta[2];
@@ -158,5 +159,9 @@ public class Circuito {
 	// Método que asocia la matriz con un bloque.
 	private void setBloqueEnMatriz(int bloqueX, int bloqueY, Bloque bloque){
 		matrizDeBloques[Math.abs(bloqueX%matrizDeBloques.length)][Math.abs(bloqueY%matrizDeBloques.length)] = bloque;
+	}
+
+	public void setTodo(int x, int y, int direccion, int movimientoDeTrama, int tramaChoque) throws RemoteException {
+		
 	}
 }	

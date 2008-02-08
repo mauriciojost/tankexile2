@@ -16,6 +16,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 // Clase que contiene en sí el hilo principal del juego. Genera el circuito y los tanques, los hace actuar, y se encarga de pintarlos.
+import javax.swing.plaf.BorderUIResource;
 public class Partida extends Canvas implements Finals, Runnable{
     private BufferStrategy estrategia; // Atributo que permite establecer el Doble Buffering para pintar la pantalla.
     private Circuito circuito; // Circuito a ser creado para correr la partida.
@@ -44,15 +45,14 @@ public class Partida extends Canvas implements Finals, Runnable{
 		instanciaPartida = this;
 	JFrame ventana = new JFrame("TankExile"); // Armado de la ventana.
 	JPanel panel = (JPanel)ventana.getContentPane(); // Obtención de su JPanel.
-	this.setBounds(0,0,Finals.ANCHO_VENTANA,Finals.ALTO_VENTANA); // Establecimiento de las dimensiones de este objeto Partida.
-
-
-	//panel.setBounds(0, 0, Finals.ANCHO_VENTANA,Finals.ALTO_VENTANA);
+	//this.setBounds(0,0,Finals.ANCHO_VENTANA,Finals.ALTO_VENTANA); // Establecimiento de las dimensiones de este objeto Partida.
+	ventana.setLayout(new GridLayout());
+	panel.setBounds(0, 0, Finals.ANCHO_VENTANA,Finals.ALTO_VENTANA);
 	panel.setPreferredSize(new Dimension(Finals.ANCHO_VENTANA,Finals.ALTO_VENTANA)); // Establecimiento de las dimensiones del panel.
 	panel.setLayout(new GridLayout());
 	panel.add(this); // El panel pintará este canvas (definido por esta instancia de Partida).
 
-	ventana.setBounds(0,0,Finals.ANCHO_VENTANA+3,Finals.ALTO_VENTANA); // Establecimiento de las dimensiones de la ventana.
+	ventana.setBounds(0,0,Finals.ANCHO_VENTANA+6,Finals.ALTO_VENTANA+50); // Establecimiento de las dimensiones de la ventana.
 	ventana.setVisible(true); // Ventana visible.
 
 

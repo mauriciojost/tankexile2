@@ -3,21 +3,19 @@ package paquete;
 
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 
 public class Bola extends Thread implements BolaControlable{
-	private int vx = 1;
-	private int vy = 1;
-	private BufferedImage imagen[] = new BufferedImage[2];
-	protected int x,y;
-	protected int width = 20, heigth = 20;
+	private static BufferedImage imagen[] = new BufferedImage[2];
+	private int x,y;
+	private final int largo = 20;
 	private boolean correrHilos;
 	private boolean buena;
-	
+	private int vx = 2;
+	private int vy = 2;
 
 	private int currentFrame;
 	public Bola(boolean buena) {
@@ -26,8 +24,8 @@ public class Bola extends Thread implements BolaControlable{
 			x = x + 20;
 		currentFrame = (buena?0:1);
 		try {
-			imagen[0] = ImageIO.read(getClass().getClassLoader().getResource("res/bolaBuena.gif"));
-			imagen[1] = ImageIO.read(getClass().getClassLoader().getResource("res/bolaMala.gif"));
+			if (imagen[0]== null) imagen[0] = ImageIO.read(getClass().getClassLoader().getResource("res/bolaBuena.gif"));
+			if (imagen[1]== null) imagen[1] = ImageIO.read(getClass().getClassLoader().getResource("res/bolaMala.gif"));
 		} catch (Exception e) {
 			System.out.println("Error: no se ha podido realizar la carga de imágenes de la clase Bola, "+e.getClass().getName()+" "+e.getMessage());
 			System.exit(0);
@@ -52,7 +50,7 @@ public class Bola extends Thread implements BolaControlable{
 		while(correrHilos){
 			actuar();
 			try {
-				this.sleep(Finals.PERIODO);
+				this.sleep(Finals.PERIODO*2);
 			} catch (InterruptedException ex) {
 				Logger.getLogger(Bola.class.getName()).log(Level.SEVERE, null, ex);
 			}
@@ -63,10 +61,9 @@ public class Bola extends Thread implements BolaControlable{
 		x+=vx;
 		y+=vy;
 		
-					
-		if (x < 0 || x > Finals.ANCHO_VENTANA-width)
+		if (x < 0 || x > Finals.ANCHO_VENTANA-this.largo)
 		  vx = -vx;
-		if (y < 0 || y > Finals.ALTO_VENTANA-heigth)
+		if (y < 0 || y > Finals.ALTO_VENTANA-this.largo)
 		  vy = -vy;
 	}
 
