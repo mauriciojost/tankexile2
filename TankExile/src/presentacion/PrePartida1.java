@@ -1,14 +1,6 @@
-
 package presentacion;
 
-
-import java.awt.BorderLayout;
-
 import java.awt.event.MouseEvent;
-
-import java.lang.reflect.InvocationTargetException;
-
-
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import paquete.*;
@@ -19,13 +11,9 @@ import java.awt.GridLayout;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-
 import java.io.File;
-import java.lang.reflect.Method;
-
-
+import java.io.IOException;
 import javax.swing.ImageIcon;
-
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -33,6 +21,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 public class PrePartida1 extends JFrame implements MouseListener{
+	private final String NOMBRE_CIRCUITO_TEMPORAL = "temporal.tmp";
 	private Presentacion1 presentacion1;
 
 
@@ -102,31 +91,8 @@ public class PrePartida1 extends JFrame implements MouseListener{
 		setVisible(true);
 		
 		this.prepartida1=this;
-		System.out.println(" PASE POR CONSTRUCTOR DE PRE PARTIDA");
 		this.conexion = conexion;
 		
-		//Mauricio
-		//conexion.bindearMisArchivos();
-		/*
-		do{
-			try{
-				conexion.ponerADisposicionArchivosRemotos();
-			}catch(Exception e){
-				System.out.println("Intento fallido para obtener archivos remotos. Intentando de nuevo...");
-				try {Thread.sleep(Finals.ESPERA_CONEXION);} catch (InterruptedException ex) {Logger.getLogger(Partida.class.getName()).log(Level.SEVERE, null, ex);}
-			}
-		}while(!conexion.archivosListo());
-		 */
-		/*
-		try {
-			conexion.copiarDeHostRemoto("circuiton.txt", "copio.txt");
-			conexion.enviarAHostRemoto("circuiton.txt", "copio.txt");
-		} catch (IOException ex) {
-			System.err.println("Error al intentar copiar en el método de Conexion copiarDeHostRemoto.");
-			Logger.getLogger(Partida.class.getName()).log(Level.SEVERE, null, ex);
-		}
-		*/
-		//Mauricio
 	}
 	
 
@@ -150,7 +116,7 @@ public class PrePartida1 extends JFrame implements MouseListener{
 
 	// Metodo que responde al evento sobre el boton Jugar.
 	public void responderInicio() {
-        //coneccionOponente es un campo q indica si el oponente ya presiono en jugar(true) o todavia no(false)
+		//coneccionOponente es un campo q indica si el oponente ya presiono en jugar(true) o todavia no(false)
        //en cada caso respectivamente comenzara el juego o se mantendra esperando el inicio en un Frame    
         if (!b_inicio.isEnabled()) return;
            
@@ -159,8 +125,7 @@ public class PrePartida1 extends JFrame implements MouseListener{
         
         try{
 			this.dispose();
-             
-                
+                             
 			ventanaEspera.setBounds(100,50,Finals.ANCHO_VENTANA-250,Finals.ALTO_VENTANA-370);
 			setResizable(false); // No se permite dar nuevo tamaño a la ventana.
 		
@@ -186,50 +151,33 @@ public class PrePartida1 extends JFrame implements MouseListener{
                 
             //ventanaEspera.setVisible(true);
 		}catch (Exception ex){ex.printStackTrace();}
-         
-        /*while(!Oponente.coneccionOponente){
-            
-                                                          } */
-
+		
         try {
-			
-
-			//Conexion conexion = new Conexion("0.0.0.0");
-			/*do{
-				conexion.conectar();
-			}while(!conexion.conexionLista());
-			conexion.start();*/
-			//conexion.bindearMisArchivos();
-			/*
-			do{
-			try{
-			conexion.ponerADisposicionArchivosRemotos();
-			}catch(Exception e){
-			System.out.println("Intento fallido para obtener archivos remotos. Intentando de nuevo...");
-			try {Thread.sleep(1000);} catch (InterruptedException ex) {Logger.getLogger(Partida.class.getName()).log(Level.SEVERE, null, ex);}
-			}
-			}while(!conexion.archivosListo());
-			 */
-			/*
-			try {
-			conexion.copiarDeHostRemoto("circuiton.txt", "copio.txt");
-			conexion.enviarAHostRemoto("circuiton.txt", "copio.txt");
-			} catch (IOException ex) {
-			System.err.println("Error al intentar copiar en el método de Conexion copiarDeHostRemoto.");
-			Logger.getLogger(Partida.class.getName()).log(Level.SEVERE, null, ex);
-			}
-			*/
 			new Partida(this.circuitoSeleccionado.getPath(), conexion, this);
 			ventanaEspera.dispose();
-			
 		} catch (Exception ex) {
 			Logger.getLogger(PrePartida1.class.getName()).log(Level.SEVERE, null, ex);
 		}
 	}
         
-	public void setCircuitoSeleccionado(File circuitoSeleccionado){
-		this.circuitoSeleccionado = circuitoSeleccionado;
+	public void setCircuitoSeleccionado(File circuitoSeleccionado, boolean propio){
+		
+		try {
+			if (propio) {
+				conexion.enviarAHostRemoto(circuitoSeleccionado.getPath(), NOMBRE_CIRCUITO_TEMPORAL);
+			} else {
+				conexion.copiarDeHostRemoto(circuitoSeleccionado.getPath(), NOMBRE_CIRCUITO_TEMPORAL);
+			}
+		} catch (IOException ex) {
+			System.err.println("Error al intentar copiar en el método de Conexion copiarDeHostRemoto.");
+			Logger.getLogger(Partida.class.getName()).log(Level.SEVERE, null, ex);
+		}	
+			
 		b_inicio.setEnabled(true);
+		
+		
+		this.circuitoSeleccionado = new File(NOMBRE_CIRCUITO_TEMPORAL);	
+
 	}
     // Método que responde al evento sobre el boton Elegir Circuito.
 	public void responderElegir() {

@@ -15,7 +15,7 @@ public class Bola extends Thread implements BolaControlable{
 	private BufferedImage imagen[] = new BufferedImage[2];
 	protected int x,y;
 	protected int width = 20, heigth = 20;
-	
+	private boolean correrHilos;
 	private boolean buena;
 	
 
@@ -32,6 +32,7 @@ public class Bola extends Thread implements BolaControlable{
 			System.out.println("Error: no se ha podido realizar la carga de imágenes de la clase Bola, "+e.getClass().getName()+" "+e.getMessage());
 			System.exit(0);
 		}
+		correrHilos = true;
 	}
 
 	public void pintar(Graphics2D g){
@@ -43,8 +44,12 @@ public class Bola extends Thread implements BolaControlable{
 	public void setX (int i) { x = i; }
 	public void setY (int i) { y = i; }
 	
+	public void stopHilo(){
+		correrHilos = false;
+	}
+	
 	public void run(){
-		while(true){
+		while(correrHilos){
 			actuar();
 			try {
 				this.sleep(Finals.PERIODO);

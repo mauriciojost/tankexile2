@@ -14,8 +14,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 // Clase cuya función es establecer la comunicación entre los dos hosts.
+
+
+
 import javax.swing.JOptionPane;
-public class Conexion extends Thread implements Legible, Conectable{
+public class Conexion extends Thread implements Conectable{
+
 	private Conectable conexionRemoto;
 	private Tanque tanquePropio; // Tanque correspondiente al host propio (o no-remoto).
 	private Controlable tanqueRemotoAControlar; // Interfaz con la que se controla el tanque propio remoto (en el host oponente).
@@ -23,15 +27,12 @@ public class Conexion extends Thread implements Legible, Conectable{
 	private BolaControlable bolaMalaAControlar;
 	private Bola bolaBuenaLocal;
 	private Bola bolaMalaLocal;
-	private Legible archivosRemotos; // Interfaz con la que se realiza la lectura de los archivos remotos.
 	private VentanaControlable ventanaRemota; // Interfaz con la que se hace la manipulación de la ventana remota de selección de circuitos.
 	private String iPOponente; // Ip del host oponente.
 	private final int PUERTO_VENTANA = 4049; // Puerto al que se asocia el registro de la ventana de selección de circuitos.
-	private final int PUERTO_ARCHIVOS = 4049; // Puerto al que se asocia el registro de archivos de circuitos.
 	private final int PUERTO_TANQUES = 4049; // Puerto al que se asocia el registro de tanques.
 	private final int PUERTO_CONEXION = 4049; // Puerto al que se asocia el registro de la instancia de Conexion.
 	private final int PUERTO_BOLAS = 4049; // Puerto al que se asocia el registro de bolas.
-	private boolean archivosListo = false; // Indicador de la disponibilidad o no de los archivos remotos para el host local.
 	private boolean tanqueListo = false; // Indicador de la disponibilidad o no del tanque remoto para el host local.
 	private boolean ventanaLista = false; // Indicador de la disponibilidad o no de la ventana (de selección de circuito) remota para el host local.
 	private boolean conexionLista = false; //Indicador de la conexión con el host remoto.
@@ -42,6 +43,7 @@ public class Conexion extends Thread implements Legible, Conectable{
 	private boolean claveOponenteRecibida = false; // Indicador de la llegada de la clave del oponente.
 	private boolean miTurno = false; // Indicador de turno de este host.
 	private int miID = 0;
+	private boolean correrHilos = true;
 	
 	
 	/* Formato de presentación:
@@ -82,6 +84,7 @@ public class Conexion extends Thread implements Legible, Conectable{
 	public boolean conexionLista(){
 		return conexionLista;
 	}
+	
 	// Método que pone la ventana de selección de circuitos de este host a disposición del host oponente.
 	public void bindearMiVentana(Escenografia ventana){
 		
@@ -113,42 +116,11 @@ public class Conexion extends Thread implements Legible, Conectable{
 		return ventanaLista;
 	}
 	
-	// Método que pone los circuitos de este host a disposición del host oponente.
-	public void bindearMisArchivos(){
-		try{
-			LocateRegistry.createRegistry(PUERTO_ARCHIVOS); // Es tomado el puerto PUERTO_ARCHIVOS y creado un registro asociado sobre él.
-		}catch(Exception e){
-			System.out.println("Registro de los archivos realizado anteriormente.");
-		}		
-		try{	
-			Legible stub = (Legible) UnicastRemoteObject.exportObject(this, 0); // Es exportado el objeto instancia de Conexion.
-			Registry registry = LocateRegistry.getRegistry(PUERTO_ARCHIVOS); // Es tomado el registro recientemente ligado al puerto PUERTO_ARCHIVOS.
-			registry.rebind("Clave archivos", stub); // El ligado el stub al registro.
-			System.out.println("Servidor de archivos de circuito listo.");
-		}catch(Exception e){
-			System.err.println("Excepción de servidor de archivos de circuito: " + e.toString());
-			e.printStackTrace();
-			
-		}
-	}
-
-	// Método que pone los circuitos remotos a disposición de este host. Luego de este método, es posible realizar la copia de los archivos remotos al host local.
-	public void ponerADisposicionArchivosRemotos() throws Exception{	
-		Registry registry = LocateRegistry.getRegistry(iPOponente,PUERTO_ARCHIVOS);
-		archivosRemotos = (Legible) registry.lookup("Clave archivos");    
-		System.out.println("Conexión de cliente exitosa. Archivos remotos a disposición local.");
-		archivosListo = true;
-	}
-	
-	public boolean archivosListo(){
-		return archivosListo;
-	}
-	
 	// Método que permite la copia de archivos. No se espera su uso por parte dle programador.
 	// Ver copiarDeHostRemoto().
 	public String leer(String archivo){
 		try{
-			System.out.println("Archivo siendo leido remotamente: "+archivo);
+			System.out.println("Archivo siendo leido remotamente: " + archivo);
 			File textFileALeer = new File(archivo);
 			FileReader textIn = new FileReader(textFileALeer);
 			char bufferCadena[] = new char[1000];
@@ -171,7 +143,7 @@ public class Conexion extends Thread implements Legible, Conectable{
 	// Se requiere para su uso haber ejecutado previamente bindearMisArchivos() remotamente.
 	// Además se requiere luego de ello haber ejecutado ponerADisposicionArchivosRemotos().
 	public void enviarAHostRemoto(String archivoOrigenLocal, String archivoDestinoRemoto) throws IOException {
-		archivosRemotos.copiarDeHostRemoto(archivoOrigenLocal,archivoDestinoRemoto);
+		conexionRemoto.copiarDeHostRemoto(archivoOrigenLocal,archivoDestinoRemoto);
 	}
 	
 	// Método que realiza la copia de un archivo remoto al host actual.
@@ -180,7 +152,7 @@ public class Conexion extends Thread implements Legible, Conectable{
 	public void copiarDeHostRemoto(String archivoOrigenRemoto, String archivoDestinoLocal) throws IOException {
 		File textFileAEscribir = new File(archivoDestinoLocal);
 		FileWriter out = new FileWriter(textFileAEscribir);
-		String cadena = archivosRemotos.leer(archivoOrigenRemoto);
+		String cadena = conexionRemoto.leer(archivoOrigenRemoto);
 		if (cadena != null){
 			out.write(cadena);
 		}else{
@@ -198,7 +170,7 @@ public class Conexion extends Thread implements Legible, Conectable{
 		}
 		try{
 			
-			Controlable stub = (Controlable) UnicastRemoteObject.exportObject(tanqueLocalLigadoOponente, tanqueLocalLigadoOponente.getID());		
+			Controlable stub = (Controlable) UnicastRemoteObject.exportObject(tanqueLocalLigadoOponente, PUERTO_TANQUES/*tanqueLocalLigadoOponente.getID()*/);		
 			Registry registry = LocateRegistry.getRegistry(PUERTO_TANQUES);
 			registry.rebind("Clave tanques", stub);
 			System.out.println("Servidor de tanque local listo.");
@@ -233,8 +205,10 @@ public class Conexion extends Thread implements Legible, Conectable{
 		} catch (RemoteException ex) {
 			System.out.println("Error en el manejo del tanque remoto, clase Conexion. El oponente ha finalizado la sesión.");
 			Logger.getLogger(Conexion.class.getName()).log(Level.SEVERE, null, ex);
+
 			JOptionPane.showMessageDialog(null, "El oponente abandono conexión");
 			System.exit(0);
+
 		}
 	}
 	
@@ -243,9 +217,10 @@ public class Conexion extends Thread implements Legible, Conectable{
 	}
 	
 	public Runnable getHiloManejadorDeTanqueRemoto(){
+		correrHilos = true;
 		return new Runnable(){
 			public void run() {
-				while(true){
+				while(correrHilos){
 					try{
 						manejarTanqueRemoto();
 						Thread.sleep(Finals.PERIODO);
@@ -256,6 +231,9 @@ public class Conexion extends Thread implements Legible, Conectable{
 			}
 		};
 	}
+	
+	
+	
 	
 	// Método que pone a disposición las bolas locales, para que sean controladas remotamente.
 	public void bindearBolasLocales(){	
@@ -317,13 +295,19 @@ public class Conexion extends Thread implements Legible, Conectable{
 			Logger.getLogger(Conexion.class.getName()).log(Level.SEVERE, null, ex);
 			JOptionPane.showMessageDialog(null, "El oponente abandono conexión");
 			System.exit(0);
+
 		}
 	}
 	
+	public void stopHilos(){
+		correrHilos = false;
+	}
+	
 	public Runnable getHiloManejadorDeBolas(){
+		correrHilos = true;
 		return new Runnable(){
 			public void run() {
-				while(true){
+				while(correrHilos){
 					try{
 						manejarBolasRemotas();
 						Thread.sleep(Finals.PERIODO);
@@ -355,7 +339,6 @@ public class Conexion extends Thread implements Legible, Conectable{
 			miTurno = true;
 			miID = 1;
 		}
-		
 		while(true){
 				if (miTurno){
 					try{this.sleep(Finals.PERIODO_DE_TURNO);}catch(InterruptedException e){e.printStackTrace();}		
