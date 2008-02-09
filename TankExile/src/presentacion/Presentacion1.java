@@ -30,9 +30,11 @@ public class Presentacion1 extends JFrame implements MouseListener {
 	private JTextField estado;
 	private Conexion conexion;
 	private JButton bConectar;
+	private JButton bSalida;
+	private VentanaControlable ventanaRemota;
 	
 	// Constructor de la clase.
-	public Presentacion1(int x, int y){
+	private Presentacion1(int x, int y){
 		super("TankExile - Presentación");
 		setBounds(x,y, Finals.ANCHO_VENTANA-250, Finals.ALTO_VENTANA-450); // Reajusta tamaño de la ventana, sin modificar su posición.
 		setResizable(false); // Impide modificar tamaño de la ventana.
@@ -57,7 +59,7 @@ public class Presentacion1 extends JFrame implements MouseListener {
 		setVisible(true); // Se hace visible la ventana.
 
 		try {
-			Thread.sleep(500);
+			Thread.sleep(1000);
 		} catch (InterruptedException ex) {
 			Logger.getLogger(Presentacion1.class.getName()).log(Level.SEVERE, null, ex);
 		}
@@ -105,7 +107,7 @@ public class Presentacion1 extends JFrame implements MouseListener {
 		
 		JPanel panel_botones = creador.crearPanel(new Dimension(Finals.ANCHO_VENTANA-250,(Finals.ALTO_VENTANA-500)/3), new FlowLayout(FlowLayout.TRAILING));
 		panel_botones.add(this.bConectar = creador.crearBoton("Conectar", "Intenta conexion con IP ingresado", this));
-		panel_botones.add(creador.crearBoton("Salida", "Cerrar", this));
+		panel_botones.add(this.bSalida = creador.crearBoton("Salida", "Cerrar", this));
 		
 		
 		estado = new JTextField(" ");
@@ -122,6 +124,7 @@ public class Presentacion1 extends JFrame implements MouseListener {
 		this.area_ip.setText(ip_propio.getText().substring(0,ip_propio.getText().lastIndexOf('.')+1));
 		this.area_ip.requestFocus();
 		this.area_ip.selectAll();
+		
 	}
 	
 	public void setEstado(String estado){
@@ -141,9 +144,10 @@ public class Presentacion1 extends JFrame implements MouseListener {
 			public void run(){
 				bConectar.setEnabled(false);
 				area_ip.setEnabled(false);
-				int intentos = Finals.CANTIDAD_DE_INTENTOS_DE_CONEXION;
-				do{
-					String mensaje = "Intentando establecer conexión (intento "+(Finals.CANTIDAD_DE_INTENTOS_DE_CONEXION-intentos+1)+"/"+Finals.CANTIDAD_DE_INTENTOS_DE_CONEXION+")...";
+				int intentos;
+				for (intentos = 0; intentos<Finals.CANTIDAD_DE_INTENTOS_DE_CONEXION;intentos++){
+				
+					String mensaje = "Intentando establecer conexión (intento "+(intentos+1)+"/"+Finals.CANTIDAD_DE_INTENTOS_DE_CONEXION+")...";
 					System.out.println(mensaje);
 					setEstado(mensaje); 
 					try{
@@ -153,22 +157,40 @@ public class Presentacion1 extends JFrame implements MouseListener {
 						//ex.printStackTrace();
 						try{Thread.sleep(Finals.ESPERA_CONEXION);}catch(InterruptedException r){}
 					}
-				}while(!conexion.conexionLista() && ((--intentos)>0));
-		
-				if (intentos==0){
-					JOptionPane.showMessageDialog(null, "No se ha podido establecer la comunicación con el host remoto.");
-					setEstado("Comunicación no establecida."); 
-				}else{
-					dispose();
-					conexion.start();
-					prePartida = new PrePartida1(presentacion1, conexion);
-					prePartida.setEstado("Estado: Conexion establecida exitosamente");
+					if (conexion.conexionLista()) break;
 				}
+				if (intentos==Finals.CANTIDAD_DE_INTENTOS_DE_CONEXION){
+					JOptionPane.showMessageDialog(null, "No se ha podido establecer la conexión con el host remoto.");
+					setEstado("Conexión no establecida.");
+					area_ip.setEnabled(true);
+					bConectar.setEnabled(true);
+					return;
+				}
+				conexion.establecerIDs();
+				dispose();
+				
+				prePartida = PrePartida1.getPrePartida(presentacion1, conexion);
+				prePartida.setEstado("Conexión establecida con éxito.");
+				conexion.bindearMiVentana(prePartida);
+				System.out.println("Servidor de ventana listo.");
+				
+				do{
+					try{
+						ventanaRemota = conexion.ponerADisposicionVentanaRemota();
+					}catch(Exception ex){
+						System.out.println("Fallo en el intento de conexión con la ventana remota. Intentando conexión nuevamente...");
+						try{Thread.sleep(Finals.ESPERA_CONEXION);}catch(InterruptedException r){}
+					}
+				}while(!conexion.ventanaLista());
+				System.out.println("Ventana remota a disposición.");
+				prePartida.setVentanaRemota(ventanaRemota);
+				
 				area_ip.setEnabled(true);
 				bConectar.setEnabled(true);
 			}
 		};
 		(new Thread(hilito)).start();
+		
 	}
 	
 	public void responderSalida(){

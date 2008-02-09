@@ -5,10 +5,12 @@ import java.io.IOException;
 // Clase que contiene en sí la información sobre los elementos que componen el circuito de juego.
 import java.rmi.RemoteException;
 import javax.swing.JOptionPane;
+import presentacion.Conexion;
 public class Circuito implements CircuitoControlable {
 	private CargadorCircuitoTXT cargadorTXT; // Permite la conversión del archivo txt a circuito.
 	private Bloque matrizDeBloques[][] = new Bloque [Finals.BLOQUES_NUM][Finals.BLOQUES_NUM]; // Matriz que contiene los elementos Bloque que son mapeados en la pantalla.
 	private Meta metas[] = new Meta[2];
+	private Conexion conexion;
 	
 	// Constructor de la clase.
 	public Circuito(String nombreCircuitoTXT){
@@ -51,6 +53,9 @@ public class Circuito implements CircuitoControlable {
 		this.setBloqueEnMatriz(i, j, bloque); // Es agregado a la matriz el bloque dado (o nada en caso de ser un null).
 	}
 	
+	public void setConexion(Conexion conexion){
+		this.conexion = conexion;
+	}
 	
 	public void pintar(Graphics2D g){
 		for (int i = 0; i < Finals.BLOQUES_NUM; i++) {
@@ -96,19 +101,23 @@ public class Circuito implements CircuitoControlable {
 		if (hayMuro(bloqueX, bloqueY)){
 			hayChoque=true; // En caso de haber muro solapado en la parte superior izquierda del tanque, hay choque.
 			this.getMuro(bloqueX, bloqueY).deterioro(tanque.getVelocidad()); // Se provoca en el muro indicado un deterioro.
+			conexion.choqueNuevoCircuitoLocal(bloqueX, bloqueY, tanque.getVelocidad());
 		}
 		
 		if (bloqueXrebase && hayMuro(bloqueX+1,bloqueY)){
 			hayChoque = true; // Si hay rebase en X (tanque más a la derecha de un "encaje en bloque horizontal") hay choque.
 			this.getMuro(bloqueX+1, bloqueY).deterioro(tanque.getVelocidad());
+			conexion.choqueNuevoCircuitoLocal(bloqueX+1, bloqueY, tanque.getVelocidad());
 		}
 		if (bloqueYrebase && hayMuro(bloqueX,bloqueY+1)){
 			hayChoque = true; // Si hay un rebase en Y (tanque más abajo de un "encaje en bloque vertical") hay choque.
 			this.getMuro(bloqueX, bloqueY+1).deterioro(tanque.getVelocidad()); // También hay deterioro, pero en este muro.
+			conexion.choqueNuevoCircuitoLocal(bloqueX, bloqueY+1, tanque.getVelocidad());
 		}
 		if (bloqueYrebase && bloqueXrebase && hayMuro(bloqueX+1,bloqueY+1)){
 			hayChoque = true; // Si hay ambos tipos de rebase, y se tiene un muro en el cuadrante inferior derecho al del tanque, hay choque.
 			this.getMuro(bloqueX+1, bloqueY+1).deterioro(tanque.getVelocidad()); // Se deteriora el muro.
+			conexion.choqueNuevoCircuitoLocal(bloqueX+1, bloqueY+1, tanque.getVelocidad());
 		}
 		
 		// Corrección de la posición del tanque involucrado.
@@ -161,7 +170,7 @@ public class Circuito implements CircuitoControlable {
 		matrizDeBloques[Math.abs(bloqueX%matrizDeBloques.length)][Math.abs(bloqueY%matrizDeBloques.length)] = bloque;
 	}
 
-	public void setTodo(int x, int y, int direccion, int movimientoDeTrama, int tramaChoque) throws RemoteException {
-		
+	public void informarChoque(int parametrosDelChoque[]) throws RemoteException {
+		this.getMuro(parametrosDelChoque[0], parametrosDelChoque[1]).deterioro(parametrosDelChoque[2]);
 	}
 }	

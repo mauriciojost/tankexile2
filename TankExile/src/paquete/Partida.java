@@ -35,56 +35,56 @@ public class Partida extends Canvas implements Finals, Runnable{
 	private PrePartida1 prePartida;
 	private Thread hiloTanqueRemoto;
 	private Thread hiloBolasRemotas;
+	private Thread hiloCircuitoRemoto;
 	private boolean correrHilos = true;
 	private static Partida instanciaPartida;
-    //private JFrame ventana;
 
     // Contstructor. Genera los elementos básicos de una aplicación del tipo juego.
     public Partida(String nombreCircuitoTXT, Conexion conexion, PrePartida1 prePartida) {
 		this.prePartida = prePartida;
 		instanciaPartida = this;
-	JFrame ventana = new JFrame("TankExile"); // Armado de la ventana.
-	JPanel panel = (JPanel)ventana.getContentPane(); // Obtención de su JPanel.
-	//this.setBounds(0,0,Finals.ANCHO_VENTANA,Finals.ALTO_VENTANA); // Establecimiento de las dimensiones de este objeto Partida.
-	ventana.setLayout(new GridLayout());
-	panel.setBounds(0, 0, Finals.ANCHO_VENTANA,Finals.ALTO_VENTANA);
-	panel.setPreferredSize(new Dimension(Finals.ANCHO_VENTANA,Finals.ALTO_VENTANA)); // Establecimiento de las dimensiones del panel.
-	panel.setLayout(new GridLayout());
-	panel.add(this); // El panel pintará este canvas (definido por esta instancia de Partida).
+		JFrame ventana = new JFrame("TankExile"); // Armado de la ventana.
+		JPanel panel = (JPanel)ventana.getContentPane(); // Obtención de su JPanel.
+		//this.setBounds(0,0,Finals.ANCHO_VENTANA,Finals.ALTO_VENTANA); // Establecimiento de las dimensiones de este objeto Partida.
+		ventana.setLayout(new GridLayout());
+		panel.setBounds(0, 0, Finals.ANCHO_VENTANA,Finals.ALTO_VENTANA);
+		panel.setPreferredSize(new Dimension(Finals.ANCHO_VENTANA,Finals.ALTO_VENTANA)); // Establecimiento de las dimensiones del panel.
+		panel.setLayout(new GridLayout());
+		panel.add(this); // El panel pintará este canvas (definido por esta instancia de Partida).
 
-	ventana.setBounds(0,0,Finals.ANCHO_VENTANA+6,Finals.ALTO_VENTANA+50); // Establecimiento de las dimensiones de la ventana.
-	ventana.setVisible(true); // Ventana visible.
+		ventana.setBounds(0,0,Finals.ANCHO_VENTANA+6,Finals.ALTO_VENTANA+50); // Establecimiento de las dimensiones de la ventana.
+		ventana.setVisible(true); // Ventana visible.
 
-
-	ventana.addWindowListener(
-	    new WindowAdapter() { // Ventana tiene escucha, una clase anónima, para el cierre.
-			public void windowClosing(WindowEvent e) {
-				finalizar();
+		ventana.addWindowListener(
+			new WindowAdapter() { // Ventana tiene escucha, una clase anónima, para el cierre.
+				public void windowClosing(WindowEvent e) {
+					finalizar();
+				}
 			}
-	    }
-	);
+		);
 
 
-	ventana.setResizable(false); // La ventana no es de tamaño ajustable.
-	this.createBufferStrategy(2); // Es creado sobre este canvas una estrategia de buffering, de dos buffers.
-	estrategia = getBufferStrategy(); // Sobre este objeto se aplicará el método de paint. Este realizará por sí mismo el doble buffering.
-	this.requestFocus(); // El foco es tomado.
+		ventana.setResizable(false); // La ventana no es de tamaño ajustable.
+		this.createBufferStrategy(2); // Es creado sobre este canvas una estrategia de buffering, de dos buffers.
+		estrategia = getBufferStrategy(); // Sobre este objeto se aplicará el método de paint. Este realizará por sí mismo el doble buffering.
+		this.requestFocus(); // El foco es tomado.
 
-	this.conexion = conexion;
-	this.yoID = conexion.getID()%2; // Son asignados los valores de ID e IP del oponente.
-	this.otroID = (conexion.getID()+1)%2;
-	//this.iPOponente = iPOponente;
-	this.nombreCircuitoTXT = nombreCircuitoTXT; // Asignación del nombre del archivo del circuito.
-	this.jugar();
+		this.conexion = conexion;
+		this.yoID = conexion.getID()%2; // Son asignados los valores de ID e IP del oponente.
+		this.otroID = (conexion.getID()+1)%2;
+		//this.iPOponente = iPOponente;
+		this.nombreCircuitoTXT = nombreCircuitoTXT; // Asignación del nombre del archivo del circuito.
+		this.jugar();
     }
     // Método que arranca la escena de la partida. Involucra la inicialización de los elementos principales del juego en sí.
     public void iniciarEscena() {
 		circuito = new Circuito(nombreCircuitoTXT); // Creación del circuito de juego.
+		circuito.setConexion(conexion);
 		tanquePropio = new Tanque(circuito, yoID); // Creación del tanque comandado por el jugador en este host.
 		tanqueLocalLigadoOponente = new Tanque(circuito, otroID); // Creación del tanque que será ligado al registro de RMI para ser comandado por el host remoto.
 		conexion.bindearTanqueLocalOponente(tanqueLocalLigadoOponente); // El tanque anterior es puesto a disposición del host remoto.
 		conexion.setTanquePropio(tanquePropio); // La conexión esta lista para ser establecida, el hilo conexión observará al tanque y con sus parámetros comandará al tanque remoto puesto en el registro de RMI.
-
+		
 		jugador = new Jugador(tanquePropio); // Un jugador es creado para comandar el tanque propio del host.
 		this.addKeyListener(jugador); // El jugador comienza a escuchar el teclado.
 
@@ -126,7 +126,21 @@ public class Partida extends Canvas implements Finals, Runnable{
 			hiloBolasRemotas = new Thread(conexion.getHiloManejadorDeBolas());
 			hiloBolasRemotas.start();
 		}
-		// El hilo conexion arranca a comandar al tanque remoto observando el comportamiento del tanque propio.
+		
+		conexion.setCircuitoPropio(circuito);
+		conexion.bindearCircuitoLocal();
+		
+		do{
+				try{
+					conexion.ponerADisposicionCircuitoRemoto();
+				}catch(Exception e){
+					try { Thread.sleep(Finals.ESPERA_CONEXION); } catch (InterruptedException ex) {Logger.getLogger(Partida.class.getName()).log(Level.SEVERE, null, ex);}
+					System.out.println("Intento fallido por obtener circuito remoto... Reintentando...");
+				}
+		}while(!conexion.circuitoListo());
+		System.out.println("Circuito remoto a disposición.");
+		hiloCircuitoRemoto = new Thread(conexion.getHiloManejadorDeCircuitoRemoto());
+		hiloCircuitoRemoto.start();
     }
 
     // Método que llama a la actuación de cada tanque.
@@ -165,7 +179,6 @@ public class Partida extends Canvas implements Finals, Runnable{
 	}
 	
     public void run() {
-		
 		while(correrHilos){
 			actualizarEscena();
 			pintarEscena();
@@ -173,23 +186,24 @@ public class Partida extends Canvas implements Finals, Runnable{
 				Thread.sleep(Finals.PERIODO);
 			}catch(InterruptedException e){e.printStackTrace();}
 		}
-		conexion.stopHilos();
 		
-		this.bolaBuena.stopHilo();
-		this.bolaMala.stopHilo();
     }
 	public static Partida getPartida(){
 		return instanciaPartida;
 	}
 	public void finalizar(){
-		try {
-			
+		try {		
 			this.getPrePartida().setVisible(true);
 			this.stopHilos();
+			conexion.stopHilos();
+			this.bolaBuena.stopHilo();
+			this.bolaMala.stopHilo();
 			this.finalize();
 			this.circuito = null;
+			
 		} catch (Throwable ex) {
 			Logger.getLogger(Partida.class.getName()).log(Level.SEVERE, null, ex);
 		}
+		
 	}
 }
