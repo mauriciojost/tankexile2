@@ -6,7 +6,6 @@ import java.rmi.RemoteException;
 public interface CircuitoControlable extends Remote {
 	
 	
-	public void setTodo(int x, int y, int direccion, int movimientoDeTrama, int tramaChoque)throws RemoteException;
-	
+	public void informarChoque(int[] parametrosDelChoque) throws RemoteException;
 	
 }
