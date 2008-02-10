@@ -127,7 +127,7 @@ public class Presentacion1 extends JFrame implements MouseListener {
 		this.estado.setText(estado);
 	}
 
-	public static Presentacion1 getPresentacion1() {
+	public static Presentacion1 getPresentacion() {
 		return presentacion1;
 	}
 	
@@ -193,7 +193,7 @@ public class Presentacion1 extends JFrame implements MouseListener {
 
 			}
 		};
-		(new Thread(hilito)).start();
+		(new Thread(hilito, "Hilo de representación de los intentos de conexión")).start();
 		
 	}
 	

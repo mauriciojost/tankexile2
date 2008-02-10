@@ -88,9 +88,9 @@ public class Circuito implements CircuitoControlable {
 					JOptionPane.showMessageDialog(null, "Fin del juego. Usted ha ganado!!!");
 				}
 			};
-			(new Thread(hilitoMensajePropio)).start();
+			(new Thread(hilitoMensajePropio, "Hilo de mensaje de llegada a la meta (propio)")).start();
 			
-			conexion.finDePartida();
+			conexion.partidaPerdida();
 			
 			return true;
 		}
@@ -99,8 +99,8 @@ public class Circuito implements CircuitoControlable {
 	
 	
 	public void oponenteLlego() throws RemoteException{
-		JOptionPane.showMessageDialog(null, "Fin del juego. Usted ha perdido...");
 		Partida.getPartida().finalizar();
+		JOptionPane.showMessageDialog(null, "Fin del juego. Usted ha perdido...");
 	}
 	
 	// Método que indica mediante un booleano si ha existido una colisión con los muros del circuito, por parte del tanque indicado como parámetro.

@@ -95,8 +95,8 @@ public class Partida extends Canvas implements Finals, Runnable{
 		tanquePropio.setSonidoHabilitado(prePartida.getSonidoHabilitado());
 		
 		jugador = new Jugador(tanquePropio); // Un jugador es creado para comandar el tanque propio del host.
+		
 		this.addKeyListener(jugador); // El jugador comienza a escuchar el teclado.
-
 		do{
 			try{
 			conexion.ponerADisposicionTanqueRemoto(); // La conexión es establecida.
@@ -106,7 +106,7 @@ public class Partida extends Canvas implements Finals, Runnable{
 			}
 		}while(!conexion.tanqueListo());
 
-		hiloTanqueRemoto = new Thread(conexion.getHiloManejadorDeTanqueRemoto());
+		hiloTanqueRemoto = new Thread(conexion.getHiloManejadorDeTanqueRemoto(), "Hilo manejador del tanque remoto");
 		// Ambos tanques son ubicados en sus metas correspondientes.
 		tanquePropio.setX(circuito.getMeta(yoID).getX());
 		tanquePropio.setY(circuito.getMeta(yoID).getY());
@@ -114,7 +114,7 @@ public class Partida extends Canvas implements Finals, Runnable{
 		tanqueLocalLigadoOponente.setY(circuito.getMeta(otroID).getY());
 		
 		hiloTanqueRemoto.start();
-
+		
 		bolaBuena = new Bola(true);
 		bolaMala = new Bola(false);
 		conexion.setBolasLocales(bolaBuena, bolaMala);
@@ -132,7 +132,7 @@ public class Partida extends Canvas implements Finals, Runnable{
 				}
 			}while(!conexion.bolasListo());
 			System.out.println("Bolas remotas a disposición.");
-			hiloBolasRemotas = new Thread(conexion.getHiloManejadorDeBolas());
+			hiloBolasRemotas = new Thread(conexion.getHiloManejadorDeBolas(), "Hilo manejador de bolas remotas");
 			hiloBolasRemotas.start();
 		}
 		
@@ -140,16 +140,18 @@ public class Partida extends Canvas implements Finals, Runnable{
 		conexion.bindearCircuitoLocal();
 		
 		do{
-				try{
-					conexion.ponerADisposicionCircuitoRemoto();
-				}catch(Exception e){
-					try { Thread.sleep(Finals.ESPERA_CONEXION); } catch (InterruptedException ex) {Logger.getLogger(Partida.class.getName()).log(Level.SEVERE, null, ex);}
-					System.out.println("Intento fallido por obtener circuito remoto... Reintentando...");
-				}
+			try{
+				conexion.ponerADisposicionCircuitoRemoto();
+			}catch(Exception e){
+				try { Thread.sleep(Finals.ESPERA_CONEXION); } catch (InterruptedException ex) {Logger.getLogger(Partida.class.getName()).log(Level.SEVERE, null, ex);}
+				System.out.println("Intento fallido por obtener circuito remoto... Reintentando...");
+			}
 		}while(!conexion.circuitoListo());
+		
 		System.out.println("Circuito remoto a disposición.");
-		hiloCircuitoRemoto = new Thread(conexion.getHiloManejadorDeCircuitoRemoto());
+		hiloCircuitoRemoto = new Thread(conexion.getHiloManejadorDeCircuitoRemoto(), "Hilo manejador de circuito remoto");
 		hiloCircuitoRemoto.start();
+		
     }
 
     // Método que llama a la actuación de cada tanque.
@@ -180,7 +182,7 @@ public class Partida extends Canvas implements Finals, Runnable{
     // Método que contiene el bucle de ejecución principal del juego.
     public void jugar(){
 		iniciarEscena();
-		Thread hiloJuego = new Thread(this);
+		Thread hiloJuego = new Thread(this, "Hilo principal del juego");
 		hiloJuego.start();
     }
 
