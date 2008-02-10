@@ -90,7 +90,7 @@ public class Conexion implements Conectable{
 	}
 	
 	// Método que pone la ventana de selección de circuitos de este host a disposición del host oponente.
-	public void bindearMiVentana(PrePartida1 ventana){
+	public void bindearMiVentana(PrePartida ventana){
 		
 		try{
 			LocateRegistry.createRegistry(PUERTO); // Es tomado el puerto PUERTO y creado un registro asociado sobre él.

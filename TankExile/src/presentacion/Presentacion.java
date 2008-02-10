@@ -23,9 +23,9 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
-public class Presentacion1 extends JFrame implements MouseListener {
-	private PrePartida1 prePartida;
-    private static Presentacion1 presentacion1;
+public class Presentacion extends JFrame implements MouseListener {
+	private PrePartida prePartida;
+    private static Presentacion presentacion1;
 	private JTextField area_ip;
 	private JTextField estado;
 	private Conexion conexion;
@@ -33,7 +33,7 @@ public class Presentacion1 extends JFrame implements MouseListener {
 	private JButton bSalida;
 	private VentanaControlable ventanaRemota;
 	// Constructor de la clase.
-	private Presentacion1(int x, int y){
+	private Presentacion(int x, int y){
 		super("TankExile - Presentación");
 		setBounds(x,y, Finals.ANCHO_VENTANA-250, Finals.ALTO_VENTANA-450); // Reajusta tamaño de la ventana, sin modificar su posición.
 		setResizable(false); // Impide modificar tamaño de la ventana.
@@ -62,7 +62,7 @@ public class Presentacion1 extends JFrame implements MouseListener {
 		try {
 			Thread.sleep(1000);
 		} catch (InterruptedException ex) {
-			Logger.getLogger(Presentacion1.class.getName()).log(Level.SEVERE, null, ex);
+			Logger.getLogger(Presentacion.class.getName()).log(Level.SEVERE, null, ex);
 		}
 		
 		panel.removeAll(); // Se remueven los objetos que se encontrataban contenidos en el panel.
@@ -81,7 +81,7 @@ public class Presentacion1 extends JFrame implements MouseListener {
 			ip_propio = creador.crearArea(InetAddress.getLocalHost().getHostAddress(), false, Finals.colorGris);
 			panel_ip_propio.add(ip_propio);
 		} catch (UnknownHostException ex) {
-			Logger.getLogger(Presentacion1.class.getName()).log(Level.SEVERE, null, ex);
+			Logger.getLogger(Presentacion.class.getName()).log(Level.SEVERE, null, ex);
 		}
 		
 		///////////////////////////////////////////////////////
@@ -127,7 +127,7 @@ public class Presentacion1 extends JFrame implements MouseListener {
 		this.estado.setText(estado);
 	}
 
-	public static Presentacion1 getPresentacion() {
+	public static Presentacion getPresentacion() {
 		return presentacion1;
 	}
 	
@@ -172,7 +172,7 @@ public class Presentacion1 extends JFrame implements MouseListener {
 				conexion.establecerIDs();
 				dispose();
 				
-				prePartida = PrePartida1.getPrePartida(presentacion1, conexion);
+				prePartida = PrePartida.getPrePartida(presentacion1, conexion);
 				prePartida.setEstado("Conexión establecida con éxito.");
 				conexion.bindearMiVentana(prePartida);
 				System.out.println("Servidor de ventana listo.");
@@ -207,7 +207,7 @@ public class Presentacion1 extends JFrame implements MouseListener {
 			nombre = nombre.substring(0, 6); // Utiliza los 6 primeros caracteres del texto obtenido del boton.
 			this.getClass().getMethod("responder"+nombre, (Class[])null).invoke(this, (Object[])null);
 		} catch (Exception ex) {
-			Logger.getLogger(PrePartida1.class.getName()).log(Level.SEVERE, null, ex);
+			Logger.getLogger(PrePartida.class.getName()).log(Level.SEVERE, null, ex);
 		}
 	}
 
@@ -217,6 +217,6 @@ public class Presentacion1 extends JFrame implements MouseListener {
 	public void mouseExited(MouseEvent e) { }
 	
 	public static void main(String args[]){
-		new Presentacion1(350,70);
+		new Presentacion(350,70);
 	}
 }

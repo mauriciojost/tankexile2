@@ -18,12 +18,12 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 
-public class Configurador1 extends JFrame implements MouseListener {
-	private PrePartida1 prePartida;
+public class Configurador extends JFrame implements MouseListener {
+	private PrePartida prePartida;
 	private JTextField campo_nick_propio;
 	private JButton evento;
 	// Constructor de la clase.
-	public Configurador1(PrePartida1 prePartida){
+	public Configurador(PrePartida prePartida){
 		super("TankExile - Opciones");
 		this.prePartida = prePartida;
 		setBounds(prePartida.getX(),prePartida.getY(),Finals.ANCHO_VENTANA-250,150); // Reajusta tamaño de la ventana, sin modificar su posición.
@@ -90,7 +90,7 @@ public class Configurador1 extends JFrame implements MouseListener {
 			String nombre = new String(((JButton)e.getSource()).getText());
 			this.getClass().getMethod("responder"+nombre, (Class[])null).invoke(this, (Object[])null);
 		} catch (Exception ex) {
-			Logger.getLogger(PrePartida1.class.getName()).log(Level.SEVERE, null, ex);
+			Logger.getLogger(PrePartida.class.getName()).log(Level.SEVERE, null, ex);
 		}
 	}
 

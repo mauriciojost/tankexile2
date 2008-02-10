@@ -32,7 +32,7 @@ public class Partida extends Canvas implements Finals, Runnable{
     //private String iPOponente; // Representa la dirección IP en la red del host del jugador oponente.
     private static Conexion conexion; // Objeto utilizado para todo lo relacionado a la comunicación entre ambos hosts.
     private static String nombreCircuitoTXT; // Atributo que representa el nombre del archivo del circuito.
-	private static PrePartida1 prePartida;
+	private static PrePartida prePartida;
 	private Thread hiloTanqueRemoto;
 	private Thread hiloBolasRemotas;
 	private Thread hiloCircuitoRemoto;
@@ -41,7 +41,7 @@ public class Partida extends Canvas implements Finals, Runnable{
 	private JFrame ventana;
 	
     // Contstructor. Genera los elementos básicos de una aplicación del tipo juego.
-    public Partida(String nombreCircuitoTXT, Conexion conexion, PrePartida1 prePartida) {
+    public Partida(String nombreCircuitoTXT, Conexion conexion, PrePartida prePartida) {
 		instanciaPartida = this;
 		this.prePartida = prePartida;
 		ventana = new JFrame("TankExile"); // Armado de la ventana.
@@ -161,7 +161,7 @@ public class Partida extends Canvas implements Finals, Runnable{
 		//tanqueLocalLigadoOponente.actuar(); // Mauricio: ¿Realmente hace falta?.
     }
 	
-	public PrePartida1 getPrePartida(){
+	public PrePartida getPrePartida(){
 		return	prePartida;
 	}
     // Método encargado de brindar la imagen correcta (representativa del estado del tanque) para que esta sea pintada en pantalla.
