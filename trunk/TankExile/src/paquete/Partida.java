@@ -51,6 +51,7 @@ public class Partida extends Canvas implements Finals, Runnable{
 		panel.setPreferredSize(new Dimension(Finals.ANCHO_VENTANA,Finals.ALTO_VENTANA)); // Establecimiento de las dimensiones del panel.
 		panel.setLayout(new GridLayout());
 		panel.add(this); // El panel pintará este canvas (definido por esta instancia de Partida).
+	
 
 		ventana.setBounds(0,0,Finals.ANCHO_VENTANA+6,Finals.ALTO_VENTANA+50); // Establecimiento de las dimensiones de la ventana.
 		ventana.setVisible(true); // Ventana visible.
@@ -58,6 +59,8 @@ public class Partida extends Canvas implements Finals, Runnable{
 		ventana.addWindowListener(
 			new WindowAdapter() { // Ventana tiene escucha, una clase anónima, para el cierre.
 				public void windowClosing(WindowEvent e) {
+					getPrePartida().setEstado("Estado: Partida abortada");
+					getPrePartida().setVisible(true);
 					finalizar();
 				}
 			}
@@ -87,6 +90,9 @@ public class Partida extends Canvas implements Finals, Runnable{
 		tanqueLocalLigadoOponente = new Tanque(circuito, otroID); // Creación del tanque que será ligado al registro de RMI para ser comandado por el host remoto.
 		conexion.bindearTanqueLocalOponente(tanqueLocalLigadoOponente); // El tanque anterior es puesto a disposición del host remoto.
 		conexion.setTanquePropio(tanquePropio); // La conexión esta lista para ser establecida, el hilo conexión observará al tanque y con sus parámetros comandará al tanque remoto puesto en el registro de RMI.
+
+		
+		tanquePropio.setSonidoHabilitado(prePartida.getSonidoHabilitado());
 		
 		jugador = new Jugador(tanquePropio); // Un jugador es creado para comandar el tanque propio del host.
 		this.addKeyListener(jugador); // El jugador comienza a escuchar el teclado.
@@ -106,7 +112,7 @@ public class Partida extends Canvas implements Finals, Runnable{
 		tanquePropio.setY(circuito.getMeta(yoID).getY());
 		tanqueLocalLigadoOponente.setX(circuito.getMeta(otroID).getX());
 		tanqueLocalLigadoOponente.setY(circuito.getMeta(otroID).getY());
-
+		
 		hiloTanqueRemoto.start();
 
 		bolaBuena = new Bola(true);
@@ -167,6 +173,7 @@ public class Partida extends Canvas implements Finals, Runnable{
 		tanqueLocalLigadoOponente.pintar(g);
 		bolaBuena.pintar(g);
 		bolaMala.pintar(g);
+		g.drawString(prePartida.getNickPropio(), 10, 25); // Grafica el nick propio
 		estrategia.show();
     }
 

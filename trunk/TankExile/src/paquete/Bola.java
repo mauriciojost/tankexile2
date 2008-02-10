@@ -13,6 +13,7 @@ public class Bola extends Thread implements BolaControlable{
 	private int x,y;
 	private final int largo = 20;
 	private boolean correrHilos;
+
 	private boolean buena;
 	private int vx = 2;
 	private int vy = 2;
@@ -21,7 +22,7 @@ public class Bola extends Thread implements BolaControlable{
 	public Bola(boolean buena) {
 		this.buena = buena;
 		if (buena)
-			x = x + 20;
+			x = x + 35;
 		currentFrame = (buena?0:1);
 		try {
 			if (imagen[0]== null) imagen[0] = ImageIO.read(getClass().getClassLoader().getResource("res/bolaBuena.gif"));
