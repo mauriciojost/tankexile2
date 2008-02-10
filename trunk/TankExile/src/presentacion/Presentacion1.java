@@ -50,7 +50,7 @@ public class Presentacion1 extends JFrame implements MouseListener {
 		panel.setLayout(new GridLayout(1,1)); // Establece manager layout para el panel.
 		panel.setBackground(Finals.colorGris); // Establece el color de fondo del panel.
 
-		ImageIcon ii = new ImageIcon(getClass().getClassLoader().getResource("res/tank.gif"));
+		ImageIcon ii = new ImageIcon(getClass().getClassLoader().getResource("res/tank.GIF"));
 		JLabel iM = new JLabel();
 		iM.setIcon(ii);
 		iM.setOpaque(false);
