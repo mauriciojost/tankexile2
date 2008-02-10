@@ -39,6 +39,8 @@ public class Partida extends Canvas implements Finals, Runnable{
 	private boolean correrHilos = true;
 	private static Partida instanciaPartida;
 	private JFrame ventana;
+	private String nickPropio;
+	private String nickOponente;
 	
     // Contstructor. Genera los elementos básicos de una aplicación del tipo juego.
     public Partida(String nombreCircuitoTXT, Conexion conexion, PrePartida prePartida) {
@@ -88,6 +90,7 @@ public class Partida extends Canvas implements Finals, Runnable{
 		circuito = new Circuito(nombreCircuitoTXT); // Creación del circuito de juego.
 		circuito.setConexion(conexion);
 		tanquePropio = new Tanque(circuito, yoID); // Creación del tanque comandado por el jugador en este host.
+		tanquePropio.setNick(prePartida.getNickPropio());
 		tanqueLocalLigadoOponente = new Tanque(circuito, otroID); // Creación del tanque que será ligado al registro de RMI para ser comandado por el host remoto.
 		conexion.bindearTanqueLocalOponente(tanqueLocalLigadoOponente); // El tanque anterior es puesto a disposición del host remoto.
 		conexion.setTanquePropio(tanquePropio); // La conexión esta lista para ser establecida, el hilo conexión observará al tanque y con sus parámetros comandará al tanque remoto puesto en el registro de RMI.
@@ -111,8 +114,14 @@ public class Partida extends Canvas implements Finals, Runnable{
 		// Ambos tanques son ubicados en sus metas correspondientes.
 		tanquePropio.setX(circuito.getMeta(yoID).getX());
 		tanquePropio.setY(circuito.getMeta(yoID).getY());
+		
+		
 		tanqueLocalLigadoOponente.setX(circuito.getMeta(otroID).getX());
 		tanqueLocalLigadoOponente.setY(circuito.getMeta(otroID).getY());
+		this.nickOponente = tanqueLocalLigadoOponente.getNick();
+		this.nickPropio = tanquePropio.getNick();
+		
+		
 		
 		hiloTanqueRemoto.start();
 		
@@ -152,7 +161,8 @@ public class Partida extends Canvas implements Finals, Runnable{
 		System.out.println("Circuito remoto a disposición.");
 		hiloCircuitoRemoto = new Thread(conexion.getHiloManejadorDeCircuitoRemoto(), "Hilo manejador de circuito remoto");
 		hiloCircuitoRemoto.start();
-		
+		nickPropio = tanquePropio.getNick();
+		nickOponente = tanqueLocalLigadoOponente.getNick();
     }
 
     // Método que llama a la actuación de cada tanque.
@@ -179,7 +189,13 @@ public class Partida extends Canvas implements Finals, Runnable{
 		bolaBuena.pintar(g);
 		bolaMala.pintar(g);
 		g.setColor(Color.white);
-		g.drawString(((prePartida.getNickPropio()!=null)?prePartida.getNickPropio():("Jugador " + (conexion.getID()+1))), 10, 25); // Grafica el nick propio
+		
+		
+		g.drawString(((nickPropio!=null)?nickPropio:("Jugador " + (conexion.getID()+1))), 10, 25); // Grafica el nick propio
+		g.drawString(((nickOponente!=null)?nickOponente:("Jugador " + (((conexion.getID()+1)%2))+1)), 10, 35); // Grafica el nick oponente
+		
+		
+		
 		estrategia.show();
     }
 
