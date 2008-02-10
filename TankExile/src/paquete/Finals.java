@@ -20,4 +20,5 @@ public interface Finals{
 	public static final int ESPERA_CONEXION =	100;
 	public static final Color colorGris = Color.lightGray;
 	public static final Color colorBlanco = Color.white;
+	public static final Color COLOR_LEYENDAS_PARTIDA = Color.white;
 }

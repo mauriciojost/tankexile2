@@ -240,6 +240,17 @@ public class Conexion implements Conectable{
 		};
 	}
 	
+	
+	public String getNickTanqueOponente(){
+		try {
+			return this.tanqueRemotoAControlar.getNick();
+		} catch (RemoteException ex) {
+			System.out.println("Error al intentar obtener el nick del oponente. Clase conexión.");
+			Logger.getLogger(Conexion.class.getName()).log(Level.SEVERE, null, ex);
+		}
+		return null;
+	}
+	
 	// Método que pone a disposición las bolas locales, para que sean controladas remotamente.
 	public void bindearBolasLocales(){	
 		try{

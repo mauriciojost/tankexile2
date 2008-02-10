@@ -117,9 +117,9 @@ public class Presentacion extends JFrame implements MouseListener {
 		
 		setVisible(true);
 		presentacion1 = this;
-//		this.area_ip.setText(ip_propio.getText().substring(0,ip_propio.getText().lastIndexOf('.')+1));
-//		this.area_ip.requestFocus();
-//		this.area_ip.selectAll();
+
+		this.area_ip.requestFocus();
+		this.area_ip.selectAll();
 		
 	}
 	
