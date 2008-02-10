@@ -32,12 +32,13 @@ public class Presentacion1 extends JFrame implements MouseListener {
 	private JButton bConectar;
 	private JButton bSalida;
 	private VentanaControlable ventanaRemota;
-	
 	// Constructor de la clase.
 	private Presentacion1(int x, int y){
 		super("TankExile - Presentación");
 		setBounds(x,y, Finals.ANCHO_VENTANA-250, Finals.ALTO_VENTANA-450); // Reajusta tamaño de la ventana, sin modificar su posición.
 		setResizable(false); // Impide modificar tamaño de la ventana.
+		//setDefaultCloseOperation(EXIT_ON_CLOSE);
+		
 		addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
 				System.exit(0);
@@ -45,19 +46,19 @@ public class Presentacion1 extends JFrame implements MouseListener {
 		}); // Se define un objeto que escucha y resonde a los eventos sobre la ventana.
 		
 		JPanel panel = (JPanel) getContentPane(); // Panel donde se grafica la interface de usuario.
-		panel.setPreferredSize(new Dimension(Finals.ANCHO_VENTANA-250, Finals.ALTO_VENTANA-500)); // Establece tamaño para el panel.
+		panel.setPreferredSize(new Dimension(Finals.ANCHO_VENTANA-250, Finals.ALTO_VENTANA-480)); // Establece tamaño para el panel.
 		panel.setLayout(new GridLayout(1,1)); // Establece manager layout para el panel.
-		panel.setBackground(Finals.colorFondo); // Establece el color de fondo del panel.
+		panel.setBackground(Finals.colorGris); // Establece el color de fondo del panel.
 
-		ImageIcon ii = new ImageIcon(getClass().getClassLoader().getResource("res/tankLoading.jpg"));
+		ImageIcon ii = new ImageIcon(getClass().getClassLoader().getResource("res/tank.gif"));
 		JLabel iM = new JLabel();
 		iM.setIcon(ii);
 		iM.setOpaque(false);
-		iM.setSize(Finals.ANCHO_VENTANA-250, Finals.ALTO_VENTANA-500);
+		iM.setSize(Finals.ANCHO_VENTANA-250, Finals.ALTO_VENTANA-480);
 		panel.add(iM);
-				
+		
 		setVisible(true); // Se hace visible la ventana.
-
+		
 		try {
 			Thread.sleep(1000);
 		} catch (InterruptedException ex) {
@@ -70,18 +71,14 @@ public class Presentacion1 extends JFrame implements MouseListener {
 		// Creacion de los componentes que conforman la interface de usuario.
 		Creador creador = new Creador();
 		
-		JTextField titulo_ip_propio = new JTextField("IP propio: ");//Cambie esta linea
-		titulo_ip_propio.setEditable(false);
-		titulo_ip_propio.setBackground(Finals.colorFondo);
-		titulo_ip_propio.setFont(new Font("Arial",Font.BOLD,15));
+		JTextArea titulo_ip_propio = creador.crearArea("IP propio: ", false, Finals.colorGris);//Cambie esta linea
 		
-		JPanel panel_ip_propio = creador.crearPanel(new Dimension(Finals.ANCHO_VENTANA-250,(Finals.ALTO_VENTANA-500)/3),new FlowLayout(FlowLayout.LEFT));
+		JPanel panel_ip_propio = creador.crearPanel(new Dimension(Finals.ANCHO_VENTANA-250,(Finals.ALTO_VENTANA-480)/3),new FlowLayout(FlowLayout.LEFT));
 		panel_ip_propio.add(titulo_ip_propio);
 		JTextArea ip_propio = null;
 		try {
-			ip_propio = new JTextArea(InetAddress.getLocalHost().getHostAddress());
-			ip_propio.setEditable(false);
-			ip_propio.setBackground(Finals.colorFondo);
+
+			ip_propio = creador.crearArea(InetAddress.getLocalHost().getHostAddress(), false, Finals.colorGris);
 			panel_ip_propio.add(ip_propio);
 		} catch (UnknownHostException ex) {
 			Logger.getLogger(Presentacion1.class.getName()).log(Level.SEVERE, null, ex);
@@ -89,30 +86,29 @@ public class Presentacion1 extends JFrame implements MouseListener {
 		
 		///////////////////////////////////////////////////////
 		
-		JTextArea titulo_ip_oponente = new JTextArea("Ingrese IP de oponente:");
-		titulo_ip_oponente.setEditable(false);
-		titulo_ip_oponente.setFont(new Font("Arial",Font.BOLD,15));
-		titulo_ip_oponente.setBackground(Finals.colorFondo);
-		
-		JTextField ip_oponente = new JTextField();
-		ip_oponente.setColumns(15);
-		ip_oponente.setToolTipText("Aquí ingrese la dirección IP del host oponente.");
-		ip_oponente.setFocusAccelerator('\132'); // Establece combinacion Alt+z para obtener focus.
-
-		this.area_ip = ip_oponente;
+		JTextArea titulo_ip_oponente = creador.crearArea("IP oponente: ", false, Finals.colorGris);
 				
-		JPanel panel_ip_oponente = creador.crearPanel(new Dimension(Finals.ANCHO_VENTANA-250, (Finals.ALTO_VENTANA-500)/3),new FlowLayout(FlowLayout.LEFT));
+		JTextField area_ip = creador.crearCampo(ip_propio.getText().substring(0,ip_propio.getText().lastIndexOf('.')+1), true, Finals.colorBlanco);
+		area_ip.setColumns(12);
+		area_ip.setToolTipText("Aquí ingrese la dirección IP del host oponente.");
+		area_ip.setFocusAccelerator('\132'); // Establece combinacion Alt+z para obtener focus.
+		area_ip.requestFocus();
+		area_ip.selectAll();
+		this.area_ip = area_ip;
+		//this.campo_ip_oponente = ip_oponente;
+				
+		JPanel panel_ip_oponente = creador.crearPanel(new Dimension(Finals.ANCHO_VENTANA-250, (Finals.ALTO_VENTANA-480)/3),new FlowLayout(FlowLayout.LEFT));
 		panel_ip_oponente.add(titulo_ip_oponente);
-		panel_ip_oponente.add(ip_oponente);
+		panel_ip_oponente.add(area_ip);
 		
-		JPanel panel_botones = creador.crearPanel(new Dimension(Finals.ANCHO_VENTANA-250,(Finals.ALTO_VENTANA-500)/3), new FlowLayout(FlowLayout.TRAILING));
+		JPanel panel_botones = creador.crearPanel(new Dimension(Finals.ANCHO_VENTANA-250,(Finals.ALTO_VENTANA-480)/3), new FlowLayout(FlowLayout.TRAILING));
 		panel_botones.add(this.bConectar = creador.crearBoton("Conectar", "Intenta conexion con IP ingresado", this));
 		panel_botones.add(this.bSalida = creador.crearBoton("Salida", "Cerrar", this));
 		
 		
 		estado = new JTextField(" ");
 		estado.setEditable(false);
-		estado.setBackground(Finals.colorFondo);
+		estado.setBackground(Finals.colorGris);
 		
 		panel.add(panel_ip_propio);
 		panel.add(panel_ip_oponente);
@@ -121,9 +117,9 @@ public class Presentacion1 extends JFrame implements MouseListener {
 		
 		setVisible(true);
 		presentacion1 = this;
-		this.area_ip.setText(ip_propio.getText().substring(0,ip_propio.getText().lastIndexOf('.')+1));
-		this.area_ip.requestFocus();
-		this.area_ip.selectAll();
+//		this.area_ip.setText(ip_propio.getText().substring(0,ip_propio.getText().lastIndexOf('.')+1));
+//		this.area_ip.requestFocus();
+//		this.area_ip.selectAll();
 		
 	}
 	
@@ -137,6 +133,7 @@ public class Presentacion1 extends JFrame implements MouseListener {
 	
 	public void responderConect(){
 		if (!bConectar.isEnabled()) return;
+
 		
 		if (conexion != null){
 			conexion.desbindearTodo(true);
@@ -193,6 +190,7 @@ public class Presentacion1 extends JFrame implements MouseListener {
 				
 				area_ip.setEnabled(true);
 				bConectar.setEnabled(true);
+
 			}
 		};
 		(new Thread(hilito)).start();
@@ -210,7 +208,7 @@ public class Presentacion1 extends JFrame implements MouseListener {
 			this.getClass().getMethod("responder"+nombre, (Class[])null).invoke(this, (Object[])null);
 		} catch (Exception ex) {
 			Logger.getLogger(PrePartida1.class.getName()).log(Level.SEVERE, null, ex);
-		} 
+		}
 	}
 
 	public void mousePressed(MouseEvent e) { }

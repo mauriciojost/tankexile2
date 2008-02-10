@@ -428,7 +428,7 @@ public class Conexion implements Conectable{
 		/* CUESTION DE TURNOS...
 		while(true){
 				if (miTurno){
-					try{this.sleep(Finals.PERIODO_DE_TURNO);}catch(InterruptedException e){e.printStackTrace();}		
+					try{this.sleep(Finals.PERIODO_DE_TURNO);}catch(InterruptedException e){e.printStackTrace();}
 						miTurno=false;
 						try{
 							conexionRemoto.darTurno();

@@ -9,7 +9,8 @@ public interface Controlable extends Remote {
 	public void setX(int x)throws RemoteException; // Métodos de posición.
 	public void setY(int y)throws RemoteException;
 	public void setTodo(int x, int y, int direccion, int movimientoDeTrama, int tramaChoque)throws RemoteException;
-	
+	public void setSonidoHabilitado(boolean s) throws RemoteException;
+	public boolean getSonidoHabilitado() throws RemoteException;
 	public void irArriba()throws RemoteException; // Métodos que indican inicio de un comando.
 	public void irAbajo()throws RemoteException;
 	public void irIzquierda()throws RemoteException;

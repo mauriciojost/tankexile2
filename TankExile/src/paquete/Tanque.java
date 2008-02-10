@@ -1,9 +1,13 @@
 package paquete;
 
+import java.applet.Applet;
+import java.applet.AudioClip;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.HashMap;
 import javax.imageio.ImageIO;
 
@@ -39,14 +43,31 @@ public class Tanque implements Controlable{
     private static HashMap<Integer, BufferedImage> imagenes = new HashMap<Integer, BufferedImage>(); // Conjunto de imágenes del tanque, asociadas a una clave cada una mediante un HashMap.
     private static Circuito circuito; // Circuito en el cual está el tanque.
 	private int id; // Identificador del tanque.
+
+	private URL url = null;
+	public AudioClip clip;	
+	private boolean ayuda_sonido = false;
+	private boolean sonido_habilitado = false;
+	private Audio audio = new Audio();
+
+	public boolean getSonidoHabilitado(){
+		return sonido_habilitado;
+	}
 	
+	public void setSonidoHabilitado(boolean sh){
+		sonido_habilitado = sh;
+	}
 	
+	public URL getUrl(){
+		return url;
+	}
+		
 	public int getID(){
 		return id;
 	}
 	
 	// Método que forza a las teclas a ser soltadas. 
-    private void forzarTeclasSueltas(){
+    private void forzarTeclasSueltas(){ 
 		arriba=false;
 		abajo=false;
 		izquierda=false;
@@ -99,6 +120,13 @@ public class Tanque implements Controlable{
 				e.printStackTrace();
 				System.exit(0);
 			}
+		
+		try{
+			url = new URL("file:///" + System.getProperty("user.dir") + "/src/res/click.WAV");
+		}catch (MalformedURLException e) { 
+				e.printStackTrace();
+		}
+		this.clip = Applet.newAudioClip(getUrl());//getURL("/src/res/SOUNDER.WAV")
 	}
 	
 	private BufferedImage rotarImagen(BufferedImage img, int grados){
@@ -158,7 +186,7 @@ public class Tanque implements Controlable{
 	
 	// Método que actualiza las velocidades según se tengan o no ciertas teclas presionadas.
 	private void actualizarVelocidades(){
-		vX=0; vY=0;
+		vX=0; vY=0; 
 		if (abajo)		vY = +trancoTanque;
 		if (arriba)		vY = -trancoTanque;
 		if (izquierda)	vX = -trancoTanque;
@@ -174,7 +202,7 @@ public class Tanque implements Controlable{
 	// Conjunto de métodos de respuesta al teclado.
 	public void irArriba(){
 		forzarTeclasSueltas();
-		if (teclasHabilitadas){
+		if (teclasHabilitadas){ 
 			arriba = true;
 			direccion = Finals.ARRIBA;
 		}
@@ -183,7 +211,7 @@ public class Tanque implements Controlable{
 	
 	public void irAbajo(){
 		forzarTeclasSueltas();
-		if (teclasHabilitadas){
+		if (teclasHabilitadas){ 
 			abajo  = true;
 			direccion = Finals.ABAJO;
 		}
@@ -192,14 +220,14 @@ public class Tanque implements Controlable{
 	
 	public void irIzquierda(){
 		forzarTeclasSueltas();
-		if (teclasHabilitadas){
+		if (teclasHabilitadas){ 
 			izquierda  = true;
 			direccion = Finals.IZQUIERDA;
 		}
 		actualizarVelocidades();
 	}
 	
-	public void irDerecha(){
+	public void irDerecha(){ 
 		forzarTeclasSueltas();
 		if (teclasHabilitadas){
 			derecha = true;
@@ -217,19 +245,19 @@ public class Tanque implements Controlable{
 		actualizarVelocidades();
 	}
 	
-	public void noIrArriba(){
+	public void noIrArriba(){ 
 		arriba=false;
 		actualizarVelocidades();
 	}
-	public void noIrAbajo(){
+	public void noIrAbajo(){ 
 		abajo=false;
 		actualizarVelocidades();
 	}
-	public void noIrIzquierda(){
+	public void noIrIzquierda(){ 
 		izquierda=false;
 		actualizarVelocidades();
 	}
-	public void noIrDerecha(){
+	public void noIrDerecha(){ 
 		derecha=false;
 		actualizarVelocidades();
 	}
@@ -239,16 +267,26 @@ public class Tanque implements Controlable{
 	}
 	
 	// Método que genera los efectos de un choque en el tanque.
-	public void choque(){
+	public void choque(){ 
 		teclasHabilitadas = false;
-		choque = true;
+		choque = true;              if(sonido_habilitado){ clip.play();} // Reproduce sonido para choque local
 		forzarTeclasSueltas();
 		actualizarVelocidades();
 		temporizadorChoque=0;
 		choqueGrande = (this.trancoTanque==2);
 		contadorSubTramaChoque=0;
 	}
+	
+	
+	
 	public void setTodo(int x, int y, int direccion, int movimientoTrama, int choqueTrama){
+		if((sonido_habilitado? ((this.X != x || this.Y != y) && !ayuda_sonido):false)){
+			audio.reproduccion(); // Reproduce sonido para movimiento del oponente.
+			ayuda_sonido = true; // No deja ingresar a este if
+		}else{
+			audio.detener();
+			ayuda_sonido = false; // Se podra ingresar al if (sujeto a las demas condiciones)
+		}
 		this.X = x;
 		this.Y = y;
 		this.direccion = direccion;

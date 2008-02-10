@@ -1,6 +1,7 @@
 
 package presentacion;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.LayoutManager;
 import java.awt.event.MouseListener;
@@ -28,19 +29,21 @@ public class Creador {
 		JPanel panel = new JPanel();
 		panel.setPreferredSize(d);
 		panel.setLayout(lm);
-		panel.setBackground(Finals.colorFondo);
+		panel.setBackground(Finals.colorGris);
 		return panel;
 	}
 	
-	public JTextField crearCampo(){
-		JTextField campo = new JTextField();
+	public JTextField crearCampo(String nombre, boolean editable, Color bg){
+		JTextField campo = new JTextField(nombre);
+		campo.setEditable(editable);
+		campo.setBackground(bg);
 		return campo;
-	
 	}
 	
-	public JTextArea crearArea(Dimension d, String nombre){
+	public JTextArea crearArea(String nombre, boolean editable, Color bg){
 		JTextArea area = new JTextArea(nombre);
+		area.setEditable(editable);
+		area.setBackground(bg);
 		return area;
 	}
-
 }

@@ -1,5 +1,6 @@
 package presentacion;
 
+
 import java.awt.event.MouseEvent;
 import java.rmi.RemoteException;
 import java.util.logging.Level;
@@ -32,8 +33,10 @@ public class PrePartida1 extends JFrame implements MouseListener, VentanaControl
 	private static Conexion conexion;
 
 	private static PrePartida1 prePartida;
+
 	private Escenografia escenografia;
-	private JTextField estado = new JTextField("Estado: ");
+	private Configurador1 configurador;
+	private JTextField estado;
 	//private String imageFilePath = "C:\\tank.jpg";
 	//private ImageIcon ii = new ImageIcon(imageFilePath);
 	private ImageIcon ii = new ImageIcon(getClass().getClassLoader().getResource("res/tank.JPG"));
@@ -42,6 +45,10 @@ public class PrePartida1 extends JFrame implements MouseListener, VentanaControl
 
 	private JButton b_inicio;
 	private File circuitoSeleccionado;
+
+    private String nick_propio;
+	private boolean sonido_prepartida = false;
+
     private JButton b_elegir_circuito;
 	
 	
@@ -65,17 +72,19 @@ public class PrePartida1 extends JFrame implements MouseListener, VentanaControl
 		PrePartida1.ventanaRemota = ventanaRemota;
 	}
 	
+
 	// Constructor de la clase.
 	
 	private PrePartida1(Presentacion1 presentacion){
 		super("Tank Exile - Pre Partida");
-		//this.presentacion=presentacion;
-		setBounds(presentacion.getX(),presentacion.getY(),Finals.ANCHO_VENTANA-250,Finals.ALTO_VENTANA-370);
+
+		this.presentacion=presentacion;
+		setBounds(presentacion.getX(),presentacion.getY(),Finals.ANCHO_VENTANA-250,375);
 		setResizable(false); // No se permite dar nuevo tamaño a la ventana.
 		
 		JPanel panel = (JPanel)this.getContentPane(); // Panel donde se grafican los objetos (bloques)que componen el escenario y los tanques que representan a cada jugador.
-		panel.setPreferredSize(new Dimension(Finals.ANCHO_VENTANA-250,Finals.ALTO_VENTANA-370));
-		panel.setLayout(new GridLayout(2,1));
+		panel.setPreferredSize(new Dimension(Finals.ANCHO_VENTANA-250,375));//Finals.ALTO_VENTANA-300
+		panel.setLayout(new FlowLayout());
 		panel.setBackground(Color.LIGHT_GRAY);
 		
 		addWindowListener(new WindowAdapter() {
@@ -84,28 +93,8 @@ public class PrePartida1 extends JFrame implements MouseListener, VentanaControl
 		}); // Se define un objeto que escucha los eventos sobre la ventana.
 		
 		Creador creador = new Creador();
-		b_inicio = creador.crearBoton("Inicio", "Comienza la partida", this);
-		b_inicio.setEnabled(false);
 		
-		JButton b_cambia_ip = creador.crearBoton("Cambiar IP", "Realiza nueva conexion", this);
-				
-		b_elegir_circuito = creador.crearBoton("Elegir Circuito", "Permite seleccion de circuito", this);
-		b_elegir_circuito.setEnabled(conexion.getID()==1);
-		
-		JButton b_salida = creador.crearBoton("Salida", "Cerrar", this);
-		
-		estado.setEditable(false);
-		estado.setBackground(Finals.colorFondo);
-		
-		JPanel panel_botones = creador.crearPanel(new Dimension(Finals.ANCHO_VENTANA-250,Finals.ALTO_VENTANA-200), new GridLayout(5,1));
-		
-		panel_botones.add(b_inicio);
-		panel_botones.add(b_cambia_ip);
-		panel_botones.add(b_elegir_circuito);
-		panel_botones.add(b_salida);
-		panel_botones.add(estado);
-		
-		JPanel panel_icono = creador.crearPanel(new Dimension(Finals.ANCHO_VENTANA-250,Finals.ALTO_VENTANA-445), new FlowLayout());
+		JPanel panel_icono = creador.crearPanel(new Dimension(Finals.ANCHO_VENTANA-250,150), new FlowLayout());
 		
 		//Creo una Etiqueta para cargar icono q contiene a la imagen
 		JLabel iM = new JLabel();
@@ -113,13 +102,55 @@ public class PrePartida1 extends JFrame implements MouseListener, VentanaControl
 		iM.setOpaque(false);
 		iM.setSize(200, 200);
 		panel_icono.add(iM);
-
+		
+		b_inicio = creador.crearBoton("Inicio", "Comienza la partida", this);
+		b_inicio.setEnabled(false);
+		
+		JButton b_cambia_ip = creador.crearBoton("Cambiar IP", "Permite realizar nueva conexion", this);
+				
+		b_elegir_circuito = creador.crearBoton("Elegir Circuito", "Permite seleccion de circuito", this);
+		b_elegir_circuito.setEnabled(conexion.getID()==1);
+		
+		JButton b_opciones = creador.crearBoton("Opciones", "Permite configuracion", this);
+		
+		JButton b_salida = creador.crearBoton("Salida", "Cerrar", this);
+		
+		estado = creador.crearCampo("Estado ", false, Finals.colorGris);
+		estado.setPreferredSize(new Dimension(80,30));
+		
+		JPanel panel_botones = creador.crearPanel(new Dimension(Finals.ANCHO_VENTANA-250,200), new GridLayout(6,1));
+		
+		panel_botones.add(b_inicio);
+		panel_botones.add(b_cambia_ip);
+		panel_botones.add(b_elegir_circuito);
+		panel_botones.add(b_opciones);
+		panel_botones.add(b_salida);
+		panel_botones.add(estado);
+		
 		panel.add(panel_icono);
 		panel.add(panel_botones);
 		setVisible(true);
 		
+		this.conexion = conexion;
+
 		this.prePartida=this;
+
 		
+	}
+	public void setSonidoHabilitado(boolean s){
+		sonido_prepartida = s;
+	}
+	
+	public boolean getSonidoHabilitado(){
+		return sonido_prepartida;
+	}
+	
+	public void setNickPropio(String nick){
+		nick_propio = nick;
+	}
+	
+	public String getNickPropio(){
+		return nick_propio;
 	}
 
 	public void setEstado(String noticia){
@@ -211,12 +242,17 @@ public class PrePartida1 extends JFrame implements MouseListener, VentanaControl
 			this.escenografia = new Escenografia(prePartida);
 			this.dispose();
 		}
+	}
+	
+
+	public void responderOpcion(){
+		//configurar sonido y nombre del jugador
+		this.dispose();
+		this.configurador = new Configurador1(prePartida);
 		
 	}
 	
-	
-	
-	//
+	// Método que responde al evento sobre el boton Cambiar IP
 	public void responderCambia(){
 		this.dispose();
 		presentacion.setLocation(this.getX(), this.getY());
@@ -229,6 +265,7 @@ public class PrePartida1 extends JFrame implements MouseListener, VentanaControl
 	
 	public static PrePartida1 getPrePartida() {
 		return prePartida;
+
 	}
         
 	public void mouseClicked(MouseEvent e) {
