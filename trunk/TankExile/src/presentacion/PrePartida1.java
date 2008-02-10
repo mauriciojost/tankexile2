@@ -197,7 +197,7 @@ public class PrePartida1 extends JFrame implements MouseListener, VentanaControl
 		}catch (Exception ex){ex.printStackTrace();}
 		*/
         try { 
-			if(this.getNickPropio().equals("")){ 
+			if(this.getNickPropio().equals("")){
 				this.setNickPropio(" PLAYER"+PrePartida1.conexion.getID());
 			}
 			Partida partida = new Partida(this.circuitoSeleccionado.getPath(), conexion, this);
