@@ -1,5 +1,6 @@
 package paquete;
 
+import java.applet.AudioClip;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
@@ -23,5 +24,4 @@ public interface Controlable extends Remote {
 	public void acelerar()throws RemoteException;	
 	public void noAcelerar()throws RemoteException;	
 	public void setDireccion(int direccion)throws RemoteException; // Método de orientación-dirección.			
-	
 }
