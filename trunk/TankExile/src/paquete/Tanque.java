@@ -122,8 +122,10 @@ public class Tanque implements Controlable{
 				e.printStackTrace();
 				System.exit(0);
 			}
-		audio_movimiento = new Audio("/src/res/waterrun.WAV");
-		audio_choque = new Audio("/src/res/click.WAV");
+		
+		audio_movimiento = new Audio("res/waterrun.wav");
+		audio_choque = new Audio("res/click.wav");
+		
 	}
 	
 	private BufferedImage rotarImagen(BufferedImage img, int grados){

@@ -118,7 +118,7 @@ public class Partida extends Canvas implements Finals, Runnable{
 		
 		tanqueLocalLigadoOponente.setX(circuito.getMeta(otroID).getX());
 		tanqueLocalLigadoOponente.setY(circuito.getMeta(otroID).getY());
-		this.nickOponente = tanqueLocalLigadoOponente.getNick();
+		this.nickOponente = conexion.getNickTanqueOponente();
 		this.nickPropio = tanquePropio.getNick();
 		
 		
@@ -188,11 +188,11 @@ public class Partida extends Canvas implements Finals, Runnable{
 		tanqueLocalLigadoOponente.pintar(g);
 		bolaBuena.pintar(g);
 		bolaMala.pintar(g);
-		g.setColor(Color.white);
+		g.setColor(Finals.COLOR_LEYENDAS_PARTIDA);
 		
 		
 		g.drawString(((nickPropio!=null)?nickPropio:("Jugador " + (conexion.getID()+1))), 10, 25); // Grafica el nick propio
-		g.drawString(((nickOponente!=null)?nickOponente:("Jugador " + (((conexion.getID()+1)%2))+1)), 10, 35); // Grafica el nick oponente
+		g.drawString(((nickOponente!=null)?nickOponente:("Jugador " + (int)(((conexion.getID()+1)%2)+1))), 30, 55); // Grafica el nick oponente
 		
 		
 		
