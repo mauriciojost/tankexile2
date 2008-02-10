@@ -7,5 +7,5 @@ public interface CircuitoControlable extends Remote {
 	
 	
 	public void informarChoque(int[] parametrosDelChoque) throws RemoteException;
-	
+	public void oponenteLlego() throws RemoteException;
 }

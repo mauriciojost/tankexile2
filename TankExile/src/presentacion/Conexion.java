@@ -22,12 +22,7 @@ import javax.swing.JOptionPane;
 public class Conexion implements Conectable{
 
 	private Conectable conexionRemoto;
-	private Tanque tanquePropio; // Tanque correspondiente al host propio (o no-remoto).
-	private Controlable tanqueRemotoAControlar; // Interfaz con la que se controla el tanque propio remoto (en el host oponente).
-	private BolaControlable bolaBuenaAControlar;
-	private BolaControlable bolaMalaAControlar;
-	private Bola bolaBuenaLocal;
-	private Bola bolaMalaLocal;
+	
 	private VentanaControlable ventanaRemota; // Interfaz con la que se hace la manipulación de la ventana remota de selección de circuitos.
 	private String iPOponente; // Ip del host oponente.
 	private final int PUERTO = 4500; // Puerto al que se asocian todos los registros.
@@ -35,6 +30,14 @@ public class Conexion implements Conectable{
 	private boolean ventanaLista = false; // Indicador de la disponibilidad o no de la ventana (de selección de circuito) remota para el host local.
 	private boolean conexionLista = false; //Indicador de la conexión con el host remoto.
 	private boolean bolasListo = false; //Indicador de la disponibilidad de las bolas remotas.
+	
+	
+	private Tanque tanquePropio; // Tanque correspondiente al host propio (o no-remoto).
+	private Controlable tanqueRemotoAControlar; // Interfaz con la que se controla el tanque propio remoto (en el host oponente).
+	private BolaControlable bolaBuenaAControlar;
+	private BolaControlable bolaMalaAControlar;
+	private Bola bolaBuenaLocal;
+	private Bola bolaMalaLocal;
 	
 	private double clavePropia; // Valor numérico generado localmente para la inicialización del turno.
 	private double claveOponente; // Valor numérico enviado desde el oponente para iniciar el turno.
@@ -107,6 +110,7 @@ public class Conexion implements Conectable{
 
 	// Método que pone la ventana de selección de circuitos remota a disposición de este host.
 	public VentanaControlable ponerADisposicionVentanaRemota() throws Exception{	
+		ventanaLista = false;
 		Registry registry = LocateRegistry.getRegistry(iPOponente,PUERTO);
 		this.ventanaRemota = (VentanaControlable) registry.lookup("Clave ventana");    
 		//System.out.println("Conexión de cliente exitosa. Ventana remota a disposición local.");
@@ -189,6 +193,7 @@ public class Conexion implements Conectable{
 	// Pone al tanque remoto a disposición del host local, para su control.
 	
 	public void ponerADisposicionTanqueRemoto() throws Exception{
+		this.tanqueListo = false;
 		//System.out.println("Conexión llamando a TankRMI en el otro host (IP:" + iPOponente + "): esperando respuesta...");
 		Registry registry = LocateRegistry.getRegistry(iPOponente, PUERTO);
 		Controlable retorno = (Controlable) registry.lookup("Clave tanques");
@@ -265,6 +270,7 @@ public class Conexion implements Conectable{
 	// Método que pone a las bolas remotas a disposición del host local, para su control.
 	// Es privado, sólo utilizado por el método establecerComunicacionBolasRemotas().
 	public void ponerADisposicionBolasRemotas() throws Exception{
+		this.bolasListo = false;
 		//System.out.println("Conexión llamando a TankRMI en el otro host (IP:" + iPOponente + "): esperando respuesta...");
 		Registry registry = LocateRegistry.getRegistry(iPOponente, PUERTO);
 		this.bolaBuenaAControlar = (BolaControlable) registry.lookup("Clave bolaBuena");
@@ -328,6 +334,7 @@ public class Conexion implements Conectable{
 			
 			CircuitoControlable stub = (CircuitoControlable) UnicastRemoteObject.exportObject(circuitoPropio, PUERTO);		
 			Registry registry = LocateRegistry.getRegistry(PUERTO);
+			
 			registry.rebind("Clave circuito", stub);
 			System.out.println("Servidor de circuito local listo.");
 			
@@ -340,6 +347,7 @@ public class Conexion implements Conectable{
 	// Método que establece la comunicación con el circuito remoto.
 	// Pone al circuito remoto a disposición del host local, para su control.
 	public void ponerADisposicionCircuitoRemoto() throws Exception{	
+		this.circuitoListo = false;
 		Registry registry = LocateRegistry.getRegistry(iPOponente, PUERTO);
 		CircuitoControlable retorno = (CircuitoControlable) registry.lookup("Clave circuito");
 		System.out.println("Conexión de circuito exitosa. Circuito remoto a disposición.");
@@ -435,8 +443,40 @@ public class Conexion implements Conectable{
 			
 		}*/
 	}
-	public int getID(){
+	
+	public void finDePartida(){
+		Runnable hilitoMensajeOponente = new Runnable(){
+			public void run(){
+				try {
+					circuitoRemotoAControlar.oponenteLlego();
+				} catch (RemoteException ex) {
+					System.out.println("Error en el método finDePartida en la clase Conexion.");
+					Logger.getLogger(Conexion.class.getName()).log(Level.SEVERE, null, ex);
+					}
+				}
+		};
+		(new Thread(hilitoMensajeOponente)).start();
+	}
+	
+	public void desbindearTodo(boolean inclusoConexion){
 		
+		try {
+			Registry registro = LocateRegistry.getRegistry(PUERTO);
+			String[] lista = registro.list();
+			String clave;
+			for(int i=0;i<lista.length;i++){
+				clave = lista[i];
+				if((!clave.equals("Clave conexion"))||inclusoConexion){
+					registro.unbind(clave);
+				}
+			}
+		} catch (Exception ex) {
+			System.out.println("Error en el método desbindearTodo de la clase Conexion.");
+			ex.printStackTrace();
+		}
+		
+	}
+	public int getID(){
 		return this.miID;
 	}
 }

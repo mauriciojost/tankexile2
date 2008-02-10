@@ -138,6 +138,12 @@ public class Presentacion1 extends JFrame implements MouseListener {
 	public void responderConect(){
 		if (!bConectar.isEnabled()) return;
 		
+		if (conexion != null){
+			conexion.desbindearTodo(true);
+			conexion.stopHilos();	
+		}
+		
+		
 		this.conexion = new Conexion(area_ip.getText());
 		
 		Runnable hilito = new Runnable(){
