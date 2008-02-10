@@ -15,27 +15,31 @@ import java.net.URL;
  * @author pc
  */
 public class Audio {
-	private URL url2 = null; 
-	public AudioClip clip2;
-	public Audio(){
+	private URL url = null; 
+	public AudioClip clip;
+	public Audio(String ubicacion){
 		try{
-			url2 = new URL("file:///" + System.getProperty("user.dir") + "/src/res/waterrun.WAV");
+			url = new URL("file:///" + System.getProperty("user.dir") + ubicacion);
 		}catch (MalformedURLException e) { 
 				e.printStackTrace();
 		}
-		this.clip2 = Applet.newAudioClip(getUrl());//getURL("/src/res/SOUNDER.WAV")
+		this.clip = Applet.newAudioClip(getUrl());//getURL("/src/res/SOUNDER.WAV")
 	}
 	
 	public URL getUrl(){
-		return url2;
+		return url;
 	}
 	
-	public void reproduccion(){ // Intento que si el oponente se mueve, yo reproduzca sonido para tal movimiento
-		clip2.loop();
+	public void reproduccionLoop(){ // Intento que si el oponente se mueve, yo reproduzca sonido para tal movimiento
+		clip.loop();
+	}
+	
+	public void reproduccionSimple(){
+		clip.play();
 	}
 	
 	public void detener(){
-		clip2.stop();
+		clip.stop();
 	}
 	
 

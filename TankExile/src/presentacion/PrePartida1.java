@@ -46,7 +46,7 @@ public class PrePartida1 extends JFrame implements MouseListener, VentanaControl
 	private JButton b_inicio;
 	private File circuitoSeleccionado;
 
-    private String nick_propio;
+    private String nick_propio = "";
 	private boolean sonido_prepartida = false;
 
     private JButton b_elegir_circuito;
@@ -196,7 +196,10 @@ public class PrePartida1 extends JFrame implements MouseListener, VentanaControl
 			 * 
 		}catch (Exception ex){ex.printStackTrace();}
 		*/
-        try {
+        try { 
+			if(this.getNickPropio().equals("")){ 
+				this.setNickPropio(" PLAYER"+PrePartida1.conexion.getID());
+			}
 			Partida partida = new Partida(this.circuitoSeleccionado.getPath(), conexion, this);
 			partida.jugar();
 			this.dispose();

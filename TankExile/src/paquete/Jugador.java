@@ -21,38 +21,38 @@ public class Jugador implements KeyListener{
 		return url;
 	}
 	public Jugador(Controlable tanque){
-		this.tanque = tanque;
-		try{
-			this.sonido_habilitado_jugador = tanque.getSonidoHabilitado();
-		} catch (RemoteException ex) {
-			System.out.println("Error en getSonidoHabilitado de Jugador.");
-			Logger.getLogger(Jugador.class.getName()).log(Level.SEVERE, null, ex);
-			//JOptionPane.showMessageDialog(null, "El oponente abandono conexión");
-			System.exit(0);
-		}
+		this.tanque = tanque;  
+//		try{
+//			this.sonido_habilitado_jugador = tanque.getSonidoHabilitado();
+//		} catch (RemoteException ex) {
+//			System.out.println("Error en getSonidoHabilitado de Jugador.");
+//			Logger.getLogger(Jugador.class.getName()).log(Level.SEVERE, null, ex);
+//			//JOptionPane.showMessageDialog(null, "El oponente abandono conexión");
+//			System.exit(0);
+//		}
 				
-		try{
-			
-			url = new URL("file:///" + System.getProperty("user.dir") + "/src/res/waterrun.WAV");
-		}catch (MalformedURLException e) { 
-				e.printStackTrace();
-		}
-		this.clip = Applet.newAudioClip(getUrl());//getURL("/src/res/SOUNDER.WAV")
+//		try{
+//			
+//			url = new URL("file:///" + System.getProperty("user.dir") + "/src/res/waterrun.WAV");
+//		}catch (MalformedURLException e) { 
+//				e.printStackTrace();
+//		}
+//		this.clip = Applet.newAudioClip(getUrl());//getURL("/src/res/SOUNDER.WAV")
 	}
 	
 	public void keyReleased(KeyEvent e) {
 		try { 
 			switch (e.getKeyCode()) {
-				case KeyEvent.VK_DOWN: clip.stop(); auxiliar_sonido_jugador = false;
+				case KeyEvent.VK_DOWN: //clip.stop(); auxiliar_sonido_jugador = false;
 					tanque.noIrAbajo();
 					break;
-				case KeyEvent.VK_UP: clip.stop(); auxiliar_sonido_jugador = false;
+				case KeyEvent.VK_UP: //clip.stop(); auxiliar_sonido_jugador = false;
 					tanque.noIrArriba();
 					break;
-				case KeyEvent.VK_LEFT: clip.stop(); auxiliar_sonido_jugador = false;
+				case KeyEvent.VK_LEFT: //clip.stop(); auxiliar_sonido_jugador = false;
 					tanque.noIrIzquierda();
 					break;
-				case KeyEvent.VK_RIGHT: clip.stop(); auxiliar_sonido_jugador = false;
+				case KeyEvent.VK_RIGHT: //clip.stop(); auxiliar_sonido_jugador = false;
 					tanque.noIrDerecha();
 					break;
 				case KeyEvent.VK_SHIFT:
@@ -67,16 +67,16 @@ public class Jugador implements KeyListener{
 	public void keyPressed(KeyEvent e) {			
 		try { 
 			switch (e.getKeyCode()) {
-				case KeyEvent.VK_UP: if(!auxiliar_sonido_jugador && sonido_habilitado_jugador){ clip.loop(); auxiliar_sonido_jugador = true;}
+				case KeyEvent.VK_UP: //if(!auxiliar_sonido_jugador && sonido_habilitado_jugador){ clip.loop(); auxiliar_sonido_jugador = true;}
 					tanque.irArriba();
 					break;
-				case KeyEvent.VK_LEFT: if(!auxiliar_sonido_jugador && sonido_habilitado_jugador){ clip.loop(); auxiliar_sonido_jugador = true;}
+				case KeyEvent.VK_LEFT: //if(!auxiliar_sonido_jugador && sonido_habilitado_jugador){ clip.loop(); auxiliar_sonido_jugador = true;}
 					tanque.irIzquierda();
 					break;
-				case KeyEvent.VK_RIGHT: if(!auxiliar_sonido_jugador && sonido_habilitado_jugador){ clip.loop(); auxiliar_sonido_jugador = true;}
+				case KeyEvent.VK_RIGHT: //if(!auxiliar_sonido_jugador && sonido_habilitado_jugador){ clip.loop(); auxiliar_sonido_jugador = true;}
 					tanque.irDerecha();
 					break;
-				case KeyEvent.VK_DOWN: if(!auxiliar_sonido_jugador && sonido_habilitado_jugador){ clip.loop(); auxiliar_sonido_jugador = true;}
+				case KeyEvent.VK_DOWN: //if(!auxiliar_sonido_jugador && sonido_habilitado_jugador){ clip.loop(); auxiliar_sonido_jugador = true;}
 					tanque.irAbajo();
 					break;
 				case KeyEvent.VK_SHIFT:

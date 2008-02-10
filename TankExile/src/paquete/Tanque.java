@@ -44,11 +44,12 @@ public class Tanque implements Controlable{
     private static Circuito circuito; // Circuito en el cual está el tanque.
 	private int id; // Identificador del tanque.
 
-	private URL url = null;
-	public AudioClip clip;	
+//	private URL url = null;
+//	public AudioClip clip;	
 	private boolean ayuda_sonido = false;
-	private boolean sonido_habilitado = false;
-	private Audio audio = new Audio();
+	private static boolean sonido_habilitado = false;
+	private Audio audio_movimiento;
+	private Audio audio_choque;
 
 	public boolean getSonidoHabilitado(){
 		return sonido_habilitado;
@@ -58,9 +59,9 @@ public class Tanque implements Controlable{
 		sonido_habilitado = sh;
 	}
 	
-	public URL getUrl(){
-		return url;
-	}
+//	public URL getUrl(){
+//		return url;
+//	}
 		
 	public int getID(){
 		return id;
@@ -120,13 +121,8 @@ public class Tanque implements Controlable{
 				e.printStackTrace();
 				System.exit(0);
 			}
-		
-		try{
-			url = new URL("file:///" + System.getProperty("user.dir") + "/src/res/click.WAV");
-		}catch (MalformedURLException e) { 
-				e.printStackTrace();
-		}
-		this.clip = Applet.newAudioClip(getUrl());//getURL("/src/res/SOUNDER.WAV")
+		audio_movimiento = new Audio("/src/res/waterrun.WAV");
+		audio_choque = new Audio("/src/res/click.WAV");
 	}
 	
 	private BufferedImage rotarImagen(BufferedImage img, int grados){
@@ -171,12 +167,12 @@ public class Tanque implements Controlable{
 		}
 		
 		if (arriba || abajo || derecha || izquierda){
-			temporizadorMovimento++;
+			temporizadorMovimento++;			if(sonido_habilitado && !ayuda_sonido){ audio_movimiento.reproduccionLoop(); ayuda_sonido = true;}
 			if (temporizadorMovimento==PERIODO_MOVIMENTO){
 				temporizadorMovimento = 0;
 				movimientoTrama=(movimientoTrama+trancoTanque)%TRAMAS_MOVIMIENTO;
 			}
-		}
+		}else{ audio_movimiento.detener(); ayuda_sonido = false;}
 		
     }
     
@@ -269,7 +265,7 @@ public class Tanque implements Controlable{
 	// Método que genera los efectos de un choque en el tanque.
 	public void choque(){ 
 		teclasHabilitadas = false;
-		choque = true;              if(sonido_habilitado){ clip.play();} // Reproduce sonido para choque local
+		choque = true;              if(sonido_habilitado){ audio_choque.reproduccionSimple();} // Reproduce sonido para choque local
 		forzarTeclasSueltas();
 		actualizarVelocidades();
 		temporizadorChoque=0;
@@ -280,13 +276,13 @@ public class Tanque implements Controlable{
 	
 	
 	public void setTodo(int x, int y, int direccion, int movimientoTrama, int choqueTrama){
-		if((sonido_habilitado? ((this.X != x || this.Y != y) && !ayuda_sonido):false)){
-			audio.reproduccion(); // Reproduce sonido para movimiento del oponente.
-			ayuda_sonido = true; // No deja ingresar a este if
-		}else{
-			audio.detener();
-			ayuda_sonido = false; // Se podra ingresar al if (sujeto a las demas condiciones)
-		}
+//		if((sonido_habilitado? ((this.X != x || this.Y != y) && !ayuda_sonido):false)){
+//			audio.reproduccion(); // Reproduce sonido para movimiento del oponente.
+//			ayuda_sonido = true; // No deja ingresar a este if
+//		}else{
+//			audio.detener();
+//			ayuda_sonido = false; // Se podra ingresar al if (sujeto a las demas condiciones)
+//		}
 		this.X = x;
 		this.Y = y;
 		this.direccion = direccion;
