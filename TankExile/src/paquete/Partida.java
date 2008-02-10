@@ -166,7 +166,7 @@ public class Partida extends Canvas implements Finals, Runnable{
     // Método encargado de brindar la imagen correcta (representativa del estado del tanque) para que esta sea pintada en pantalla.
     public void pintarEscena() {
 		Graphics2D g = (Graphics2D)estrategia.getDrawGraphics();
-		g.setColor(Color.WHITE);
+		g.setColor(Color.lightGray);
 
 		g.fillRect(0,0,this.getWidth(),this.getHeight());
 		circuito.pintar(g);
@@ -175,7 +175,8 @@ public class Partida extends Canvas implements Finals, Runnable{
 		tanqueLocalLigadoOponente.pintar(g);
 		bolaBuena.pintar(g);
 		bolaMala.pintar(g);
-		g.drawString(prePartida.getNickPropio(), 10, 25); // Grafica el nick propio
+		g.setColor(Color.white);
+		g.drawString(((prePartida.getNickPropio()!=null)?prePartida.getNickPropio():("Jugador " + (conexion.getID()+1))), 10, 25); // Grafica el nick propio
 		estrategia.show();
     }
 
