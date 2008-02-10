@@ -50,6 +50,7 @@ public class Tanque implements Controlable{
 	private static boolean sonido_habilitado = false;
 	private Audio audio_movimiento;
 	private Audio audio_choque;
+	private String nick;
 
 	public boolean getSonidoHabilitado(){
 		return sonido_habilitado;
@@ -291,5 +292,12 @@ public class Tanque implements Controlable{
 	}
 	public int getChoqueTrama(){
 		return choqueTrama;
+	}
+	
+	public String getNick(){
+		return nick;
+	}
+	public void setNick(String nick){
+		this.nick = nick;
 	}
 }	
