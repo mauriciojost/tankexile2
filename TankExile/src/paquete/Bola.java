@@ -20,6 +20,7 @@ public class Bola extends Thread implements BolaControlable{
 
 	private int currentFrame;
 	public Bola(boolean buena) {
+		this.setName(buena?"Hilo bola buena":"Hilo bola mala");
 		this.buena = buena;
 		if (buena)
 			x = x + 35;
@@ -47,11 +48,12 @@ public class Bola extends Thread implements BolaControlable{
 		correrHilos = false;
 	}
 	
+	@Override
 	public void run(){
 		while(correrHilos){
 			actuar();
 			try {
-				this.sleep(Finals.PERIODO*2);
+				Thread.sleep(Finals.PERIODO*2);
 			} catch (InterruptedException ex) {
 				Logger.getLogger(Bola.class.getName()).log(Level.SEVERE, null, ex);
 			}

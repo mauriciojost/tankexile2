@@ -444,7 +444,7 @@ public class Conexion implements Conectable{
 		}*/
 	}
 	
-	public void finDePartida(){
+	public void partidaPerdida(){
 		Runnable hilitoMensajeOponente = new Runnable(){
 			public void run(){
 				try {
@@ -455,7 +455,7 @@ public class Conexion implements Conectable{
 					}
 				}
 		};
-		(new Thread(hilitoMensajeOponente)).start();
+		(new Thread(hilitoMensajeOponente, "Hilo del mensaje de finalización para el oponente")).start();
 	}
 	
 	public void desbindearTodo(boolean inclusoConexion){
