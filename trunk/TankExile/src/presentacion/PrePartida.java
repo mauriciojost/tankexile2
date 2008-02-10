@@ -25,17 +25,17 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-public class PrePartida1 extends JFrame implements MouseListener, VentanaControlable{
+public class PrePartida extends JFrame implements MouseListener, VentanaControlable{
 	private final String NOMBRE_CIRCUITO_TEMPORAL = "temporal.tmp";
-	private static Presentacion1 presentacion;
+	private static Presentacion presentacion;
 
 	private static VentanaControlable ventanaRemota;
 	private static Conexion conexion;
 
-	private static PrePartida1 prePartida;
+	private static PrePartida prePartida;
 
 	private Escenografia escenografia;
-	private Configurador1 configurador;
+	private Configurador configurador;
 	private JTextField estado;
 	//private String imageFilePath = "C:\\tank.jpg";
 	//private ImageIcon ii = new ImageIcon(imageFilePath);
@@ -52,16 +52,16 @@ public class PrePartida1 extends JFrame implements MouseListener, VentanaControl
     private JButton b_elegir_circuito;
 	
 	
-	public static PrePartida1 getPrePartida(Presentacion1 presentacion, Conexion conexion){
+	public static PrePartida getPrePartida(Presentacion presentacion, Conexion conexion){
 		if (prePartida != null){
-			PrePartida1.conexion = conexion;
-			PrePartida1.presentacion = presentacion;
+			PrePartida.conexion = conexion;
+			PrePartida.presentacion = presentacion;
 			return prePartida;
 		}else{
 			
-			PrePartida1.conexion = conexion;
-			PrePartida1.presentacion = presentacion;
-			prePartida = new PrePartida1(presentacion);
+			PrePartida.conexion = conexion;
+			PrePartida.presentacion = presentacion;
+			prePartida = new PrePartida(presentacion);
 			return prePartida;
 		}
 	}
@@ -69,13 +69,13 @@ public class PrePartida1 extends JFrame implements MouseListener, VentanaControl
 	
 	
 	public void setVentanaRemota(VentanaControlable ventanaRemota){
-		PrePartida1.ventanaRemota = ventanaRemota;
+		PrePartida.ventanaRemota = ventanaRemota;
 	}
 	
 
 	// Constructor de la clase.
 	
-	private PrePartida1(Presentacion1 presentacion){
+	private PrePartida(Presentacion presentacion){
 		super("Tank Exile - Pre Partida");
 
 		this.presentacion=presentacion;
@@ -198,13 +198,13 @@ public class PrePartida1 extends JFrame implements MouseListener, VentanaControl
 		*/
         try { 
 			if(this.getNickPropio().equals("")){
-				this.setNickPropio(" PLAYER"+PrePartida1.conexion.getID());
+				this.setNickPropio(" PLAYER"+PrePartida.conexion.getID());
 			}
 			Partida partida = new Partida(this.circuitoSeleccionado.getPath(), conexion, this);
 			partida.jugar();
 			this.dispose();
 		} catch (Exception ex) {
-			Logger.getLogger(PrePartida1.class.getName()).log(Level.SEVERE, null, ex);
+			Logger.getLogger(PrePartida.class.getName()).log(Level.SEVERE, null, ex);
 		}
 	}
         
@@ -251,7 +251,7 @@ public class PrePartida1 extends JFrame implements MouseListener, VentanaControl
 	public void responderOpcion(){
 		//configurar sonido y nombre del jugador
 		this.dispose();
-		this.configurador = new Configurador1(prePartida);
+		this.configurador = new Configurador(prePartida);
 		
 	}
 	
@@ -266,7 +266,7 @@ public class PrePartida1 extends JFrame implements MouseListener, VentanaControl
 		System.exit(0);
 	}
 	
-	public static PrePartida1 getPrePartida() {
+	public static PrePartida getPrePartida() {
 		return prePartida;
 
 	}
@@ -278,7 +278,7 @@ public class PrePartida1 extends JFrame implements MouseListener, VentanaControl
 			this.getClass().getMethod("responder"+nombre, (Class[])null).invoke(this, (Object[])null);
 		} catch (Exception ex) {	
 			ex.printStackTrace();
-			Logger.getLogger(PrePartida1.class.getName()).log(Level.SEVERE, null, ex);
+			Logger.getLogger(PrePartida.class.getName()).log(Level.SEVERE, null, ex);
 		}
 	}
 

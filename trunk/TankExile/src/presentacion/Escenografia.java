@@ -26,13 +26,13 @@ public class Escenografia extends JFrame implements MouseListener, ListSelection
     private int indeX;
     final static String tec = ".tec";
     private File[] vector_de_archivos;//* = dir.listFiles();*/
-    private PrePartida1 prePartida;
+    private PrePartida prePartida;
     private JTextField estado = new JTextField("Estado: ");
 	private JButton b_seleccion;
 	private JButton b_cancelar;
 	private File ultimoArchivoElegido;
 	
-    public Escenografia(PrePartida1 prepartida) {
+    public Escenografia(PrePartida prepartida) {
 
 		super("TankExile - Seleccionar Escenario");
 		//setBounds(cx,cy,Finals.ANCHO_VENTANA-200,Finals.ALTO_VENTANA-300);
@@ -89,7 +89,7 @@ public class Escenografia extends JFrame implements MouseListener, ListSelection
 					// LINEA REEE IMPORTANTE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 					Escenografia.getEsc().dispose();
 					
-					PrePartida1.getPrePartida1().setVisible(true);
+					PrePartida.getPrePartida1().setVisible(true);
 				}
 			}
 		);
@@ -101,11 +101,11 @@ public class Escenografia extends JFrame implements MouseListener, ListSelection
 			public void actionPerformed(ActionEvent e) {
 				Escenografia.getEsc().dispose();
 
-				PrePartida1.getPrePartida1().setLocation(Escenografia.getEsc().getX(), Escenografia.getEsc().getY());
+				PrePartida.getPrePartida1().setLocation(Escenografia.getEsc().getX(), Escenografia.getEsc().getY());
 
-				PrePartida1.getPrePartida1().setVisible(true);
+				PrePartida.getPrePartida1().setVisible(true);
 
-				PrePartida1.getPrePartida1().setEstado("Estado: Se ha seleccionado un circuito.");
+				PrePartida.getPrePartida1().setEstado("Estado: Se ha seleccionado un circuito.");
             //hay que implementar la vuelta atras a la pagina que la precede
 			}
 		});
@@ -227,7 +227,7 @@ public class Escenografia extends JFrame implements MouseListener, ListSelection
 			this.getClass().getMethod("responder"+nombre, (Class[])null).invoke(this, (Object[])null);
 		} catch (Exception ex) {	
 			ex.printStackTrace();
-			Logger.getLogger(PrePartida1.class.getName()).log(Level.SEVERE, null, ex);
+			Logger.getLogger(PrePartida.class.getName()).log(Level.SEVERE, null, ex);
 		}		
 	}
 
