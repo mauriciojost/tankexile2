@@ -16,7 +16,6 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 // Clase que contiene en sí el hilo principal del juego. Genera el circuito y los tanques, los hace actuar, y se encarga de pintarlos.
-import javax.swing.plaf.BorderUIResource;
 public class Partida extends Canvas implements Finals, Runnable{
     private BufferStrategy estrategia; // Atributo que permite establecer el Doble Buffering para pintar la pantalla.
     private Circuito circuito; // Circuito a ser creado para correr la partida.
@@ -30,20 +29,21 @@ public class Partida extends Canvas implements Finals, Runnable{
     private int yoID; // Representa el ID del jugador en este host.
     private int otroID; // Representa el ID del jugador oponente.
     //private String iPOponente; // Representa la dirección IP en la red del host del jugador oponente.
-    private Conexion conexion; // Objeto utilizado para todo lo relacionado a la comunicación entre ambos hosts.
-    private String nombreCircuitoTXT; // Atributo que representa el nombre del archivo del circuito.
-	private PrePartida1 prePartida;
+    private static Conexion conexion; // Objeto utilizado para todo lo relacionado a la comunicación entre ambos hosts.
+    private static String nombreCircuitoTXT; // Atributo que representa el nombre del archivo del circuito.
+	private static PrePartida1 prePartida;
 	private Thread hiloTanqueRemoto;
 	private Thread hiloBolasRemotas;
 	private Thread hiloCircuitoRemoto;
 	private boolean correrHilos = true;
 	private static Partida instanciaPartida;
-
+	private JFrame ventana;
+	
     // Contstructor. Genera los elementos básicos de una aplicación del tipo juego.
     public Partida(String nombreCircuitoTXT, Conexion conexion, PrePartida1 prePartida) {
-		this.prePartida = prePartida;
 		instanciaPartida = this;
-		JFrame ventana = new JFrame("TankExile"); // Armado de la ventana.
+		this.prePartida = prePartida;
+		ventana = new JFrame("TankExile"); // Armado de la ventana.
 		JPanel panel = (JPanel)ventana.getContentPane(); // Obtención de su JPanel.
 		//this.setBounds(0,0,Finals.ANCHO_VENTANA,Finals.ALTO_VENTANA); // Establecimiento de las dimensiones de este objeto Partida.
 		ventana.setLayout(new GridLayout());
@@ -67,17 +67,20 @@ public class Partida extends Canvas implements Finals, Runnable{
 		ventana.setResizable(false); // La ventana no es de tamaño ajustable.
 		this.createBufferStrategy(2); // Es creado sobre este canvas una estrategia de buffering, de dos buffers.
 		estrategia = getBufferStrategy(); // Sobre este objeto se aplicará el método de paint. Este realizará por sí mismo el doble buffering.
-		this.requestFocus(); // El foco es tomado.
+		
 
 		this.conexion = conexion;
 		this.yoID = conexion.getID()%2; // Son asignados los valores de ID e IP del oponente.
 		this.otroID = (conexion.getID()+1)%2;
 		//this.iPOponente = iPOponente;
 		this.nombreCircuitoTXT = nombreCircuitoTXT; // Asignación del nombre del archivo del circuito.
-		this.jugar();
+		
     }
     // Método que arranca la escena de la partida. Involucra la inicialización de los elementos principales del juego en sí.
     public void iniciarEscena() {
+		ventana.setVisible(true);
+		this.requestFocus(); // El foco es tomado.
+		
 		circuito = new Circuito(nombreCircuitoTXT); // Creación del circuito de juego.
 		circuito.setConexion(conexion);
 		tanquePropio = new Tanque(circuito, yoID); // Creación del tanque comandado por el jugador en este host.
@@ -155,7 +158,7 @@ public class Partida extends Canvas implements Finals, Runnable{
     // Método encargado de brindar la imagen correcta (representativa del estado del tanque) para que esta sea pintada en pantalla.
     public void pintarEscena() {
 		Graphics2D g = (Graphics2D)estrategia.getDrawGraphics();
-		g.setColor(Color.LIGHT_GRAY);
+		g.setColor(Color.WHITE);
 
 		g.fillRect(0,0,this.getWidth(),this.getHeight());
 		circuito.pintar(g);
@@ -168,7 +171,7 @@ public class Partida extends Canvas implements Finals, Runnable{
     }
 
     // Método que contiene el bucle de ejecución principal del juego.
-    private void jugar(){
+    public void jugar(){
 		iniciarEscena();
 		Thread hiloJuego = new Thread(this);
 		hiloJuego.start();
@@ -186,7 +189,6 @@ public class Partida extends Canvas implements Finals, Runnable{
 				Thread.sleep(Finals.PERIODO);
 			}catch(InterruptedException e){e.printStackTrace();}
 		}
-		
     }
 	public static Partida getPartida(){
 		return instanciaPartida;
@@ -198,12 +200,10 @@ public class Partida extends Canvas implements Finals, Runnable{
 			conexion.stopHilos();
 			this.bolaBuena.stopHilo();
 			this.bolaMala.stopHilo();
-			this.finalize();
-			this.circuito = null;
-			
+			ventana.dispose();
 		} catch (Throwable ex) {
 			Logger.getLogger(Partida.class.getName()).log(Level.SEVERE, null, ex);
 		}
-		
+		conexion.desbindearTodo(false);
 	}
 }

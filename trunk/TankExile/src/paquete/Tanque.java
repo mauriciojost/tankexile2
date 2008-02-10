@@ -1,24 +1,26 @@
 package paquete;
 
 import java.awt.Graphics2D;
-import java.awt.Image;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import javax.imageio.ImageIO;
-import javax.swing.JOptionPane;
 
 
 public class Tanque implements Controlable{
 	private static final int TRAMAS_CHOQUE = 2; // Cantidad de imágenes del tanque.
 	private static final int PERIODO_CHOQUE_CHICO = 50; // Duración de los efectos de un choque.
-	private static final int PERIODO_CHOQUE_GRANDE = 100; // Duración de los efectos de un choque.
-	private static final int TRAMAS_MOVIMIENTO = 16; // Cantidad de imágenes del tanque.
+	private static final int PERIODO_CHOQUE_GRANDE = 150; // Duración de los efectos de un choque.
+	private static final int TRAMAS_MOVIMIENTO = 18; // Cantidad de imágenes del tanque.
 	private static final int PERIODO_MOVIMENTO = 1;
-	private int TRANCO_TANQUE = 1; // Tamaño del tranco de avance del tanque.
+	private int contadorSubTramaChoque;
+	private final int SUB_PERIODO_CHOQUE = 5;
+	
+	
 	private int vX; // Velocidad horizontal del tanque.
 	private int vY; // Velocidad vertical del tanque.
+	private int trancoTanque = 1; // Tamaño del tranco de avance del tanque (unidad de avance).
 	private boolean teclasHabilitadas = true;
 	private boolean choqueGrande = false;
 	private int temporizadorMovimento = 0;
@@ -37,7 +39,7 @@ public class Tanque implements Controlable{
     private static HashMap<Integer, BufferedImage> imagenes = new HashMap<Integer, BufferedImage>(); // Conjunto de imágenes del tanque, asociadas a una clave cada una mediante un HashMap.
     private static Circuito circuito; // Circuito en el cual está el tanque.
 	private int id; // Identificador del tanque.
-
+	
 	
 	public int getID(){
 		return id;
@@ -52,7 +54,7 @@ public class Tanque implements Controlable{
     }
 	
 	public int getVelocidad(){
-		return TRANCO_TANQUE;
+		return trancoTanque;
 	}
 	
 	// Método que pinta en pantalla la imagen que corresponde al tanque y a su estado.
@@ -65,23 +67,6 @@ public class Tanque implements Controlable{
 		return direccion;
     }
     
-	private String convertirDireccionAString(int direccion){
-		switch (direccion){
-			
-			/*
-				ABAJO		0
-				IZQUIERDA	1
-				DERECHA		2
-				ARRIBA		3
-			 */
-			case 0: return "abajo";
-			case 1: return "izquierda";
-			case 2: return "derecha";
-			case 3: return "arriba";
-			default: return "";
-		}
-	}
-	
 	// Constructor.
 	@SuppressWarnings("static-access")
 	public Tanque(Circuito circuito, int id) {
@@ -92,20 +77,22 @@ public class Tanque implements Controlable{
 		if (imagenes.isEmpty())
 			try{
 				for (int i = 0; i < this.TRAMAS_MOVIMIENTO;i++){
-					imagenes.put(new Integer(30000+i), ImageIO.read(getClass().getClassLoader().getResource("res/Tanque_arriba"+i+".gif")));
-					imagenes.put(new Integer(30100+i), ImageIO.read(getClass().getClassLoader().getResource("res/Tanque_arribac"+i+".gif")));
+					String nombre = "res/Tanque_arriba"+(TRAMAS_MOVIMIENTO - i-1)+".gif";
+					String nombrec = "res/Tanque_arribac"+(TRAMAS_MOVIMIENTO - i-1)+".gif";
+					imagenes.put(new Integer(30000+i), ImageIO.read(getClass().getClassLoader().getResource(nombre)));
+					//imagenes.put(new Integer(30100+i), ImageIO.read(getClass().getClassLoader().getResource(nombrec)));
 				}
 				for (int i = 0; i < this.TRAMAS_MOVIMIENTO;i++){
 					imagenes.put(new Integer(Finals.ABAJO    *10000+ i), this.rotarImagen(imagenes.get(30000+ i),180));
-					imagenes.put(new Integer(Finals.ABAJO    *10000 + 100+ i), this.rotarImagen(imagenes.get(30100+ i),180));
+					//imagenes.put(new Integer(Finals.ABAJO    *10000 + 100+ i), this.rotarImagen(imagenes.get(30100+ i),180));
 				}
 				for (int i = 0; i < this.TRAMAS_MOVIMIENTO;i++){
 					imagenes.put(new Integer(Finals.DERECHA  *10000+ i), this.rotarImagen(imagenes.get(30000+ i), 90));
-					imagenes.put(new Integer(Finals.DERECHA  *10000 + 100 + i), this.rotarImagen(imagenes.get(30100+ i), 90));
+					//imagenes.put(new Integer(Finals.DERECHA  *10000 + 100 + i), this.rotarImagen(imagenes.get(30100+ i), 90));
 				}
 				for (int i = 0; i < this.TRAMAS_MOVIMIENTO;i++){
 					imagenes.put(new Integer(Finals.IZQUIERDA*10000+ i), this.rotarImagen(imagenes.get(30000+ i),-90));
-					imagenes.put(new Integer(Finals.IZQUIERDA*10000 + 100 + i), this.rotarImagen(imagenes.get(30100+ i),-90));
+					//imagenes.put(new Integer(Finals.IZQUIERDA*10000 + 100 + i), this.rotarImagen(imagenes.get(30100+ i),-90));
 				}
 			}catch(Exception e){
 				System.out.println("Error: no se ha podido realizar la carga de imágenes de la clase Tanque, "+e.getClass().getName()+" "+e.getMessage());
@@ -125,13 +112,8 @@ public class Tanque implements Controlable{
 	
 	// Método de actuación del tanque.
 	public void actuar() {
-		
-		
-		
 		X+=vX; // Actualización de la posición.
 		Y+=vY;
-		
-		
 		
 		if(circuito.hayColision(this)){ // Detección de colisiones. Responsabilidades del circuito.
 			this.choque();// En caso de haberla, sufrir efectos del mismo.
@@ -141,12 +123,15 @@ public class Tanque implements Controlable{
 			this.choque();
 		}
 		
-		
-		
 					
 		// Efectos del estado de choque.
 		if (choque){
-			choqueTrama = (choqueTrama + 1) % TRAMAS_CHOQUE;
+			contadorSubTramaChoque++;
+			if (contadorSubTramaChoque==SUB_PERIODO_CHOQUE){
+				choqueTrama = (choqueTrama + 1) % TRAMAS_CHOQUE;
+				contadorSubTramaChoque=0;
+			}
+			
 			temporizadorChoque++;
 			teclasHabilitadas = false;
 			
@@ -161,7 +146,7 @@ public class Tanque implements Controlable{
 			temporizadorMovimento++;
 			if (temporizadorMovimento==PERIODO_MOVIMENTO){
 				temporizadorMovimento = 0;
-				movimientoTrama=(movimientoTrama+TRANCO_TANQUE)%TRAMAS_MOVIMIENTO;
+				movimientoTrama=(movimientoTrama+trancoTanque)%TRAMAS_MOVIMIENTO;
 			}
 		}
 		
@@ -174,10 +159,10 @@ public class Tanque implements Controlable{
 	// Método que actualiza las velocidades según se tengan o no ciertas teclas presionadas.
 	private void actualizarVelocidades(){
 		vX=0; vY=0;
-		if (abajo)		vY = +TRANCO_TANQUE;
-		if (arriba)		vY = -TRANCO_TANQUE;
-		if (izquierda)	vX = -TRANCO_TANQUE;
-		if (derecha)	vX = +TRANCO_TANQUE;
+		if (abajo)		vY = +trancoTanque;
+		if (arriba)		vY = -trancoTanque;
+		if (izquierda)	vX = -trancoTanque;
+		if (derecha)	vX = +trancoTanque;
 	}
   
 	// Métodos básicos de posicionamiento.
@@ -224,11 +209,11 @@ public class Tanque implements Controlable{
 	}
 	
 	public void acelerar(){
-		TRANCO_TANQUE = 2;
+		trancoTanque = 2;
 		actualizarVelocidades();
 	}
 	public void noAcelerar(){
-		TRANCO_TANQUE = 1;
+		trancoTanque = 1;
 		actualizarVelocidades();
 	}
 	
@@ -260,7 +245,8 @@ public class Tanque implements Controlable{
 		forzarTeclasSueltas();
 		actualizarVelocidades();
 		temporizadorChoque=0;
-		choqueGrande = (this.TRANCO_TANQUE==2);
+		choqueGrande = (this.trancoTanque==2);
+		contadorSubTramaChoque=0;
 	}
 	public void setTodo(int x, int y, int direccion, int movimientoTrama, int choqueTrama){
 		this.X = x;

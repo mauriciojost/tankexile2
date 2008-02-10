@@ -166,7 +166,8 @@ public class PrePartida1 extends JFrame implements MouseListener, VentanaControl
 		}catch (Exception ex){ex.printStackTrace();}
 		*/
         try {
-			new Partida(this.circuitoSeleccionado.getPath(), conexion, this);
+			Partida partida = new Partida(this.circuitoSeleccionado.getPath(), conexion, this);
+			partida.jugar();
 			this.dispose();
 		} catch (Exception ex) {
 			Logger.getLogger(PrePartida1.class.getName()).log(Level.SEVERE, null, ex);

@@ -81,12 +81,26 @@ public class Circuito implements CircuitoControlable {
 		Meta meta = metas[Math.abs((tanque.getID()+1)%2)];
 		if (((tanque.getX() > (meta.getX() - 20))&&(tanque.getX() < (meta.getX() + 20)))&&((tanque.getY() > (meta.getY() - 20))&&(tanque.getY() < (meta.getY() + 20)))){
 			//JOptionPane
-			JOptionPane.showMessageDialog(null, "Mensaje de llegada.");
-			Partida.getPartida().finalizar();
+			
+			Runnable hilitoMensajePropio = new Runnable(){
+				public void run(){
+					Partida.getPartida().finalizar();
+					JOptionPane.showMessageDialog(null, "Fin del juego. Usted ha ganado!!!");
+				}
+			};
+			(new Thread(hilitoMensajePropio)).start();
+			
+			conexion.finDePartida();
+			
 			return true;
 		}
-		
 		return false;
+	}
+	
+	
+	public void oponenteLlego() throws RemoteException{
+		JOptionPane.showMessageDialog(null, "Fin del juego. Usted ha perdido...");
+		Partida.getPartida().finalizar();
 	}
 	
 	// Método que indica mediante un booleano si ha existido una colisión con los muros del circuito, por parte del tanque indicado como parámetro.
