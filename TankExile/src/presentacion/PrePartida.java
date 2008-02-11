@@ -46,7 +46,7 @@ public class PrePartida extends JFrame implements MouseListener, VentanaControla
 	private JButton b_inicio;
 	private File circuitoSeleccionado;
 
-    private String nick_propio = "";
+    private String nick_propio = null;
 	private boolean sonido_prepartida = false;
 
     private JButton b_elegir_circuito;
@@ -79,11 +79,11 @@ public class PrePartida extends JFrame implements MouseListener, VentanaControla
 		super("Tank Exile - Pre Partida");
 
 		this.presentacion=presentacion;
-		setBounds(presentacion.getX(),presentacion.getY(),Finals.ANCHO_VENTANA-250,375);
+		setBounds(presentacion.getX(),presentacion.getY(),Finals.ANCHO_VENTANA-250,385);
 		setResizable(false); // No se permite dar nuevo tamaño a la ventana.
 		
 		JPanel panel = (JPanel)this.getContentPane(); // Panel donde se grafican los objetos (bloques)que componen el escenario y los tanques que representan a cada jugador.
-		panel.setPreferredSize(new Dimension(Finals.ANCHO_VENTANA-250,375));//Finals.ALTO_VENTANA-300
+		panel.setPreferredSize(new Dimension(Finals.ANCHO_VENTANA-250,385));//Finals.ALTO_VENTANA-300
 		panel.setLayout(new FlowLayout());
 		panel.setBackground(Color.LIGHT_GRAY);
 		
@@ -197,9 +197,6 @@ public class PrePartida extends JFrame implements MouseListener, VentanaControla
 		}catch (Exception ex){ex.printStackTrace();}
 		*/
         try { 
-			if(this.getNickPropio().equals("")){
-				this.setNickPropio(" PLAYER"+PrePartida.conexion.getID());
-			}
 			Partida partida = new Partida(this.circuitoSeleccionado.getPath(), conexion, this);
 			partida.jugar();
 			this.dispose();

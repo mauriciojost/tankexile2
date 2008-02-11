@@ -46,7 +46,7 @@ public class Configurador extends JFrame implements MouseListener {
 		
 		JTextArea titulo_nick_propio = creador.crearArea("Nick: ", false, Finals.colorGris);
 		
-		campo_nick_propio = creador.crearCampo("    ", true, Finals.colorBlanco);
+		campo_nick_propio = creador.crearCampo("", true, Finals.colorBlanco);
 		campo_nick_propio.setColumns(15);
 		
 		JButton sonido = creador.crearBoton("Sonido", "Habilita sonido", this);

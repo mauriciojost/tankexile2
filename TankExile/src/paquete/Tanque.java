@@ -79,7 +79,7 @@ public class Tanque implements Controlable{
 	public int getVelocidad(){
 		return trancoTanque;
 	}
-	
+	public void setVelocidad(int i){ trancoTanque = i;}
 	// Método que pinta en pantalla la imagen que corresponde al tanque y a su estado.
     public void pintar(Graphics2D g){
 		g.drawImage((BufferedImage)imagenes.get(new Integer(direccion * 10000 + choqueTrama * 100+ movimientoTrama)), X,Y, null);
@@ -268,11 +268,12 @@ public class Tanque implements Controlable{
 	// Método que genera los efectos de un choque en el tanque.
 	public void choque(){ 
 		teclasHabilitadas = false;
-		choque = true;              if(sonido_habilitado){ audio_choque.reproduccionSimple();} // Reproduce sonido para choque local
+		choque = true;              if(sonido_habilitado){ audio_choque.reproduccionSimple();} // Reproduce sonido para choque local.
 		forzarTeclasSueltas();
 		actualizarVelocidades();
 		temporizadorChoque=0;
-		choqueGrande = (this.trancoTanque==2);
+		choqueGrande = (this.trancoTanque==2); 
+		trancoTanque=1; // Modifica velocidad despues de comprobar el tipo de choque.
 		contadorSubTramaChoque=0;
 	}
 	
