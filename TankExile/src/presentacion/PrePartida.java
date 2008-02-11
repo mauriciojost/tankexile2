@@ -37,14 +37,11 @@ public class PrePartida extends JFrame implements MouseListener, VentanaControla
 	private Escenografia escenografia;
 	private Configurador configurador;
 	private JTextField estado;
-	//private String imageFilePath = "C:\\tank.jpg";
-	//private ImageIcon ii = new ImageIcon(imageFilePath);
-	private ImageIcon ii = new ImageIcon(getClass().getClassLoader().getResource("res/tank.JPG"));
-	private ImageIcon esp = new ImageIcon(getClass().getClassLoader().getResource("res/EsperaOponente.jpg"));
-	private JFrame ventanaEspera = new JFrame("Tank Exile - Esperando Oponente");
+	
+	private ImageIcon ii = new ImageIcon(getClass().getClassLoader().getResource("res/tank.GIF"));
 
 	private JButton b_inicio;
-	private File circuitoSeleccionado;
+	private File circuitoSeleccionado = new File(NOMBRE_CIRCUITO_TEMPORAL);
 
     private String nick_propio = null;
 	private boolean sonido_prepartida = false;
@@ -77,8 +74,8 @@ public class PrePartida extends JFrame implements MouseListener, VentanaControla
 	
 	private PrePartida(Presentacion presentacion){
 		super("Tank Exile - Pre Partida");
-
-		this.presentacion=presentacion;
+		
+	
 		setBounds(presentacion.getX(),presentacion.getY(),Finals.ANCHO_VENTANA-250,385);
 		setResizable(false); // No se permite dar nuevo tamaño a la ventana.
 		
@@ -87,16 +84,17 @@ public class PrePartida extends JFrame implements MouseListener, VentanaControla
 		panel.setLayout(new FlowLayout());
 		panel.setBackground(Color.LIGHT_GRAY);
 		
-		addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {System.exit(0);}
-		}); // Se define un objeto que escucha los eventos sobre la ventana.
+		addWindowListener(
+			new WindowAdapter() {	
+				public void windowClosing(WindowEvent e) {System.exit(0);}
+			}
+		); // Se define un objeto que escucha los eventos sobre la ventana.
 		
 		Creador creador = new Creador();
 		
 		JPanel panel_icono = creador.crearPanel(new Dimension(Finals.ANCHO_VENTANA-250,150), new FlowLayout());
 		
-		//Creo una Etiqueta para cargar icono q contiene a la imagen
+		// Crea una etiqueta para cargar icono que contiene a la imagen.
 		JLabel iM = new JLabel();
 		iM.setIcon(ii);
 		iM.setOpaque(false);
@@ -106,7 +104,6 @@ public class PrePartida extends JFrame implements MouseListener, VentanaControla
 		b_inicio = creador.crearBoton("Inicio", "Comienza la partida", this);
 		b_inicio.setEnabled(false);
 		
-		JButton b_cambia_ip = creador.crearBoton("Cambiar IP", "Permite realizar nueva conexion", this);
 				
 		b_elegir_circuito = creador.crearBoton("Elegir Circuito", "Permite seleccion de circuito", this);
 		b_elegir_circuito.setEnabled(conexion.getID()==1);
@@ -121,22 +118,22 @@ public class PrePartida extends JFrame implements MouseListener, VentanaControla
 		JPanel panel_botones = creador.crearPanel(new Dimension(Finals.ANCHO_VENTANA-250,200), new GridLayout(6,1));
 		
 		panel_botones.add(b_inicio);
-		panel_botones.add(b_cambia_ip);
 		panel_botones.add(b_elegir_circuito);
 		panel_botones.add(b_opciones);
 		panel_botones.add(b_salida);
 		panel_botones.add(estado);
-		
 		panel.add(panel_icono);
 		panel.add(panel_botones);
+		
 		setVisible(true);
 		
-		this.conexion = conexion;
-
-		this.prePartida=this;
-
+		PrePartida.conexion = conexion;
+		PrePartida.prePartida = this;
+		PrePartida.presentacion = presentacion;
 		
+		setEstado("Conexión establecida con éxito.");
 	}
+	
 	public void setSonidoHabilitado(boolean s){
 		sonido_prepartida = s;
 	}
@@ -159,43 +156,13 @@ public class PrePartida extends JFrame implements MouseListener, VentanaControla
 	
 	// Metodo que responde al evento sobre el boton Jugar.
 	public void responderInicio() {
-		//coneccionOponente es un campo q indica si el oponente ya presiono en jugar(true) o todavia no(false)
-       //en cada caso respectivamente comenzara el juego o se mantendra esperando el inicio en un Frame    
         if (!b_inicio.isEnabled()) return;
-           
-        //MOstrar pantalla de esperar oponente mientras Oponente.coneccionOponente sea Falso
-        //while(!Oponente.coneccionOponente){}
+        
+		if (conexion.getID()==1)
+			try{ventanaRemota.setInicioHabilitado(true);}catch(Exception e){e.printStackTrace();}
+        
         this.dispose();
-        /*try{
-			
-                             
-			ventanaEspera.setBounds(100,50,Finals.ANCHO_VENTANA-250,Finals.ALTO_VENTANA-370);
-			setResizable(false); // No se permite dar nuevo tamaño a la ventana.
-		
-			JPanel panel = (JPanel)this.getContentPane(); // Panel donde se grafican los objetos (bloques)que componen el escenario y los tanques que representan a cada jugador.
-			panel.setPreferredSize(new Dimension(Finals.ANCHO_VENTANA-250,Finals.ALTO_VENTANA-370));
-			//panel.setLayout(new GridLayout(2,1));
-			panel.setBackground(Color.LIGHT_GRAY);
-		
-			addWindowListener(
-				new WindowAdapter(){
-					@Override
-					public void windowClosing(WindowEvent e) {
-						System.exit(0);
-					}
-				}
-			); // Se define un objeto que escucha los eventos sobre la ventana.
-		 
-            JLabel iM = new JLabel();
-            iM.setIcon(ii);
-            iM.setOpaque(false);
-            iM.setSize(200, 200);
-            //panel.add(iM);
-                
-            //ventanaEspera.setVisible(true);
-			 * 
-		}catch (Exception ex){ex.printStackTrace();}
-		*/
+        
         try { 
 			Partida partida = new Partida(this.circuitoSeleccionado.getPath(), conexion, this);
 			partida.jugar();
@@ -217,11 +184,8 @@ public class PrePartida extends JFrame implements MouseListener, VentanaControla
 		
 		try {
 			if (propio) {
-				
 				conexion.enviarAHostRemoto(circuitoSeleccionado.getPath(), NOMBRE_CIRCUITO_TEMPORAL);				
 				try {copiarArchivo(circuitoSeleccionado.getPath(), NOMBRE_CIRCUITO_TEMPORAL);}catch(Exception e){e.printStackTrace();}
-				
-				
 			} else {
 				conexion.copiarDeHostRemoto(circuitoSeleccionado.getPath(), NOMBRE_CIRCUITO_TEMPORAL);
 			}
@@ -231,7 +195,7 @@ public class PrePartida extends JFrame implements MouseListener, VentanaControla
 		}	
 			
 		b_inicio.setEnabled(true);
-		try{ventanaRemota.setInicioHabilitado(true);}catch(Exception e){e.printStackTrace();}
+		
 		
 		this.circuitoSeleccionado = new File(NOMBRE_CIRCUITO_TEMPORAL);	
 		this.circuitoSeleccionado.deleteOnExit();
@@ -243,20 +207,12 @@ public class PrePartida extends JFrame implements MouseListener, VentanaControla
 			this.dispose();
 		}
 	}
-	
 
 	public void responderOpcion(){
 		//configurar sonido y nombre del jugador
 		this.dispose();
 		this.configurador = new Configurador(prePartida);
 		
-	}
-	
-	// Método que responde al evento sobre el boton Cambiar IP
-	public void responderCambia(){
-		this.dispose();
-		presentacion.setLocation(this.getX(), this.getY());
-		presentacion.setVisible(true);
 	}
 	
     public void responderSalida(){
@@ -283,13 +239,9 @@ public class PrePartida extends JFrame implements MouseListener, VentanaControla
 	public void mouseReleased(MouseEvent e) { }
 	public void mouseEntered(MouseEvent e) { }
 	public void mouseExited(MouseEvent e) { }
-
-	public void metodoDeControl() throws RemoteException {
-		throw new UnsupportedOperationException("Not supported yet.");
-	}
 	
 	public void setInicioHabilitado(boolean habilitada) throws RemoteException {
 		this.b_inicio.setEnabled(habilitada);
-		this.circuitoSeleccionado = new File(NOMBRE_CIRCUITO_TEMPORAL);	
+			
 	}
 }

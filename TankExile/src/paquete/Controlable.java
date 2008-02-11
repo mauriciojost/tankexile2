@@ -9,7 +9,7 @@ public interface Controlable extends Remote {
 	// Conjunto de métodos que se exige tenga un objeto controlable, sea por teclado o por comando remoto.
 	public void setX(int x)throws RemoteException; // Métodos de posición.
 	public void setY(int y)throws RemoteException;
-	public void setTodo(int x, int y, int direccion, int movimientoDeTrama, int tramaChoque)throws RemoteException;
+	public void setTodo(int x, int y, int direccion, int movimientoDeTrama, int tramaChoque, boolean moviendose)throws RemoteException;
 	public void setSonidoHabilitado(boolean s) throws RemoteException;
 	public boolean getSonidoHabilitado() throws RemoteException;
 	public void irArriba()throws RemoteException; // Métodos que indican inicio de un comando.
@@ -24,5 +24,7 @@ public interface Controlable extends Remote {
 	public void acelerar()throws RemoteException;	
 	public void noAcelerar()throws RemoteException;	
 	public void setDireccion(int direccion)throws RemoteException; // Método de orientación-dirección.			
-	public String getNick()throws RemoteException;	
+	public String getNickOponente()throws RemoteException;	
+	public void setMoviendose(boolean estaMoviendose) throws RemoteException;
+	public void choqueResumido() throws RemoteException;
 }

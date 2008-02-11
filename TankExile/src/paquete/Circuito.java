@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.rmi.RemoteException;
 import javax.swing.JOptionPane;
 import presentacion.Conexion;
+import presentacion.PrePartida;
 public class Circuito implements CircuitoControlable {
 	private CargadorCircuitoTXT cargadorTXT; // Permite la conversión del archivo txt a circuito.
 	private Bloque matrizDeBloques[][] = new Bloque [Finals.BLOQUES_NUM][Finals.BLOQUES_NUM]; // Matriz que contiene los elementos Bloque que son mapeados en la pantalla.
@@ -56,6 +57,9 @@ public class Circuito implements CircuitoControlable {
 	public void setConexion(Conexion conexion){
 		this.conexion = conexion;
 	}
+	public Conexion getConexion(){
+		return conexion;
+	}
 	
 	public void pintar(Graphics2D g){
 		for (int i = 0; i < Finals.BLOQUES_NUM; i++) {
@@ -86,6 +90,8 @@ public class Circuito implements CircuitoControlable {
 				public void run(){
 					Partida.getPartida().finalizar();
 					JOptionPane.showMessageDialog(null, "Fin del juego. Usted ha ganado!!!");
+					PrePartida.getPrePartida().setEstado("Fin del juego. Usted ha ganado...");
+					PrePartida.getPrePartida().setVisible(true);
 				}
 			};
 			(new Thread(hilitoMensajePropio, "Hilo de mensaje de llegada a la meta (propio)")).start();
@@ -99,6 +105,8 @@ public class Circuito implements CircuitoControlable {
 	
 	
 	public void oponenteLlego() throws RemoteException{
+		PrePartida.getPrePartida().setEstado("Usted ha perdido.");
+		PrePartida.getPrePartida().setVisible(true);
 		Partida.getPartida().finalizar();
 		JOptionPane.showMessageDialog(null, "Fin del juego. Usted ha perdido...");
 	}

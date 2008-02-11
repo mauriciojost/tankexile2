@@ -15,9 +15,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 // Clase cuya función es establecer la comunicación entre los dos hosts.
-
-
-
 import javax.swing.JOptionPane;
 public class Conexion implements Conectable{
 
@@ -49,7 +46,8 @@ public class Conexion implements Conectable{
 	private CircuitoControlable circuitoRemotoAControlar;
 	private Circuito circuitoPropio;
 	private ArrayList<int[]> choquesPendientesCircuitoRemoto;
-	
+	private PrePartida ventana;
+	private Tanque tanqueLocalLigadoOponente;
 	/* Formato de presentación:
 			1. Bindeo.
 			2. Puesta a disposición.
@@ -67,6 +65,7 @@ public class Conexion implements Conectable{
 			System.out.println("Registro de la conexión realizado anteriormente.");
 		}
 		try{
+			
 			Conectable stub = (Conectable) UnicastRemoteObject.exportObject(this, PUERTO); // Es exportado el objeto instancia de Conexion.
 			Registry registry = LocateRegistry.getRegistry(PUERTO); // Es tomado el registro recientemente ligado al puerto PUERTO.
 			registry.rebind("Clave conexion", stub); // El ligado el stub al registro.
@@ -89,14 +88,18 @@ public class Conexion implements Conectable{
 		return conexionLista;
 	}
 	
+	public void setVentanaRemota(PrePartida ventana){
+		this.ventana = ventana;
+	}
 	// Método que pone la ventana de selección de circuitos de este host a disposición del host oponente.
-	public void bindearMiVentana(PrePartida ventana){
+	public void bindearMiVentana(){
 		
 		try{
 			LocateRegistry.createRegistry(PUERTO); // Es tomado el puerto PUERTO y creado un registro asociado sobre él.
 		}catch(Exception e){
 			System.out.println("Registro de la ventana realizado anteriormente.");
 		}
+		
 		try{
 			presentacion.VentanaControlable stub = (VentanaControlable) UnicastRemoteObject.exportObject(ventana, PUERTO); // Es exportado el objeto instancia de Conexion.
 			Registry registry = LocateRegistry.getRegistry(PUERTO); // Es tomado el registro recientemente ligado al puerto PUERTO.
@@ -168,8 +171,13 @@ public class Conexion implements Conectable{
 		out.close();
 	}
 	
+	
+	public void setTanqueLocalOponente(Tanque tanqueLocalLigadoOponente){
+		this.tanqueLocalLigadoOponente = tanqueLocalLigadoOponente;
+	}
+	
 	// Método que pone a disposición al tanque local oponente, para que sea controlado remotamente.
-	public Tanque bindearTanqueLocalOponente(Tanque tanqueLocalLigadoOponente){	
+	public Tanque bindearTanqueLocalOponente(){	
 		try{
 			LocateRegistry.createRegistry(PUERTO);
 		}catch(Exception e){
@@ -206,17 +214,30 @@ public class Conexion implements Conectable{
 		return tanqueListo;
 	}
 	
+	
+	public void indicarChoque(){
+		Runnable hilito = new Runnable(){
+			public void run() {				
+				try{
+					tanqueRemotoAControlar.choqueResumido();
+				}catch(Exception ex){
+					System.out.println("Error al indicar un choque remotamente.");
+					Logger.getLogger(Conexion.class.getName()).log(Level.SEVERE, null, ex);
+				}
+			}
+		};
+		(new Thread(hilito, "Hilo indicador de choque remoto")).start();
+	}
 	// Método utilizado por el hilo de conexión para lograr el control del tanque propio remoto.
 	public void manejarTanqueRemoto(){
 		try {
-			tanqueRemotoAControlar.setTodo(tanquePropio.getX(), tanquePropio.getY(), tanquePropio.getDireccion(), tanquePropio.getMovimientoTrama(), tanquePropio.getChoqueTrama());
+			tanqueRemotoAControlar.setTodo(tanquePropio.getX(), tanquePropio.getY(), tanquePropio.getDireccion(), tanquePropio.getMovimientoTrama(), tanquePropio.getChoqueTrama(), tanquePropio.getMoviendose());
 		} catch (RemoteException ex) {
 			System.out.println("Error en el manejo del tanque remoto, clase Conexion. El oponente ha finalizado la sesión.");
 			Logger.getLogger(Conexion.class.getName()).log(Level.SEVERE, null, ex);
-
+			this.stopHilos();
 			JOptionPane.showMessageDialog(null, "El oponente abandono conexión.");
 			System.exit(0);
-
 		}
 	}
 
@@ -243,7 +264,9 @@ public class Conexion implements Conectable{
 	
 	public String getNickTanqueOponente(){
 		try {
-			return this.tanqueRemotoAControlar.getNick();
+			String a = this.tanqueRemotoAControlar.getNickOponente();
+			System.out.println("getNickTanqueOponente: "+a);
+			return a;
 		} catch (RemoteException ex) {
 			System.out.println("Error al intentar obtener el nick del oponente. Clase conexión.");
 			Logger.getLogger(Conexion.class.getName()).log(Level.SEVERE, null, ex);
@@ -308,6 +331,7 @@ public class Conexion implements Conectable{
 		} catch (RemoteException ex) {
 			System.out.println("Error en el manejo de bolas remotas, clase Conexion. El oponente ha finalizado la sesión.");
 			Logger.getLogger(Conexion.class.getName()).log(Level.SEVERE, null, ex);
+			this.stopHilos();
 			JOptionPane.showMessageDialog(null, "El oponente abandono conexión.");
 			System.exit(0);
 
@@ -316,6 +340,7 @@ public class Conexion implements Conectable{
 	
 	public void stopHilos(){
 		correrHilos = false;
+		
 	}
 	
 	public Runnable getHiloManejadorDeBolas(){
@@ -382,7 +407,7 @@ public class Conexion implements Conectable{
 		} catch (RemoteException ex) {
 			System.out.println("Error en el manejo del circuito remoto, clase Conexion. El oponente ha finalizado la sesión.");
 			Logger.getLogger(Conexion.class.getName()).log(Level.SEVERE, null, ex);
-
+			this.stopHilos();
 			JOptionPane.showMessageDialog(null, "El oponente abandono conexión.");
 			System.exit(0);
 		}
@@ -485,9 +510,19 @@ public class Conexion implements Conectable{
 			System.out.println("Error en el método desbindearTodo de la clase Conexion.");
 			ex.printStackTrace();
 		}
-		
+		/*try{
+			UnicastRemoteObject.unexportObject(this.ventana, true);
+			UnicastRemoteObject.unexportObject(this.circuitoPropio, true);
+			UnicastRemoteObject.unexportObject(this.tanqueLocalLigadoOponente, true);
+			UnicastRemoteObject.unexportObject(this.bolaBuenaLocal, true);
+			UnicastRemoteObject.unexportObject(this.bolaMalaLocal, true);
+		}catch(Exception e){}
+		*/
 	}
 	public int getID(){
 		return this.miID;
+	}
+	public int getOtroID(){
+		return ((this.miID+1) % 2);
 	}
 }

@@ -4,7 +4,6 @@ package presentacion;
 import paquete.*;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -32,6 +31,7 @@ public class Presentacion extends JFrame implements MouseListener {
 	private JButton bConectar;
 	private JButton bSalida;
 	private VentanaControlable ventanaRemota;
+	
 	// Constructor de la clase.
 	private Presentacion(int x, int y){
 		super("TankExile - Presentación");
@@ -40,6 +40,7 @@ public class Presentacion extends JFrame implements MouseListener {
 		//setDefaultCloseOperation(EXIT_ON_CLOSE);
 		
 		addWindowListener(new WindowAdapter() {
+			@Override
 			public void windowClosing(WindowEvent e) {
 				System.exit(0);
 			}
@@ -64,7 +65,7 @@ public class Presentacion extends JFrame implements MouseListener {
 		} catch (InterruptedException ex) {
 			Logger.getLogger(Presentacion.class.getName()).log(Level.SEVERE, null, ex);
 		}
-		
+
 		panel.removeAll(); // Se remueven los objetos que se encontrataban contenidos en el panel.
 		panel.setLayout(new GridLayout(4,1)); // Establece manager layout para el panel.
 		
@@ -84,7 +85,6 @@ public class Presentacion extends JFrame implements MouseListener {
 			Logger.getLogger(Presentacion.class.getName()).log(Level.SEVERE, null, ex);
 		}
 		
-		///////////////////////////////////////////////////////
 		
 		JTextArea titulo_ip_oponente = creador.crearArea("IP oponente: ", false, Finals.colorGris);
 				
@@ -173,8 +173,9 @@ public class Presentacion extends JFrame implements MouseListener {
 				dispose();
 				
 				prePartida = PrePartida.getPrePartida(presentacion1, conexion);
-				prePartida.setEstado("Conexión establecida con éxito.");
-				conexion.bindearMiVentana(prePartida);
+				
+				conexion.setVentanaRemota(prePartida);
+				conexion.bindearMiVentana();
 				System.out.println("Servidor de ventana listo.");
 				
 				do{
