@@ -4,6 +4,7 @@ package paquete;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.rmi.RemoteException;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
@@ -19,11 +20,12 @@ public class Bola extends Thread implements BolaControlable{
 	private int vy = 2;
 	private int periodoEfecto = 0;
 	private int currentFrame;
+	private boolean soyLocal = false;
+	Random rnd = new Random();
+	
 	public Bola(boolean buena, Tanque tanquePropio) {
 		this.setName(buena?"Hilo bola buena":"Hilo bola mala");
 		this.buena = buena; this.tanquePropio = tanquePropio;
-		if (buena)
-			x = x + 35;
 		currentFrame = (buena?0:1);
 		try {
 			if (imagen[0]== null) imagen[0] = ImageIO.read(getClass().getClassLoader().getResource("res/bolaBuena.gif"));
@@ -47,15 +49,34 @@ public class Bola extends Thread implements BolaControlable{
 	public void stopHilo(){
 		correrHilos = false;
 	}
-	
+	public void setLocal(){
+		soyLocal = true;
+	}
 	@Override
 	public void run(){
-		while(correrHilos){
-			actuar();
-			try {
-				Thread.sleep(Finals.PERIODO*2);
-			} catch (InterruptedException ex) {
-				Logger.getLogger(Bola.class.getName()).log(Level.SEVERE, null, ex);
+		if (soyLocal){
+			
+			this.setX(rnd.nextInt(Finals.BLOQUES_NUM) * Finals.BLOQUE_LADO_LONG);
+			this.setY(rnd.nextInt(Finals.BLOQUES_NUM) * Finals.BLOQUE_LADO_LONG);
+			this.vx = (rnd.nextBoolean()?1:-1) * vx;
+			this.vy = (rnd.nextBoolean()?1:-1) * vy;
+			
+			while(correrHilos){
+				actuar();
+				try {
+					Thread.sleep(Finals.PERIODO_BOLA);
+				} catch (InterruptedException ex) {
+					Logger.getLogger(Bola.class.getName()).log(Level.SEVERE, null, ex);
+				}
+			}
+		}else{
+			while(correrHilos){
+				actuarResumido();
+				try {
+					Thread.sleep(Finals.PERIODO_BOLA);
+				} catch (InterruptedException ex) {
+					Logger.getLogger(Bola.class.getName()).log(Level.SEVERE, null, ex);
+				}
 			}
 		}
 	}
@@ -73,12 +94,24 @@ public class Bola extends Thread implements BolaControlable{
 			if(buena)
 				tanquePropio.setVelocidad(2); // La bola buena aumenta la velocidad.
 			else
-				tanquePropio.choque(); // La bola mala produce el efecto de choque y establece la velocidad estandar.
+				tanquePropio.choque(true); // La bola mala produce el efecto de choque y establece la velocidad estandar.
 		
-		if (x < 0 || x > Finals.ANCHO_VENTANA-this.largo)
-		  vx = -vx;
-		if (y < 0 || y > Finals.ALTO_VENTANA-this.largo) 
-		  vy = -vy;
+		if (x < 0)
+			vx = (rnd.nextInt(2) + 4);
+		if (x > Finals.ANCHO_VENTANA-this.largo)
+		  vx = -(rnd.nextInt(2) + 4);
+		if (y < 0)
+			vy = (rnd.nextInt(2) + 4);
+		if ( y > Finals.ALTO_VENTANA-this.largo) 
+			vy = -(rnd.nextInt(2) + 4);
+	}
+	
+	public void actuarResumido(){
+		if((tanquePropio.getX() > x-20)&&(tanquePropio.getX() < x+20)&&(tanquePropio.getY() > y-20)&&(tanquePropio.getY() < y+20))
+			if (buena)
+				tanquePropio.setVelocidad(2); // La bola buena aumenta la velocidad.
+			else
+				tanquePropio.choque(true); // La bola mala produce el efecto de choque y establece la velocidad estandar.
 	}
 
 	public int getVx() { return vx; }

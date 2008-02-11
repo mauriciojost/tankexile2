@@ -50,7 +50,8 @@ public class Tanque implements Controlable{
 	private static boolean sonido_habilitado = false;
 	private Audio audio_movimiento;
 	private Audio audio_choque;
-	private String nick;
+	private String nickOponente;
+	private boolean moviendose;
 
 	public boolean getSonidoHabilitado(){
 		return sonido_habilitado;
@@ -138,16 +139,41 @@ public class Tanque implements Controlable{
 	}
 	
 	// Método de actuación del tanque.
+	public void actuarResumido() {
+		
+		if (moviendose){
+			if(sonido_habilitado && !ayuda_sonido){
+				audio_movimiento.reproduccionLoop();
+				ayuda_sonido = true;
+			}
+		} else {
+			audio_movimiento.detener();
+			ayuda_sonido = false;
+		}
+    }
+    
+	public void setMoviendose(boolean estaMoviendose){
+		moviendose = estaMoviendose;
+	}
+	
+	public boolean getMoviendose(){
+		return moviendose;
+	}
+	
+	public void choqueResumido(){
+		if(sonido_habilitado){ audio_choque.reproduccionSimple();}
+	}
+	
 	public void actuar() {
 		X+=vX; // Actualización de la posición.
 		Y+=vY;
 		
 		if(circuito.hayColision(this)){ // Detección de colisiones. Responsabilidades del circuito.
-			this.choque();// En caso de haberla, sufrir efectos del mismo.
+			this.choque(false);// En caso de haberla, sufrir efectos del mismo.
 		}
 		
 		if(circuito.llegueAMiMeta(this)){ // Detección de llegada a la meta.
-			this.choque();
+			this.choque(false);
 		}
 		
 					
@@ -170,15 +196,27 @@ public class Tanque implements Controlable{
 		}
 		
 		if (arriba || abajo || derecha || izquierda){
-			temporizadorMovimento++;			if(sonido_habilitado && !ayuda_sonido){ audio_movimiento.reproduccionLoop(); ayuda_sonido = true;}
+			moviendose = true;
+			temporizadorMovimento++;			
+			if(sonido_habilitado && !ayuda_sonido){
+				audio_movimiento.reproduccionLoop();
+				ayuda_sonido = true;
+			}
 			if (temporizadorMovimento==PERIODO_MOVIMENTO){
 				temporizadorMovimento = 0;
 				movimientoTrama=(movimientoTrama+trancoTanque)%TRAMAS_MOVIMIENTO;
 			}
-		}else{ audio_movimiento.detener(); ayuda_sonido = false;}
+		}else{ 
+			moviendose = false;
+			audio_movimiento.detener();
+			ayuda_sonido = false;
+		}
 		
     }
     
+	
+	
+	
 	public int getMovimientoTrama(){
 		return movimientoTrama;
 	}
@@ -266,20 +304,21 @@ public class Tanque implements Controlable{
 	}
 	
 	// Método que genera los efectos de un choque en el tanque.
-	public void choque(){ 
+	public void choque(boolean agravante){ 
 		teclasHabilitadas = false;
 		choque = true;              if(sonido_habilitado){ audio_choque.reproduccionSimple();} // Reproduce sonido para choque local.
 		forzarTeclasSueltas();
 		actualizarVelocidades();
 		temporizadorChoque=0;
-		choqueGrande = (this.trancoTanque==2); 
+		choqueGrande = (this.trancoTanque==2)  || agravante; 
 		trancoTanque=1; // Modifica velocidad despues de comprobar el tipo de choque.
 		contadorSubTramaChoque=0;
+		circuito.getConexion().indicarChoque();
 	}
 	
 	
 	
-	public void setTodo(int x, int y, int direccion, int movimientoTrama, int choqueTrama){
+	public void setTodo(int x, int y, int direccion, int movimientoTrama, int choqueTrama, boolean moviendose){
 //		if((sonido_habilitado? ((this.X != x || this.Y != y) && !ayuda_sonido):false)){
 //			audio.reproduccion(); // Reproduce sonido para movimiento del oponente.
 //			ayuda_sonido = true; // No deja ingresar a este if
@@ -287,6 +326,7 @@ public class Tanque implements Controlable{
 //			audio.detener();
 //			ayuda_sonido = false; // Se podra ingresar al if (sujeto a las demas condiciones)
 //		}
+		this.moviendose = moviendose;
 		this.X = x;
 		this.Y = y;
 		this.direccion = direccion;
@@ -297,10 +337,14 @@ public class Tanque implements Controlable{
 		return choqueTrama;
 	}
 	
-	public String getNick(){
-		return nick;
+	public String getNickOponente(){
+		System.out.println("Tanque.getNickOponente():" + nickOponente);
+		return nickOponente;
 	}
-	public void setNick(String nick){
-		this.nick = nick;
+	public void setNickOponente(String nickOponente){
+		this.nickOponente = nickOponente;
+	}
+	public void detenerReproduccion(){
+		audio_movimiento.detener();
 	}
 }	

@@ -15,7 +15,7 @@ public class Muro extends Bloque{
 		try {
 			// Carga de las imágenes en la Clase (puesto que son las mismas para cada objeto de la misma).
 			for (int i = 0; i < NUMERO_DE_IMAGENES; i++){
-				if (imagenes[i]==null) imagenes[i] = ImageIO.read(getClass().getClassLoader().getResource("res/muro"+i+".gif"));
+				if (imagenes[i]==null) imagenes[i] = ImageIO.read(getClass().getClassLoader().getResource("res/murito"+i+".gif"));
 			}
 		} catch (Exception e) {
 			System.out.println("Error: no se ha podido realizar la carga de imágenes de la clase Muro, " + e.getClass().getName()+" "+e.getMessage());
