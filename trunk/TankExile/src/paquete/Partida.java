@@ -125,8 +125,8 @@ public class Partida extends Canvas implements Finals, Runnable{
 		
 		hiloTanqueRemoto.start();
 		
-		bolaBuena = new Bola(true);
-		bolaMala = new Bola(false);
+		bolaBuena = new Bola(true,tanquePropio);
+		bolaMala = new Bola(false,tanquePropio);
 		conexion.setBolasLocales(bolaBuena, bolaMala);
 		conexion.bindearBolasLocales();
 		System.out.println("Servidor de bolas listo.");
@@ -193,8 +193,6 @@ public class Partida extends Canvas implements Finals, Runnable{
 		
 		g.drawString(((nickPropio!=null)?nickPropio:("Jugador " + (conexion.getID()+1))), 10, 25); // Grafica el nick propio
 		g.drawString(((nickOponente!=null)?nickOponente:("Jugador " + (int)(((conexion.getID()+1)%2)+1))), 30, 55); // Grafica el nick oponente
-		
-		
 		
 		estrategia.show();
     }

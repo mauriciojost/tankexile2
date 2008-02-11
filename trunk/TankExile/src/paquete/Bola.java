@@ -13,15 +13,15 @@ public class Bola extends Thread implements BolaControlable{
 	private int x,y;
 	private final int largo = 20;
 	private boolean correrHilos;
-
+	private Tanque tanquePropio;
 	private boolean buena;
 	private int vx = 2;
 	private int vy = 2;
-
+	private int periodoEfecto = 0;
 	private int currentFrame;
-	public Bola(boolean buena) {
+	public Bola(boolean buena, Tanque tanquePropio) {
 		this.setName(buena?"Hilo bola buena":"Hilo bola mala");
-		this.buena = buena;
+		this.buena = buena; this.tanquePropio = tanquePropio;
 		if (buena)
 			x = x + 35;
 		currentFrame = (buena?0:1);
@@ -63,10 +63,21 @@ public class Bola extends Thread implements BolaControlable{
 	public void actuar() {
 		x+=vx;
 		y+=vy;
+//		(Tx > (Bx-20)) 
+//		(Tx < (Bx+20))
+//		(Ty > (By-20)) 
+//		(Ty < (By+20))
+
+
+		if((tanquePropio.getX() > x-20)&&(tanquePropio.getX() < x+20)&&(tanquePropio.getY() > y-20)&&(tanquePropio.getY() < y+20))
+			if(buena)
+				tanquePropio.setVelocidad(2); // La bola buena aumenta la velocidad.
+			else
+				tanquePropio.choque(); // La bola mala produce el efecto de choque y establece la velocidad estandar.
 		
 		if (x < 0 || x > Finals.ANCHO_VENTANA-this.largo)
 		  vx = -vx;
-		if (y < 0 || y > Finals.ALTO_VENTANA-this.largo)
+		if (y < 0 || y > Finals.ALTO_VENTANA-this.largo) 
 		  vy = -vy;
 	}
 
