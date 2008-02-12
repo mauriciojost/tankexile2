@@ -507,8 +507,7 @@ public class Conexion implements Conectable{
 				}
 			}
 		} catch (Exception ex) {
-			System.out.println("Error en el método desbindearTodo de la clase Conexion.");
-			ex.printStackTrace();
+			System.out.println("Método desbindearTodo de la clase Conexion.");
 		}
 		/*try{
 			UnicastRemoteObject.unexportObject(this.ventana, true);

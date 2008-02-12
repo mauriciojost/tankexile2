@@ -214,9 +214,6 @@ public class Tanque implements Controlable{
 		
     }
     
-	
-	
-	
 	public int getMovimientoTrama(){
 		return movimientoTrama;
 	}
@@ -313,11 +310,10 @@ public class Tanque implements Controlable{
 		choqueGrande = (this.trancoTanque==2)  || agravante; 
 		trancoTanque=1; // Modifica velocidad despues de comprobar el tipo de choque.
 		contadorSubTramaChoque=0;
-		circuito.getConexion().indicarChoque();
+		
 	}
 	
-	
-	
+
 	public void setTodo(int x, int y, int direccion, int movimientoTrama, int choqueTrama, boolean moviendose){
 //		if((sonido_habilitado? ((this.X != x || this.Y != y) && !ayuda_sonido):false)){
 //			audio.reproduccion(); // Reproduce sonido para movimiento del oponente.
