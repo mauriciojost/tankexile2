@@ -26,7 +26,7 @@ public class Configurador extends JFrame implements MouseListener {
 	public Configurador(PrePartida prePartida){
 		super("TankExile - Opciones");
 		this.prePartida = prePartida;
-		setBounds(prePartida.getX(),prePartida.getY(),Finals.ANCHO_VENTANA-250,150); // Reajusta tamaño de la ventana, sin modificar su posición.
+		setBounds(prePartida.getX(),prePartida.getY(),Finals.ANCHO_VENTANA-250,200); // Reajusta tamaño de la ventana, sin modificar su posición.
 		setResizable(false); // No se permite dar nuevo tamaño a la ventana.
 		
 		JPanel panel = (JPanel)getContentPane(); // Panel donde se grafican los objetos (bloques)que componen el escenario y los tanques que representan a cada jugador.
