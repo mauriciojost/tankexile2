@@ -22,6 +22,7 @@ public class CargadorCircuitoTXT {
 		}
 	}
 	
+	// Método estático usado para verificar la validez o no de un archivo de circuito antes de cargarlo.
 	public static boolean validarCircuito(String nombre){
 		File textFile = null;
 		FileReader textIn = null;

@@ -1,9 +1,8 @@
 package paquete;
-
 import java.awt.Graphics2D;
+
 // Clase cuyos objetos son las unidades de conformación del circuito de juego.
-public abstract class Bloque{
-	
+public abstract class Bloque{	
 	private int x, y; //Atributos que representan las coordenadas reales (píxeles) del bloque.
 		
 	public Bloque(int bx, int by) {
@@ -18,6 +17,4 @@ public abstract class Bloque{
 	// Métodos que permiten obtener la posición real (en pixeles desde la esquina superior izquierda) del bloque.
 	public int getX(){return x;}
 	public int getY(){return y;}
-
-	
 }

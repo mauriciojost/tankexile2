@@ -9,20 +9,21 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 
+// Clase que representa a cada bola del juego.
 public class Bola extends Thread implements BolaControlable{
 	private static BufferedImage imagen[] = new BufferedImage[2];
-	private int x,y;
-	private final int largo = 20;
-	private boolean correrHilos;
-	private Tanque tanquePropio;
-	private boolean buena;
-	private int vx = 2;
-	private int vy = 2;
-	private int periodoEfecto = 0;
-	private int currentFrame;
-	private boolean soyLocal = false;
-	Random rnd = new Random();
+	private int x,y; // Posición.
 	
+	private boolean correrHilos; // Indicador de detención del hilo.
+	private Tanque tanquePropio;
+	private boolean buena; // Indicador de bola buena o mala.
+	private int vx = 2; // Velocidad de la bola.
+	private int vy = 2;
+	private int currentFrame; // Indicador de la imagen a mostrar.
+	private boolean soyLocal = false; // Indicador de que la bola actual es controlada localmente, y no de forma remota.
+	private Random rnd = new Random(); // Generador de números pseudo aleatorios usados en el rebote de las bolas.
+	
+	// Contructor.
 	public Bola(boolean buena, Tanque tanquePropio) {
 		this.setName(buena?"Hilo bola buena":"Hilo bola mala");
 		this.buena = buena; this.tanquePropio = tanquePropio;
@@ -34,7 +35,7 @@ public class Bola extends Thread implements BolaControlable{
 			System.out.println("Error: no se ha podido realizar la carga de imágenes de la clase Bola, "+e.getClass().getName()+" "+e.getMessage());
 			System.exit(0);
 		}
-		correrHilos = true;
+		correrHilos = true; // Se permite la ejecución de los hilos.
 	}
 
 	public void pintar(Graphics2D g){
@@ -52,6 +53,7 @@ public class Bola extends Thread implements BolaControlable{
 	public void setLocal(){
 		soyLocal = true;
 	}
+	
 	@Override
 	public void run(){
 		if (soyLocal){
@@ -62,21 +64,13 @@ public class Bola extends Thread implements BolaControlable{
 			this.vy = (rnd.nextBoolean()?1:-1) * vy;
 			
 			while(correrHilos){
-				actuar();
-				try {
-					Thread.sleep(Finals.PERIODO_BOLA);
-				} catch (InterruptedException ex) {
-					Logger.getLogger(Bola.class.getName()).log(Level.SEVERE, null, ex);
-				}
+				actuar(); // En caso de ser local, la bola actua teniendo en cuenta rebotes. No así cuando es controlada de forma remota.
+				try {Thread.sleep(Finals.PERIODO_BOLA);} catch (InterruptedException ex) {Logger.getLogger(Bola.class.getName()).log(Level.SEVERE, null, ex);}
 			}
 		}else{
 			while(correrHilos){
 				actuarResumido();
-				try {
-					Thread.sleep(Finals.PERIODO_BOLA);
-				} catch (InterruptedException ex) {
-					Logger.getLogger(Bola.class.getName()).log(Level.SEVERE, null, ex);
-				}
+				try {Thread.sleep(Finals.PERIODO_BOLA);} catch (InterruptedException ex) {Logger.getLogger(Bola.class.getName()).log(Level.SEVERE, null, ex);}
 			}
 		}
 	}
@@ -84,29 +78,27 @@ public class Bola extends Thread implements BolaControlable{
 	public void actuar() {
 		x+=vx;
 		y+=vy;
-//		(Tx > (Bx-20)) 
-//		(Tx < (Bx+20))
-//		(Ty > (By-20)) 
-//		(Ty < (By+20))
-
-
+			
+		// Es verificada la condición de contacto con el tanque local.
 		if((tanquePropio.getX() > x-20)&&(tanquePropio.getX() < x+20)&&(tanquePropio.getY() > y-20)&&(tanquePropio.getY() < y+20))
 			if(buena)
 				tanquePropio.setVelocidad(Tanque.MAX_VELOCIDAD); // La bola buena aumenta la velocidad.
 			else
 				tanquePropio.choque(true); // La bola mala produce el efecto de choque y establece la velocidad estandar.
 		
+		// Es verificada la condición de rebote.
 		if (x < 0)
 			vx = (rnd.nextInt(2) + 4);
-		if (x > Finals.ANCHO_VENTANA-this.largo)
+		if (x > Finals.ANCHO_VENTANA-Finals.BLOQUE_LADO_LONG)
 		  vx = -(rnd.nextInt(2) + 4);
 		if (y < 0)
 			vy = (rnd.nextInt(2) + 4);
-		if ( y > Finals.ALTO_VENTANA-this.largo) 
+		if ( y > Finals.ALTO_VENTANA-Finals.BLOQUE_LADO_LONG) 
 			vy = -(rnd.nextInt(2) + 4);
 	}
 	
 	public void actuarResumido(){
+		// Es sólo verificada la condición de choque con el tanque local.
 		if((tanquePropio.getX() > x-20)&&(tanquePropio.getX() < x+20)&&(tanquePropio.getY() > y-20)&&(tanquePropio.getY() < y+20))
 			if (buena)
 				tanquePropio.setVelocidad(Tanque.MAX_VELOCIDAD); // La bola buena aumenta la velocidad.
@@ -115,7 +107,7 @@ public class Bola extends Thread implements BolaControlable{
 	}
 
 	public int getVx() { return vx; }
-	public void setVx(int i) {vx = i;	}
+	public void setVx(int i) {vx = i;}
 
 	public void setTodo(int x, int y) throws RemoteException {
 		this.x = x;
