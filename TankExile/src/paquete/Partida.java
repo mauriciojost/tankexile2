@@ -8,7 +8,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
-import java.awt.Image;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferStrategy;
@@ -30,7 +29,6 @@ public class Partida extends Canvas implements Finals, Runnable{
 
     private int yoID; // Representa el ID del jugador en este host.
     private int otroID; // Representa el ID del jugador oponente.
-    //private String iPOponente; // Representa la dirección IP en la red del host del jugador oponente.
     private static Conexion conexion; // Objeto utilizado para todo lo relacionado a la comunicación entre ambos hosts.
     private static String nombreCircuitoTXT; // Atributo que representa el nombre del archivo del circuito.
 	private static PrePartida prePartida;
@@ -86,7 +84,7 @@ public class Partida extends Canvas implements Finals, Runnable{
     }
     // Método que arranca la escena de la partida. Involucra la inicialización de los elementos principales del juego en sí.
     public void iniciarEscena() {
-		ventana.setVisible(true);
+		ventana.setVisible(true); // Ventana visible.
 		this.requestFocus(); // El foco es tomado.
 		
 		circuito = new Circuito(nombreCircuitoTXT); // Creación del circuito de juego.
@@ -97,7 +95,7 @@ public class Partida extends Canvas implements Finals, Runnable{
 		conexion.setTanqueLocalOponente(tanqueLocalLigadoOponente); 
 		conexion.bindearTanqueLocalOponente(); // El tanque anterior es puesto a disposición del host remoto.
 		conexion.setTanquePropio(tanquePropio); // La conexión esta lista para ser establecida, el hilo conexión observará al tanque y con sus parámetros comandará al tanque remoto puesto en el registro de RMI.
-		this.tanqueLocalLigadoOponente.setNickOponente(prePartida.getNickPropio());
+		this.tanqueLocalLigadoOponente.setNickOponente(prePartida.getNickPropio()); // Nick que será leido por el host remoto.
 		
 		tanquePropio.setSonidoHabilitado(prePartida.getSonidoHabilitado());
 		
@@ -118,16 +116,15 @@ public class Partida extends Canvas implements Finals, Runnable{
 		tanquePropio.setX(circuito.getMeta(yoID).getX());
 		tanquePropio.setY(circuito.getMeta(yoID).getY());
 		
-		
 		tanqueLocalLigadoOponente.setX(circuito.getMeta(otroID).getX());
 		tanqueLocalLigadoOponente.setY(circuito.getMeta(otroID).getY());
+		
 		this.nickOponente = conexion.getNickTanqueOponente();
 		this.nickPropio = (prePartida.getNickPropio());
 		
+		hiloTanqueRemoto.start(); // El hilo que controla al tanque remoto es iniciado.
 		
-		
-		hiloTanqueRemoto.start();
-		
+		// Creación y bindeo de las bolas.
 		bolaBuena = new Bola(true,tanquePropio);
 		bolaMala = new Bola(false,tanquePropio);
 		conexion.setBolasLocales(bolaBuena, bolaMala);
@@ -135,33 +132,37 @@ public class Partida extends Canvas implements Finals, Runnable{
 		System.out.println("Servidor de bolas listo.");
 		
 		
-		
 		if (this.yoID == 1){
+			// Se establece la responsabilidad de las bolas según la localidad o no del host.
 			bolaBuena.setLocal();
 			bolaMala.setLocal();
 			
 			do{
 				try{
-					conexion.ponerADisposicionBolasRemotas();
+					conexion.ponerADisposicionBolasRemotas(); // Se llama a las remotas en caso de hacer control de bolas localmente, para controlarlas.
 				}catch(Exception e){
 					try { Thread.sleep(Finals.ESPERA_CONEXION); } catch (InterruptedException ex) {Logger.getLogger(Partida.class.getName()).log(Level.SEVERE, null, ex);}
 					System.out.println("Intento fallido por obtener bolas remotas... Reintentando...");
 				}
 			}while(!conexion.bolasListo());
 			System.out.println("Bolas remotas a disposición.");
+			
+			// Es creado e iniciado el hilo que manejará a las bolas remotas.
 			hiloBolasRemotas = new Thread(conexion.getHiloManejadorDeBolas(), "Hilo manejador de bolas remotas");
 			hiloBolasRemotas.start();
 		}
 		
+		// Las bolas comienzan a actuar por sí mismas.
 		bolaBuena.start();
 		bolaMala.start();
 		
+		// El circiuto local es bindeado.
 		conexion.setCircuitoPropio(circuito);
 		conexion.bindearCircuitoLocal();
 		
 		do{
 			try{
-				conexion.ponerADisposicionCircuitoRemoto();
+				conexion.ponerADisposicionCircuitoRemoto(); // El circuito remoto es puesto a disposición del host local.
 			}catch(Exception e){
 				try { Thread.sleep(Finals.ESPERA_CONEXION); } catch (InterruptedException ex) {Logger.getLogger(Partida.class.getName()).log(Level.SEVERE, null, ex);}
 				System.out.println("Intento fallido por obtener circuito remoto... Reintentando...");
@@ -169,6 +170,8 @@ public class Partida extends Canvas implements Finals, Runnable{
 		}while(!conexion.circuitoListo());
 		
 		System.out.println("Circuito remoto a disposición.");
+		
+		// Se comienza la sincronización de los dos circuitos.
 		hiloCircuitoRemoto = new Thread(conexion.getHiloManejadorDeCircuitoRemoto(), "Hilo manejador de circuito remoto");
 		hiloCircuitoRemoto.start();
     }
@@ -179,31 +182,27 @@ public class Partida extends Canvas implements Finals, Runnable{
 		tanqueLocalLigadoOponente.actuarResumido();
     }
 	
+	
+	// Método que retorna la ventana de prePartida, y según sea la localidad o no del host, habilita el botón de inicio.
 	public PrePartida getPrePartida(){
 		if (conexion.getID()==0){
-			try {
-				prePartida.setInicioHabilitado(false);
-			} catch (RemoteException ex) {
-				Logger.getLogger(Partida.class.getName()).log(Level.SEVERE, null, ex);
-			}
+			try {prePartida.setInicioHabilitado(false);} catch (RemoteException ex) {Logger.getLogger(Partida.class.getName()).log(Level.SEVERE, null, ex);}
 		}
 		return prePartida;
 	}
-    // Método encargado de brindar la imagen correcta (representativa del estado del tanque) para que esta sea pintada en pantalla.
+	
+    // Método encargado de realizar el dibujo de cada elemento de la partida en pantalla.
     public void pintarEscena() {
 		Graphics2D g = (Graphics2D)estrategia.getDrawGraphics();
 
-		
-		
-		
+		// Establecimiento del fondo.
 		g.setColor(Color.WHITE);
-
-
 		g.fillRect(0,0,this.getWidth(),this.getHeight());
 		
+		// Pintado del circuito.
 		circuito.pintar(g);
 		
-		
+		// Pintado de las leyendas.
 		g.setColor(Finals.COLOR_LEYENDAS_PARTIDA);
 		
 		int metaPX  = circuito.getMeta(conexion.getID()).getX() + 25;
@@ -214,12 +213,14 @@ public class Partida extends Canvas implements Finals, Runnable{
 		
 		g.drawString(((nickPropio!=null)?nickPropio:("Jugador local " + (conexion.getID()+1))), metaPX, metaPY); // Grafica el nick propio
 		g.drawString(((nickOponente!=null)?nickOponente:("Jugador oponente " + (int)(((conexion.getID()+1)%2)+1))), metaOX, metaOY); // Grafica el nick oponente
-		
-		
+			
+		// Pintado de los tanques y las bolas.
 		tanqueLocalLigadoOponente.pintar(g);
 		tanquePropio.pintar(g);
 		bolaBuena.pintar(g);
 		bolaMala.pintar(g);
+		
+		// Se muestra lo pintado.
 		estrategia.show();
     }
 
@@ -234,6 +235,7 @@ public class Partida extends Canvas implements Finals, Runnable{
 		correrHilos = false;
 	}
 	
+	// Bucle principal del juego.
     public void run() {
 		while(correrHilos){
 			actualizarEscena();
@@ -243,22 +245,26 @@ public class Partida extends Canvas implements Finals, Runnable{
 			}catch(InterruptedException e){e.printStackTrace();}
 		}
     }
+	
 	public static Partida getPartida(){
 		return instanciaPartida;
 	}
+	
+	// Método que realiza la detención de todos los hilos de la partida.
 	public void finalizar(){
-		try {		
-			tanquePropio.detenerReproduccion();
+		try {
+			
+			tanquePropio.detenerReproduccion(); // Es detenida la reproducción de todos los sonidos.
 			this.tanqueLocalLigadoOponente.detenerReproduccion();
-			this.getPrePartida().setVisible(true);
-			this.stopHilos();
-			conexion.stopHilos();
-			this.bolaBuena.stopHilo();
+			this.getPrePartida().setVisible(true); // Se hace visible la ventana de prePartida.
+			this.stopHilos(); // Se detienen los hilos del juego.
+			conexion.stopHilos(); // Se detienen los hilos que controlan remotamente.
+			this.bolaBuena.stopHilo(); // Se detienen los hilos de cada bola.
 			this.bolaMala.stopHilo();
-			ventana.dispose();
+			ventana.dispose(); // Se da de baja esta ventana.
 		} catch (Throwable ex) {
 			Logger.getLogger(Partida.class.getName()).log(Level.SEVERE, null, ex);
 		}
-		conexion.desbindearTodo(false);
+		conexion.desbindearTodo(false); // Se hace unbind de todo aquello bindeado.
 	}
 }

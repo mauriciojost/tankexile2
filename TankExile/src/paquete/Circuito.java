@@ -61,6 +61,7 @@ public class Circuito implements CircuitoControlable {
 		return conexion;
 	}
 	
+	// Método que realiza la llamada de pintado de cada elemento constitutivo del circuito (bloques).
 	public void pintar(Graphics2D g){
 		for (int i = 0; i < Finals.BLOQUES_NUM; i++) {
 			for (int j = 0; j < Finals.BLOQUES_NUM; j++) {
@@ -84,8 +85,8 @@ public class Circuito implements CircuitoControlable {
 	public boolean llegueAMiMeta(Tanque tanque){
 		Meta meta = metas[Math.abs((tanque.getID()+1)%2)];
 		if (((tanque.getX() > (meta.getX() - 20))&&(tanque.getX() < (meta.getX() + 20)))&&((tanque.getY() > (meta.getY() - 20))&&(tanque.getY() < (meta.getY() + 20)))){
-			//JOptionPane
 			
+			// Es creado un hilo para indicar al usuario el final del juego.
 			Runnable hilitoMensajePropio = new Runnable(){
 				public void run(){
 					Partida.getPartida().finalizar();
@@ -104,6 +105,7 @@ public class Circuito implements CircuitoControlable {
 	}
 	
 	
+	// Método llamado remotamente para indicar que el jugador remoto ya ha llegado a su meta.
 	public void oponenteLlego() throws RemoteException{
 		PrePartida.getPrePartida().setEstado("Usted ha perdido.");
 		PrePartida.getPrePartida().setVisible(true);
@@ -113,6 +115,7 @@ public class Circuito implements CircuitoControlable {
 	
 	// Método que indica mediante un booleano si ha existido una colisión con los muros del circuito, por parte del tanque indicado como parámetro.
 	// También ejecuta: el efecto de deterioro del muro correspondiente (en caso de colisión) y la corrección de la posición del tanque.
+	// Además indica al circuito remoto la existencia de choques.
 	public boolean hayColision(Tanque tanque){
 		boolean hayChoque = false; // Variable booleana que indica la existencia o no de choque con al menos un muro.
 		int bloqueX = tanque.getX()/Finals.BLOQUE_LADO_LONG; // Cálculo de la coordenada (en matriz) del bloque superior izquierdo a analizar (coordenada X).
@@ -173,11 +176,7 @@ public class Circuito implements CircuitoControlable {
 	
 	// Método que indica la existencia o no de un muro en las coordenadas indicadas del circuito.
 	private boolean hayMuro(int x, int y){
-		if(this.getBloqueEnMatriz(x, y) instanceof Muro){
-			return true;
-		}else{
-			return false;
-		}
+		return (this.getBloqueEnMatriz(x, y) instanceof Muro);
 	}
 	
 	// Método que retorna el objeto de la clase Meta solicitado.
@@ -195,6 +194,7 @@ public class Circuito implements CircuitoControlable {
 		matrizDeBloques[Math.abs(bloqueX%matrizDeBloques.length)][Math.abs(bloqueY%matrizDeBloques.length)] = bloque;
 	}
 
+	// Método llamado remotamente, que indica un nuevo choque para representar en los muros, con sus parámetros como un array.
 	public void informarChoque(int parametrosDelChoque[]) throws RemoteException {
 		this.getMuro(parametrosDelChoque[0], parametrosDelChoque[1]).deterioro(parametrosDelChoque[2]);
 	}

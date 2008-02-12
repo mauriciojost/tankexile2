@@ -1,9 +1,10 @@
 package paquete;
 
-import java.applet.AudioClip;
+
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
+// Interface relacionada al control de un tanque remotamente.
 public interface Controlable extends Remote {
 	
 	// Conjunto de métodos que se exige tenga un objeto controlable, sea por teclado o por comando remoto.

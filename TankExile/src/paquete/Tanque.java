@@ -13,27 +13,25 @@ import javax.imageio.ImageIO;
 
 
 public class Tanque implements Controlable{
-	private static final int TRAMAS_CHOQUE = 2; // Cantidad de imágenes del tanque.
-	public static final int MAX_VELOCIDAD = 4;
-	public static final int MIN_VELOCIDAD = 2;
-	public static final int U_VELOCIDAD = 2;
+	private static final int TRAMAS_CHOQUE = 2; // Cantidad de imágenes del tanque respecto de la situación de choque.
+	public static final int MAX_VELOCIDAD = 4; // Velocidad máxima.
+	public static final int MIN_VELOCIDAD = 2; // Velocidad mínima.
+	public static final int U_VELOCIDAD = 2; // Parámetro utilizado para determinar la gravedad de un choque según su velocidad.
 	private static final int PERIODO_CHOQUE_CHICO = 50; // Duración de los efectos de un choque.
 	private static final int PERIODO_CHOQUE_GRANDE = 150; // Duración de los efectos de un choque.
 	private static final int TRAMAS_MOVIMIENTO = 18; // Cantidad de imágenes del tanque.
 	private static final int PERIODO_MOVIMENTO = 1;
-	private int contadorSubTramaChoque;
-	private final int SUB_PERIODO_CHOQUE = 5;
+	private int contadorSubTramaChoque; // Contador auxiliar para la situación de choque.
+	private final int SUB_PERIODO_CHOQUE = 5; // Duración de un sub período de choque.
 	
 	
 	private int vX; // Velocidad horizontal del tanque.
 	private int vY; // Velocidad vertical del tanque.
 	private int trancoTanque = Tanque.MIN_VELOCIDAD; // Tamaño del tranco de avance del tanque (unidad de avance).
-	private boolean teclasHabilitadas = true;
-	private boolean choqueGrande = false;
-	private int temporizadorMovimento = 0;
-	
+	private boolean teclasHabilitadas = true; // Indicador de habilitación o no de teclado para comandar el tanque.
+	private boolean choqueGrande = false; // Indicador de magnitud del último choque.
+	private int temporizadorMovimento = 0; 
 	private int movimientoTrama = 0;
-	
 	
 	private boolean arriba,abajo,izquierda,derecha; // Booleanos representativas de la directiva de la dirección a adoptar.
 	private int direccion = Finals.ARRIBA; // Atributo representativo de la dirección actual del tanque.
@@ -47,14 +45,12 @@ public class Tanque implements Controlable{
     private static Circuito circuito; // Circuito en el cual está el tanque.
 	private int id; // Identificador del tanque.
 
-//	private URL url = null;
-//	public AudioClip clip;	
 	private boolean ayuda_sonido = false;
 	private static boolean sonido_habilitado = false;
 	private Audio audio_movimiento;
 	private Audio audio_choque;
-	private String nickOponente;
-	private boolean moviendose;
+	private String nickOponente; 
+	private boolean moviendose; 
 
 	public boolean getSonidoHabilitado(){
 		return sonido_habilitado;
@@ -63,11 +59,7 @@ public class Tanque implements Controlable{
 	public void setSonidoHabilitado(boolean sh){
 		sonido_habilitado = sh;
 	}
-	
-//	public URL getUrl(){
-//		return url;
-//	}
-		
+
 	public int getID(){
 		return id;
 	}
@@ -83,7 +75,9 @@ public class Tanque implements Controlable{
 	public int getVelocidad(){
 		return trancoTanque;
 	}
+
 	public void setVelocidad(int i){ trancoTanque = i;}
+	
 	// Método que pinta en pantalla la imagen que corresponde al tanque y a su estado.
     public void pintar(Graphics2D g){
 		g.drawImage((BufferedImage)imagenes.get(new Integer(direccion * 10000 + choqueTrama * 100+ movimientoTrama)), X,Y, null);
@@ -105,7 +99,7 @@ public class Tanque implements Controlable{
 			try{
 				for (int i = 0; i < this.TRAMAS_MOVIMIENTO;i++){
 					String nombre = "res/Tanque_arriba"+(TRAMAS_MOVIMIENTO - i-1)+".gif";
-					String nombrec = "res/Tanque_arribac"+(TRAMAS_MOVIMIENTO - i-1)+".gif";
+					//String nombrec = "res/Tanque_arribac"+(TRAMAS_MOVIMIENTO - i-1)+".gif";
 					imagenes.put(new Integer(30000+i), ImageIO.read(getClass().getClassLoader().getResource(nombre)));
 					//imagenes.put(new Integer(30100+i), ImageIO.read(getClass().getClassLoader().getResource(nombrec)));
 				}
@@ -127,11 +121,13 @@ public class Tanque implements Controlable{
 				System.exit(0);
 			}
 		
+		
 		audio_movimiento = new Audio("res/waterrun.wav");
 		audio_choque = new Audio("res/click.wav");
 		
 	}
 	
+	// Método que rota una imagen.
 	private BufferedImage rotarImagen(BufferedImage img, int grados){
 		AffineTransform rotation = new AffineTransform();
 		AffineTransformOp rotator;
@@ -141,9 +137,8 @@ public class Tanque implements Controlable{
 		return rotator.filter(img, null);
 	}
 	
-	// Método de actuación del tanque.
+	// Método de actuación resumida del tanque, que sólo reproduce o nó un sonido según la situación o no de movimiento. Usado por el tanque oponente.
 	public void actuarResumido() {
-		
 		if (moviendose){
 			if(sonido_habilitado && !ayuda_sonido){
 				audio_movimiento.reproduccionLoop();
@@ -167,6 +162,7 @@ public class Tanque implements Controlable{
 		if(sonido_habilitado){ audio_choque.reproduccionSimple();}
 	}
 	
+	// Método de actuación del tanque.
 	public void actuar() {
 		X+=vX; // Actualización de la posición.
 		Y+=vY;
@@ -198,6 +194,7 @@ public class Tanque implements Controlable{
 			}
 		}
 		
+		// Efectos de animación y reproducción de sonido.
 		if (arriba || abajo || derecha || izquierda){
 			moviendose = true;
 			temporizadorMovimento++;			
