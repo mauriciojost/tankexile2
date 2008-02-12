@@ -216,14 +216,10 @@ public class Partida extends Canvas implements Finals, Runnable{
 		g.drawString(((nickOponente!=null)?nickOponente:("Jugador oponente " + (int)(((conexion.getID()+1)%2)+1))), metaOX, metaOY); // Grafica el nick oponente
 		
 		
-
-		tanquePropio.pintar(g);
 		tanqueLocalLigadoOponente.pintar(g);
+		tanquePropio.pintar(g);
 		bolaBuena.pintar(g);
 		bolaMala.pintar(g);
-		
-		
-		
 		estrategia.show();
     }
 

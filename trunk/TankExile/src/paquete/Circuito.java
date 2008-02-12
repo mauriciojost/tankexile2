@@ -142,14 +142,17 @@ public class Circuito implements CircuitoControlable {
 			conexion.choqueNuevoCircuitoLocal(bloqueX+1, bloqueY+1, tanque.getVelocidad());
 		}
 		
-		// Corrección de la posición del tanque involucrado.
-		switch (tanque.getDireccion()){
-			// Según la dirección del tanque, este es llevado hacia atrás hasta la condición de no solapamiento.
-			case Finals.ABAJO:		while(this.solapamiento(tanque)){tanque.setY(tanque.getY()-1);}
-			case Finals.ARRIBA:		while(this.solapamiento(tanque)){tanque.setY(tanque.getY()+1);}
-			case Finals.IZQUIERDA:	while(this.solapamiento(tanque)){tanque.setX(tanque.getX()+1);}
-			case Finals.DERECHA:	while(this.solapamiento(tanque)){tanque.setX(tanque.getX()-1);}												
-		}			
+		if (hayChoque){
+			// Corrección de la posición del tanque involucrado.
+			switch (tanque.getDireccion()){
+				// Según la dirección del tanque, este es llevado hacia atrás hasta la condición de no solapamiento.
+				case Finals.ABAJO:		while(this.solapamiento(tanque)){tanque.setY(tanque.getY()-1);}
+				case Finals.ARRIBA:		while(this.solapamiento(tanque)){tanque.setY(tanque.getY()+1);}
+				case Finals.IZQUIERDA:	while(this.solapamiento(tanque)){tanque.setX(tanque.getX()+1);}
+				case Finals.DERECHA:	while(this.solapamiento(tanque)){tanque.setX(tanque.getX()-1);}												
+			}
+			this.getConexion().indicarChoque();
+		}
 		return hayChoque; // Es retornado un booleano que indica la existencia o no de un choque.
 	}
 	
