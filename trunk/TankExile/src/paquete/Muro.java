@@ -30,7 +30,7 @@ public class Muro extends Bloque{
 	
 	// Método que realiza una variación en la imagen a mostrar, dando un efecto de deterioro en el bloque.
 	public void deterioro(int magnitud){
-		tramaActual=(tramaActual+magnitud); // Se toma la trama 1 del arreglo de imágenes.
+		tramaActual=(tramaActual+(magnitud/Tanque.U_VELOCIDAD)); // Se toma la trama 1 del arreglo de imágenes.
 		if (tramaActual > imagenes.length-1){
 			tramaActual = imagenes.length -1;
 		}

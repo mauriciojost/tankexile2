@@ -14,6 +14,9 @@ import javax.imageio.ImageIO;
 
 public class Tanque implements Controlable{
 	private static final int TRAMAS_CHOQUE = 2; // Cantidad de imágenes del tanque.
+	public static final int MAX_VELOCIDAD = 4;
+	public static final int MIN_VELOCIDAD = 2;
+	public static final int U_VELOCIDAD = 2;
 	private static final int PERIODO_CHOQUE_CHICO = 50; // Duración de los efectos de un choque.
 	private static final int PERIODO_CHOQUE_GRANDE = 150; // Duración de los efectos de un choque.
 	private static final int TRAMAS_MOVIMIENTO = 18; // Cantidad de imágenes del tanque.
@@ -24,7 +27,7 @@ public class Tanque implements Controlable{
 	
 	private int vX; // Velocidad horizontal del tanque.
 	private int vY; // Velocidad vertical del tanque.
-	private int trancoTanque = 1; // Tamaño del tranco de avance del tanque (unidad de avance).
+	private int trancoTanque = Tanque.MIN_VELOCIDAD; // Tamaño del tranco de avance del tanque (unidad de avance).
 	private boolean teclasHabilitadas = true;
 	private boolean choqueGrande = false;
 	private int temporizadorMovimento = 0;
@@ -271,11 +274,11 @@ public class Tanque implements Controlable{
 	}
 	
 	public void acelerar(){
-		trancoTanque = 2;
+		trancoTanque = Tanque.MAX_VELOCIDAD;
 		actualizarVelocidades();
 	}
 	public void noAcelerar(){
-		trancoTanque = 1;
+		trancoTanque = Tanque.MIN_VELOCIDAD;
 		actualizarVelocidades();
 	}
 	
@@ -307,8 +310,8 @@ public class Tanque implements Controlable{
 		forzarTeclasSueltas();
 		actualizarVelocidades();
 		temporizadorChoque=0;
-		choqueGrande = (this.trancoTanque==2)  || agravante; 
-		trancoTanque=1; // Modifica velocidad despues de comprobar el tipo de choque.
+		choqueGrande = (this.trancoTanque==Tanque.MAX_VELOCIDAD)  || agravante; 
+		trancoTanque=Tanque.MIN_VELOCIDAD; // Modifica velocidad despues de comprobar el tipo de choque.
 		contadorSubTramaChoque=0;
 		
 	}

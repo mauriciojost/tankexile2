@@ -92,7 +92,7 @@ public class Bola extends Thread implements BolaControlable{
 
 		if((tanquePropio.getX() > x-20)&&(tanquePropio.getX() < x+20)&&(tanquePropio.getY() > y-20)&&(tanquePropio.getY() < y+20))
 			if(buena)
-				tanquePropio.setVelocidad(2); // La bola buena aumenta la velocidad.
+				tanquePropio.setVelocidad(Tanque.MAX_VELOCIDAD); // La bola buena aumenta la velocidad.
 			else
 				tanquePropio.choque(true); // La bola mala produce el efecto de choque y establece la velocidad estandar.
 		
@@ -109,7 +109,7 @@ public class Bola extends Thread implements BolaControlable{
 	public void actuarResumido(){
 		if((tanquePropio.getX() > x-20)&&(tanquePropio.getX() < x+20)&&(tanquePropio.getY() > y-20)&&(tanquePropio.getY() < y+20))
 			if (buena)
-				tanquePropio.setVelocidad(2); // La bola buena aumenta la velocidad.
+				tanquePropio.setVelocidad(Tanque.MAX_VELOCIDAD); // La bola buena aumenta la velocidad.
 			else
 				tanquePropio.choque(true); // La bola mala produce el efecto de choque y establece la velocidad estandar.
 	}
