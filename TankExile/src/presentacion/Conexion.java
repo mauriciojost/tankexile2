@@ -17,6 +17,7 @@ import java.util.logging.Logger;
 // Clase cuya función es establecer la comunicación entre los dos hosts.
 import javax.swing.JOptionPane;
 public class Conexion implements Conectable{
+	private static Conexion instanciaConexion = null;
 	private Conectable conexionRemoto;
 	private VentanaControlable ventanaRemota; // Interfaz con la que se hace la manipulación de la ventana remota de selección de circuitos.
 	private String iPOponente; // Ip del host oponente.
@@ -53,7 +54,7 @@ public class Conexion implements Conectable{
 	// Constructor.
 	public Conexion(String iPOponente){
 		this.iPOponente = iPOponente;
-		
+		instanciaConexion = this;
 		try{
 			LocateRegistry.createRegistry(PUERTO); // Es tomado el puerto PUERTO y creado un registro asociado sobre él.
 		}catch(Exception e){
@@ -482,5 +483,8 @@ public class Conexion implements Conectable{
 	}
 	public int getOtroID(){
 		return ((this.miID+1) % 2);
+	}
+	public static Conexion getConexion(){
+		return instanciaConexion;
 	}
 }
