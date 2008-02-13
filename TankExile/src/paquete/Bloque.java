@@ -2,6 +2,7 @@ package paquete;
 import java.awt.Graphics2D;
 
 // Clase cuyos objetos son las unidades de conformación del circuito de juego.
+import java.awt.Rectangle;
 public abstract class Bloque{	
 	private int x, y; //Atributos que representan las coordenadas reales (píxeles) del bloque.
 		
@@ -17,4 +18,7 @@ public abstract class Bloque{
 	// Métodos que permiten obtener la posición real (en pixeles desde la esquina superior izquierda) del bloque.
 	public int getX(){return x;}
 	public int getY(){return y;}
+	public Rectangle getBounds(){
+		return new Rectangle(x, y, Finals.BLOQUE_LADO_LONG, Finals.BLOQUE_LADO_LONG);
+	}
 }
