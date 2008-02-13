@@ -17,7 +17,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 // Clase que contiene en sí el hilo principal del juego. Genera el circuito y los tanques, los hace actuar, y se encarga de pintarlos.
-public class Partida extends Canvas implements Finals, Runnable{
+public class Partida extends Canvas implements Runnable{
     private BufferStrategy estrategia; // Atributo que permite establecer el Doble Buffering para pintar la pantalla.
     private Circuito circuito; // Circuito a ser creado para correr la partida.
 
@@ -44,7 +44,7 @@ public class Partida extends Canvas implements Finals, Runnable{
     // Contstructor. Genera los elementos básicos de una aplicación del tipo juego.
     public Partida(String nombreCircuitoTXT, Conexion conexion, PrePartida prePartida) {
 		instanciaPartida = this;
-		this.prePartida = prePartida;
+		Partida.prePartida = prePartida;
 		ventana = new JFrame("TankExile"); // Armado de la ventana.
 		JPanel panel = (JPanel)ventana.getContentPane(); // Obtención de su JPanel.
 		//this.setBounds(0,0,Finals.ANCHO_VENTANA,Finals.ALTO_VENTANA); // Establecimiento de las dimensiones de este objeto Partida.
@@ -72,9 +72,8 @@ public class Partida extends Canvas implements Finals, Runnable{
 
 		ventana.setResizable(false); // La ventana no es de tamaño ajustable.
 		this.createBufferStrategy(2); // Es creado sobre este canvas una estrategia de buffering, de dos buffers.
-		estrategia = getBufferStrategy(); // Sobre este objeto se aplicará el método de paint. Este realizará por sí mismo el doble buffering.
+		estrategia = this.getBufferStrategy(); // Sobre este objeto se aplicará el método de paint. Este realizará por sí mismo el doble buffering.
 		
-
 		Partida.conexion = conexion;
 		this.yoID = conexion.getID()%2; // Son asignados los valores de ID e IP del oponente.
 		this.otroID = (conexion.getID()+1)%2;
