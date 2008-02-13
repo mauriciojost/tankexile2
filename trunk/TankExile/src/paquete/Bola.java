@@ -11,6 +11,8 @@ import javax.imageio.ImageIO;
 
 // Clase que representa a cada bola del juego.
 public class Bola extends Thread implements BolaControlable{
+	private static int RANGO_VELOCIDAD = 4;
+	private static int MIN_VELOCIDAD = 1;
 	private static BufferedImage imagen[] = new BufferedImage[2];
 	private int x,y; // Posición.
 	
@@ -85,16 +87,16 @@ public class Bola extends Thread implements BolaControlable{
 				tanquePropio.setVelocidad(Tanque.MAX_VELOCIDAD); // La bola buena aumenta la velocidad.
 			else
 				tanquePropio.choque(true); // La bola mala produce el efecto de choque y establece la velocidad estandar.
-		
+			
 		// Es verificada la condición de rebote.
 		if (x < 0)
-			vx = (rnd.nextInt(2) + 4);
+			vx = (Bola.MIN_VELOCIDAD + rnd.nextInt(Bola.RANGO_VELOCIDAD));
 		if (x > Finals.ANCHO_VENTANA-Finals.BLOQUE_LADO_LONG)
-		  vx = -(rnd.nextInt(2) + 4);
+		  vx = -(Bola.MIN_VELOCIDAD + rnd.nextInt(Bola.RANGO_VELOCIDAD));
 		if (y < 0)
-			vy = (rnd.nextInt(2) + 4);
+			vy = (Bola.MIN_VELOCIDAD + rnd.nextInt(Bola.RANGO_VELOCIDAD));
 		if ( y > Finals.ALTO_VENTANA-Finals.BLOQUE_LADO_LONG) 
-			vy = -(rnd.nextInt(2) + 4);
+			vy = -(Bola.MIN_VELOCIDAD + rnd.nextInt(Bola.RANGO_VELOCIDAD));
 	}
 	
 	public void actuarResumido(){

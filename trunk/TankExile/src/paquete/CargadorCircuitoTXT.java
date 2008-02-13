@@ -45,11 +45,12 @@ public class CargadorCircuitoTXT {
 					} while ((((char)caracter) != '0')&&(((char)caracter) != '1')&&(((char)caracter) != '2')&&(((char)caracter) != '3'));
 					//System.out.println("Es caracter válido para analizar: (i;j)=("+i+";"+ j+").");
 					switch ((char)caracter) {
+						case ' ': break;
 						case '0': break;
 						case '1': break;
 						case '2': hayMeta1=true; break;
 						case '3': hayMeta2=true; break;
-						
+						default: throw new IOException("El archivo tiene un caracter no válido ("+ caracter +").");		
 					}
 					//System.out.println("Variables hM1 y hM2: '" + hayMeta1 + "' y '" +hayMeta2 +"'.");
 				}
@@ -106,11 +107,13 @@ public class CargadorCircuitoTXT {
 		}while((caracter==13) || (caracter == 10)); 
 		
 		switch ((char)caracter){	// A cada caracter leído corresponde el retorno de un objeto.
+									//		' ' -> Sendero (sin bloque, es decir, sin muro ni meta).
 									//		'0' -> Sendero (sin bloque, es decir, sin muro ni meta).
 									//		'1' -> Muro.
 									//		'2' -> Meta 1.
 									//		'3' -> Meta 2.
 									//		Cualquier otro caracter implica arrojar una excepción por caracter no válido.
+			case ' ' : return null;
 			case '0' : return null;
 			case '1' : return new Muro(x,y);
 			case '2' : meta0=true; return new Meta(x,y,0);

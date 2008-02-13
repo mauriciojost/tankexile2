@@ -20,44 +20,42 @@ public class Circuito implements CircuitoControlable {
 	// Constructor de la clase.
 	public Circuito(String nombreCircuitoTXT){
 		cargadorTXT = new CargadorCircuitoTXT(nombreCircuitoTXT);
-		Bloque bloque;
+		Bloque bloque=null;
 		// Es recorrida secuencialmente cada posición del circuito para determinar según el archivo txt, si crear o no un muro o una meta, allí.
 		for (int j = 0; j < Finals.BLOQUES_NUM; j++) {
 			for (int i = 0; i < Finals.BLOQUES_NUM; i++) {
 				// En caso de estar en un borde, es creado automáticamente un muro.
 				if ((j==0)||(i==0)||(i==Finals.BLOQUES_NUM-1)||(j==Finals.BLOQUES_NUM-1)){
-					this.agregarBloque(new Muro(i,j));
+					bloque = (new Muro(i,j));
 				}else{
-				// En caso de no estar en un borde, se procede a leer el archivo para obtener el elemento a ligar al circuito.
+					// En caso de no estar en un borde, se procede a leer el archivo para obtener el elemento a ligar al circuito.
 					try {
 						bloque = cargadorTXT.getBloqueLeido(i,j); // El elemento a crear es leído para ser agregado al circuito.
-						this.agregarBloque(bloque); // Es agregado el bloque leído al circuito.
-						if (bloque instanceof Meta){ // Es verificada la posibilidad de que este bloque sea una meta, para vincularla con alguno de los atributos.
-							metas[Math.abs(((Meta)bloque).getNumero()%2)] = (Meta)bloque ;
-						}
-					
 					} catch (IOException ex) {
 						System.out.println("Error de IO al leer el circuito.");
 						ex.printStackTrace();
+						System.exit(-1);
 					}
 				}
-		
+				this.agregarBloque(bloque); // Es agregado el bloque leído al circuito.
 			}
 		}
-		try{
-		if (!cargadorTXT.circuitoCorrecto()) // Es verificada la existencia de las dos metas, en caso de no estar se arroja una excepción.
-			throw new Exception("Error: archivo de circuito incorrecto, faltan las metas número 1 y/o 2 en el mismo.");
-		}catch(Exception e){
-			e.printStackTrace();
+		
+		if (!cargadorTXT.circuitoCorrecto()){ // Es verificada la existencia de las dos metas, en caso de no estar se arroja una excepción.
+			System.out.println("Error: archivo de circuito incorrecto, faltan las metas número 1 y/o 2 en el mismo.");
+			System.exit(-1);
 		}
+		
 		cargadorTXT.cerrarArchivo();
 	}
 	
 	// Método privado que añade un bloque dado al circuito (tanto a la matriz como al grupo de objetos a representar).
 	private void agregarBloque(Bloque bloque){
-		//this.setBloqueEnMatriz(i, j, bloque); // Es agregado a la matriz el bloque dado (o nada en caso de ser un null).
 		if (bloque!=null){
 			bloques.add(bloque);
+			if (bloque instanceof Meta){ // Es verificada la posibilidad de que este bloque sea una meta, para vincularla con alguno de los atributos.
+				metas[Math.abs(((Meta)bloque).getNumero()%2)] = (Meta)bloque ;
+			}
 		}
 	}
 	
@@ -74,57 +72,14 @@ public class Circuito implements CircuitoControlable {
 		while(iterador.hasNext()){
 			((Bloque)iterador.next()).pintar(g);
 		}
-		/*for(int i=0; i<bloques.size();i++){
-			bloques.get(i).pintar(g);
-		}*/
-		/*for (int i = 0; i < Finals.BLOQUES_NUM; i++) {
-			for (int j = 0; j < Finals.BLOQUES_NUM; j++) {
-				if (matrizDeBloques[i][j]!=null){
-					matrizDeBloques[i][j].pintar(g);
-				}
-			}
-		}*/
 	}
-	
-	// Método que brinda el bloque correspondiente a las coordenadas dadas.
-	//public Muro getMuro (int bloqueX, int bloqueY){
-	//	if (this.getBloqueEnMatriz(bloqueX, bloqueY) instanceof Muro){
-	//		return (Muro)this.getBloqueEnMatriz(bloqueX, bloqueY);
-	//	}else{
-	//		return (Muro)null;
-	//	}
-	//}
-	
-	// Metodo que indica si el tanque dado ha llegado a su objetivo (meta del oponente).
-	public boolean llegueAMiMeta(Tanque tanque){
-		Meta meta = metas[Math.abs((tanque.getID()+1)%2)];
-		if (((tanque.getX() > (meta.getX() - 20))&&(tanque.getX() < (meta.getX() + 20)))&&((tanque.getY() > (meta.getY() - 20))&&(tanque.getY() < (meta.getY() + 20)))){
-			
-			// Es creado un hilo para indicar al usuario el final del juego.
-			Runnable hilitoMensajePropio = new Runnable(){
-				public void run(){
-					Partida.getPartida().finalizar();
-					JOptionPane.showMessageDialog(null, "Fin del juego. Usted ha ganado!!!");
-					PrePartida.getPrePartida().setEstado("Fin del juego. Usted ha ganado...");
-					PrePartida.getPrePartida().setVisible(true);
-				}
-			};
-			(new Thread(hilitoMensajePropio, "Hilo de mensaje de llegada a la meta (propio)")).start();
-			
-			conexion.partidaPerdida();
-			
-			return true;
-		}
-		return false;
-	}
-	
 	
 	// Método llamado remotamente para indicar que el jugador remoto ya ha llegado a su meta.
 	public void oponenteLlego() throws RemoteException{
 		PrePartida.getPrePartida().setEstado("Fin del juego. Usted ha perdido.");
 		PrePartida.getPrePartida().setVisible(true);
 		Partida.getPartida().finalizar();
-		JOptionPane.showMessageDialog(null, "Fin del juego. Usted ha perdido...");
+		//JOptionPane.showMessageDialog(null, "Fin del juego. Usted ha perdido...");
 	}
 	
 	// Método que indica mediante un booleano si ha existido una colisión con los muros del circuito, por parte del tanque indicado como parámetro.
@@ -132,88 +87,46 @@ public class Circuito implements CircuitoControlable {
 	// Además indica al circuito remoto la existencia de choques.
 	public boolean hayColision(Tanque tanque){
 		boolean hayChoque = false; // Variable booleana que indica la existencia o no de choque con al menos un muro.
-		/*int bloqueX = tanque.getX()/Finals.BLOQUE_LADO_LONG; // Cálculo de la coordenada (en matriz) del bloque superior izquierdo a analizar (coordenada X).
-		int bloqueY = tanque.getY() / Finals.BLOQUE_LADO_LONG; // Cálculo de la coordenada del bloque superior izquierdo a analizar (coordenada Y).
-		boolean bloqueXrebase = (tanque.getX()%Finals.BLOQUE_LADO_LONG)>0; // Variable que indica posibilidad de múltiple colisión (coordenada X).
-		boolean bloqueYrebase = (tanque.getY() % Finals.BLOQUE_LADO_LONG)>0; // Ídem (coordenada Y). Será true si el tanque estará entre dos cuadrantes horizontalmente.
-		*/
-		
+		Meta miMeta = metas[Math.abs((tanque.getID()+1)%2)];
 		Rectangle tanqueRec = tanque.getBounds();
+		
 		for(int i=0; i<bloques.size();i++){
 			Bloque bloque = (Bloque)bloques.get(i);
-			
-			
 			if (tanqueRec.intersects(bloque.getBounds())){
 				if(bloque instanceof Muro){
 					((Muro)bloque).deterioro(tanque.getVelocidad()); // Se provoca en el muro indicado un deterioro.
 					conexion.choqueNuevoCircuitoLocal(i, tanque.getVelocidad());
 					hayChoque = true;
 				}
+				if (bloque instanceof Meta){
+					if (miMeta.equals(bloque)){
+						PrePartida.getPrePartida().setEstado("Fin del juego. Usted ha ganado...");
+						PrePartida.getPrePartida().setVisible(true);
+						conexion.partidaPerdida();
+						Partida.getPartida().finalizar();
+					}
+				}
 			}
 		}
-		
-		/*
-		for(int i=0; i<Finals.BLOQUES_NUM;i++){
-			for(int j=0; j<Finals.BLOQUES_NUM;j++){		
-				if ((this.matrizDeBloques[i][j])instanceof Muro){
-					if (tanqueRec.intersects(this.matrizDeBloques[i][j].getBounds())){
-						this.getMuro(i, j).deterioro(tanque.getVelocidad()); // Se provoca en el muro indicado un deterioro.
-						conexion.choqueNuevoCircuitoLocal(i, j, tanque.getVelocidad());
-						hayChoque = true;
-					}
-					//if ((this.matrizDeBloques[i][j])instanceof Meta)
-		}	}	}
-		*/
-		/*
-		
-		if (hayMuro(bloqueX, bloqueY)){
-			hayChoque=true; // En caso de haber muro solapado en la parte superior izquierda del tanque, hay choque.
-			this.getMuro(bloqueX, bloqueY).deterioro(tanque.getVelocidad()); // Se provoca en el muro indicado un deterioro.
-			conexion.choqueNuevoCircuitoLocal(bloqueX, bloqueY, tanque.getVelocidad());
-		}
-		
-		if (bloqueXrebase && hayMuro(bloqueX+1,bloqueY)){
-			hayChoque = true; // Si hay rebase en X (tanque más a la derecha de un "encaje en bloque horizontal") hay choque.
-			this.getMuro(bloqueX+1, bloqueY).deterioro(tanque.getVelocidad());
-			conexion.choqueNuevoCircuitoLocal(bloqueX+1, bloqueY, tanque.getVelocidad());
-		}
-		if (bloqueYrebase && hayMuro(bloqueX,bloqueY+1)){
-			hayChoque = true; // Si hay un rebase en Y (tanque más abajo de un "encaje en bloque vertical") hay choque.
-			this.getMuro(bloqueX, bloqueY+1).deterioro(tanque.getVelocidad()); // También hay deterioro, pero en este muro.
-			conexion.choqueNuevoCircuitoLocal(bloqueX, bloqueY+1, tanque.getVelocidad());
-		}
-		if (bloqueYrebase && bloqueXrebase && hayMuro(bloqueX+1,bloqueY+1)){
-			hayChoque = true; // Si hay ambos tipos de rebase, y se tiene un muro en el cuadrante inferior derecho al del tanque, hay choque.
-			this.getMuro(bloqueX+1, bloqueY+1).deterioro(tanque.getVelocidad()); // Se deteriora el muro.
-			conexion.choqueNuevoCircuitoLocal(bloqueX+1, bloqueY+1, tanque.getVelocidad());
-		}
-		
-		*/
 		
 		if (hayChoque){
 			// Corrección de la posición del tanque involucrado.
 			switch (tanque.getDireccion()){
 				// Según la dirección del tanque, este es llevado hacia atrás hasta la condición de no solapamiento.
-				case Finals.ABAJO:		while(this.solapamiento(tanque)){tanque.setY(tanque.getY()-1);}
-				case Finals.ARRIBA:		while(this.solapamiento(tanque)){tanque.setY(tanque.getY()+1);}
-				case Finals.IZQUIERDA:	while(this.solapamiento(tanque)){tanque.setX(tanque.getX()+1);}
-				case Finals.DERECHA:	while(this.solapamiento(tanque)){tanque.setX(tanque.getX()-1);}												
+				case Finals.ABAJO:		while(this.solapamiento(tanque)){tanque.setY(tanque.getY()-Tanque.U_VELOCIDAD);}
+				case Finals.ARRIBA:		while(this.solapamiento(tanque)){tanque.setY(tanque.getY()+Tanque.U_VELOCIDAD);}
+				case Finals.IZQUIERDA:	while(this.solapamiento(tanque)){tanque.setX(tanque.getX()+Tanque.U_VELOCIDAD);}
+				case Finals.DERECHA:	while(this.solapamiento(tanque)){tanque.setX(tanque.getX()-Tanque.U_VELOCIDAD);}
 			}
-			this.getConexion().indicarChoque();
+			
 		}
+		
+		
 		return hayChoque; // Es retornado un booleano que indica la existencia o no de un choque.
 	}
 	
-	
 	// Método que indica mediante un booleano si ha existido un solapamiento con los muros del circuito, por parte del tanque indicado como parámetro.
 	private boolean solapamiento(Tanque tanque){
-		/*boolean hayChoque = false; // Variable booleana que indica la existencia o no de choque con al menos un muro.
-		int bloqueX = tanque.getX()/Finals.BLOQUE_LADO_LONG; // Cálculo de la coordenada (en matriz) del bloque superior izquierdo a analizar (coordenada X).
-		int bloqueY = tanque.getY() / Finals.BLOQUE_LADO_LONG; // Cálculo de la coordenada del bloque superior izquierdo a analizar (coordenada Y).
-		boolean bloqueXrebase = (tanque.getX()%Finals.BLOQUE_LADO_LONG)>0; // Variable que indica posibilidad de múltiple colisión (coordenada X).
-		boolean bloqueYrebase = (tanque.getY() % Finals.BLOQUE_LADO_LONG)>0; // Ídem (coordenada Y). Será true si el tanque estará entre dos cuadrantes horizontalmente.
-		
-		*/
 		Iterator iterador = bloques.iterator();
 		Rectangle tanqueRec = tanque.getBounds();
 		while(iterador.hasNext()){
@@ -222,38 +135,16 @@ public class Circuito implements CircuitoControlable {
 			}
 		}
 		return false;
-			
-		/*
-		if ((hayMuro(bloqueX, bloqueY))||(bloqueXrebase && hayMuro(bloqueX+1,bloqueY))|| (bloqueYrebase && hayMuro(bloqueX,bloqueY+1))||(bloqueYrebase && bloqueXrebase && hayMuro(bloqueX+1,bloqueY+1))){
-			hayChoque=true; // En caso de haber muro solapado en la parte superior izquierda del tanque, hay choque.
-		}	
-		return hayChoque; // Es retornado un booleano que indica la existencia o no de un choque.
-		*/
 	}
-	
-	// Método que indica la existencia o no de un muro en las coordenadas indicadas del circuito.
-	//private boolean hayMuro(int x, int y){
-	//	return (this.getBloqueEnMatriz(x, y) instanceof Muro);
-	//}
 	
 	// Método que retorna el objeto de la clase Meta solicitado.
 	public Meta getMeta(int numero){
 		return metas[Math.abs(numero%2)];
 	}
 	
-	// Método que retorna el bloque indicado por sus coordenadas.
-	//private Bloque getBloqueEnMatriz(int bloqueX, int bloqueY){
-	//	return matrizDeBloques[Math.abs(bloqueX%matrizDeBloques.length)][Math.abs(bloqueY%matrizDeBloques.length)];
-	//}
-	
-	// Método que asocia la matriz con un bloque.
-	/*private void setBloqueEnMatriz(int bloqueX, int bloqueY, Bloque bloque){
-		matrizDeBloques[Math.abs(bloqueX%matrizDeBloques.length)][Math.abs(bloqueY%matrizDeBloques.length)] = bloque;
-	}*/
-
 	// Método llamado remotamente, que indica un nuevo choque para representar en los muros, con sus parámetros como un array.
 	public void informarChoque(int parametrosDelChoque[]) throws RemoteException {
-		((Muro)bloques.get(parametrosDelChoque[0])).deterioro(parametrosDelChoque[1]);
-		//this.getMuro(parametrosDelChoque[0], parametrosDelChoque[1]).deterioro(parametrosDelChoque[2]);
+		// El parámetro contiene en su primer elemento el índice relacionado al muro chocado. En su segundo elemento, la magnitud del choque.
+		((Muro)bloques.get((int)parametrosDelChoque[0])).deterioro((int)parametrosDelChoque[1]);
 	}
 }	
