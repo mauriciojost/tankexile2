@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Iterator;
-import javax.swing.JOptionPane;
 import presentacion.Conexion;
 import presentacion.PrePartida;
 public class Circuito implements CircuitoControlable {
@@ -16,9 +15,11 @@ public class Circuito implements CircuitoControlable {
 	private ArrayList<Bloque> bloques = new ArrayList<Bloque>();
 	private Meta metas[] = new Meta[2];
 	private Conexion conexion;
+	private Tanque tanqueLocal;
 	
 	// Constructor de la clase.
 	public Circuito(String nombreCircuitoTXT){
+		
 		cargadorTXT = new CargadorCircuitoTXT(nombreCircuitoTXT);
 		Bloque bloque=null;
 		// Es recorrida secuencialmente cada posición del circuito para determinar según el archivo txt, si crear o no un muro o una meta, allí.
@@ -49,6 +50,13 @@ public class Circuito implements CircuitoControlable {
 		cargadorTXT.cerrarArchivo();
 	}
 	
+	public void setTanqueLocal(Tanque tanqueLocal){
+		this.tanqueLocal = tanqueLocal;
+	}
+	// Método que se encarga de mantener la coherencia entre el circuito y su tanque local.
+	public void actuar(){
+		this.hayColision(tanqueLocal);
+	}
 	// Método privado que añade un bloque dado al circuito (tanto a la matriz como al grupo de objetos a representar).
 	private void agregarBloque(Bloque bloque){
 		if (bloque!=null){
@@ -82,10 +90,10 @@ public class Circuito implements CircuitoControlable {
 		//JOptionPane.showMessageDialog(null, "Fin del juego. Usted ha perdido...");
 	}
 	
-	// Método que indica mediante un booleano si ha existido una colisión con los muros del circuito, por parte del tanque indicado como parámetro.
+	// Método que mantiene la coherencia entre el circuito y su tanque local.
 	// También ejecuta: el efecto de deterioro del muro correspondiente (en caso de colisión) y la corrección de la posición del tanque.
 	// Además indica al circuito remoto la existencia de choques.
-	public boolean hayColision(Tanque tanque){
+	public void hayColision(Tanque tanque){
 		boolean hayChoque = false; // Variable booleana que indica la existencia o no de choque con al menos un muro.
 		Meta miMeta = metas[Math.abs((tanque.getID()+1)%2)];
 		Rectangle tanqueRec = tanque.getBounds();
@@ -118,11 +126,11 @@ public class Circuito implements CircuitoControlable {
 				case Finals.IZQUIERDA:	while(this.solapamiento(tanque)){tanque.setX(tanque.getX()+Tanque.U_VELOCIDAD);}
 				case Finals.DERECHA:	while(this.solapamiento(tanque)){tanque.setX(tanque.getX()-Tanque.U_VELOCIDAD);}
 			}
-			
+			tanque.choque(false);
 		}
 		
 		
-		return hayChoque; // Es retornado un booleano que indica la existencia o no de un choque.
+		
 	}
 	
 	// Método que indica mediante un booleano si ha existido un solapamiento con los muros del circuito, por parte del tanque indicado como parámetro.
