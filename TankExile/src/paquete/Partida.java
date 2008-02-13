@@ -252,8 +252,7 @@ public class Partida extends Canvas implements Finals, Runnable{
 	
 	// Método que realiza la detención de todos los hilos de la partida.
 	public void finalizar(){
-		try {
-			
+		try {		
 			tanquePropio.detenerReproduccion(); // Es detenida la reproducción de todos los sonidos.
 			this.tanqueLocalLigadoOponente.detenerReproduccion();
 			this.getPrePartida().setVisible(true); // Se hace visible la ventana de prePartida.
