@@ -7,7 +7,6 @@ public abstract class Bloque{
 	private int x, y; //Atributos que representan las coordenadas reales (píxeles) del bloque.
 		
 	public Bloque(int bx, int by) {
-
 		x = bx * Finals.BLOQUE_LADO_LONG; // Cálculo de las coordenadas reales del bloque.
 		y = by * Finals.BLOQUE_LADO_LONG;
 	}

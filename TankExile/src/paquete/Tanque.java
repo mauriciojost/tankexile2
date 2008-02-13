@@ -10,9 +10,9 @@ import javax.imageio.ImageIO;
 
 
 public class Tanque implements Controlable{
-	public static final int MAX_VELOCIDAD = 4; // Velocidad máxima.
-	public static final int MIN_VELOCIDAD = 2; // Velocidad mínima.
 	public static final int U_VELOCIDAD = 2; // Parámetro utilizado para determinar la gravedad de un choque según su velocidad.
+	public static final int MAX_VELOCIDAD = U_VELOCIDAD * 2; // Velocidad máxima.
+	public static final int MIN_VELOCIDAD = U_VELOCIDAD; // Velocidad mínima.
 	private static final int TRAMAS_CHOQUE = 2; // Cantidad de imágenes del tanque respecto de la situación de choque.
 	private static final int PERIODO_CHOQUE_CHICO = 50; // Duración de los efectos de un choque.
 	private static final int PERIODO_CHOQUE_GRANDE = 150; // Duración de los efectos de un choque.
@@ -117,7 +117,6 @@ public class Tanque implements Controlable{
 				System.exit(0);
 			}
 		
-		
 		audio_movimiento = new Audio("res/waterrun.wav");
 		audio_choque = new Audio("res/click.wav");
 		
@@ -154,10 +153,6 @@ public class Tanque implements Controlable{
 		return moviendose;
 	}
 	
-	public void choqueResumido(){
-		if(sonido_habilitado){ audio_choque.reproduccionSimple();}
-	}
-	
 	// Método de actuación del tanque.
 	public void actuar() {
 		X+=vX; // Actualización de la posición.
@@ -167,10 +162,7 @@ public class Tanque implements Controlable{
 			this.choque(false);// En caso de haberla, sufrir efectos del mismo.
 		}
 		
-		if(circuito.llegueAMiMeta(this)){ // Detección de llegada a la meta.
-			this.choque(false);
-		}
-					
+		
 		// Efectos del estado de choque.
 		if (choque){
 			contadorSubTramaChoque++;
@@ -242,8 +234,7 @@ public class Tanque implements Controlable{
 		arriba=false;
 		actualizarVelocidades();
 	}
-	
-	
+
 	public void irAbajo(){
 		forzarTeclasSueltas();
 		if (teclasHabilitadas){ 
@@ -258,6 +249,7 @@ public class Tanque implements Controlable{
 		abajo=false;
 		actualizarVelocidades();
 	}
+	
 	public void irIzquierda(){
 		forzarTeclasSueltas();
 		if (teclasHabilitadas){ 
@@ -266,10 +258,12 @@ public class Tanque implements Controlable{
 		}
 		actualizarVelocidades();
 	}
+	
 	public void noIrIzquierda(){ 
 		izquierda=false;
 		actualizarVelocidades();
 	}
+	
 	public void irDerecha(){ 
 		forzarTeclasSueltas();
 		if (teclasHabilitadas){
@@ -278,13 +272,11 @@ public class Tanque implements Controlable{
 		}
 		actualizarVelocidades();	
 	}
+	
 	public void noIrDerecha(){
 		derecha=false;
 		actualizarVelocidades();
 	}
-	
-	
-
 	
 	public void setDireccion(int direccion){
 		this.direccion = direccion;
@@ -293,17 +285,25 @@ public class Tanque implements Controlable{
 	// Método que genera los efectos de un choque en el tanque.
 	public void choque(boolean agravante){ 
 		teclasHabilitadas = false;
-		choque = true;              if(sonido_habilitado){ audio_choque.reproduccionSimple();} // Reproduce sonido para choque local.
+		choque = true;
+		if(sonido_habilitado){
+			audio_choque.reproduccionSimple();
+		} // Reproduce sonido para choque local.
 		forzarTeclasSueltas();
 		actualizarVelocidades();
 		temporizadorChoque=0;
-		choqueGrande = (this.trancoTanque==Tanque.MAX_VELOCIDAD)  || agravante; 
-		trancoTanque=Tanque.MIN_VELOCIDAD; // Modifica velocidad despues de comprobar el tipo de choque.
+		choqueGrande = (this.trancoTanque==Tanque.MAX_VELOCIDAD)  || agravante; // Cuando un choque se quiere forzar a ser grande, se utiliza 'agravante' en true.
+		trancoTanque = Tanque.MIN_VELOCIDAD; // Modifica velocidad despues de comprobar el tipo de choque.
 		contadorSubTramaChoque=0;
-		
+		circuito.getConexion().indicarChoque();
 	}
 	
-
+	public void choqueResumido(){
+		if(sonido_habilitado){
+			audio_choque.reproduccionSimple();
+		}
+	}
+	
 	public void setTodo(int x, int y, int direccion, int movimientoTrama, int choqueTrama, boolean moviendose){
 		this.X = x;
 		this.Y = y;
@@ -312,20 +312,23 @@ public class Tanque implements Controlable{
 		this.movimientoTrama = movimientoTrama;
 		this.choqueTrama = choqueTrama;
 	}
+	
 	public int getChoqueTrama(){
 		return choqueTrama;
 	}
 	
 	public String getNickOponente(){
-		System.out.println("Tanque.getNickOponente():" + nickOponente);
 		return nickOponente;
 	}
+	
 	public void setNickOponente(String nickOponente){
 		this.nickOponente = nickOponente;
 	}
+	
 	public void detenerReproduccion(){
 		audio_movimiento.detener();
 	}
+	
 	public Rectangle getBounds(){
 		return new Rectangle(this.X, this.Y, Finals.BLOQUE_LADO_LONG, Finals.BLOQUE_LADO_LONG);
 	}

@@ -27,8 +27,6 @@ public class Conexion implements Conectable{
 	private boolean ventanaLista = false; // Indicador de la disponibilidad o no de la ventana (de selección de circuito) remota para el host local.
 	private boolean conexionLista = false; //Indicador de la conexión con el host remoto.
 	private boolean bolasListo = false; //Indicador de la disponibilidad de las bolas remotas.
-	
-	
 	private Tanque tanquePropio; // Tanque correspondiente al host propio (o no-remoto).
 	private Controlable tanqueRemotoAControlar; // Interfaz con la que se controla el tanque propio remoto (en el host oponente).
 	private BolaControlable bolaBuenaAControlar;
@@ -45,7 +43,7 @@ public class Conexion implements Conectable{
 	private boolean circuitoListo = false;
 	private CircuitoControlable circuitoRemotoAControlar;
 	private Circuito circuitoPropio;
-	private ArrayList<int[]> choquesPendientesCircuitoRemoto;
+	private ArrayList<int[]> choquesPendientesCircuitoRemoto = new ArrayList<int[]>();
 	private PrePartida ventana;
 	private Tanque tanqueLocalLigadoOponente;
 	/* Formato de presentación:
@@ -58,7 +56,7 @@ public class Conexion implements Conectable{
 	// Constructor.
 	public Conexion(String iPOponente){
 		this.iPOponente = iPOponente;
-		this.choquesPendientesCircuitoRemoto = new ArrayList<int[]>();
+		
 		try{
 			LocateRegistry.createRegistry(PUERTO); // Es tomado el puerto PUERTO y creado un registro asociado sobre él.
 		}catch(Exception e){
@@ -263,15 +261,13 @@ public class Conexion implements Conectable{
 	
 	
 	public String getNickTanqueOponente(){
+		String nick = null;
 		try {
-			String a = this.tanqueRemotoAControlar.getNickOponente();
-			System.out.println("getNickTanqueOponente: "+a);
-			return a;
+			nick = this.tanqueRemotoAControlar.getNickOponente();
 		} catch (RemoteException ex) {
 			System.out.println("Error al intentar obtener el nick del oponente. Clase conexión.");
-			Logger.getLogger(Conexion.class.getName()).log(Level.SEVERE, null, ex);
 		}
-		return null;
+		return nick;
 	}
 	
 	// Método que pone a disposición las bolas locales, para que sean controladas remotamente.
@@ -441,13 +437,13 @@ public class Conexion implements Conectable{
 		claveOponente = clave;
 		claveOponenteRecibida = true;
 	}
-	
+	/*
 	public synchronized void darTurno() throws RemoteException {
 		miTurno = true;
 		this.notifyAll();
 
 	}
-	
+	*/
 	public void establecerIDs(){
 		clavePropia = (new Random()).nextDouble();
 		try{conexionRemoto.setClaveOponente(clavePropia);}catch(RemoteException e){e.printStackTrace();}
@@ -488,14 +484,13 @@ public class Conexion implements Conectable{
 				} catch (RemoteException ex) {
 					System.out.println("Error en el método finDePartida en la clase Conexion.");
 					Logger.getLogger(Conexion.class.getName()).log(Level.SEVERE, null, ex);
-					}
 				}
+			}
 		};
 		(new Thread(hilitoMensajeOponente, "Hilo del mensaje de finalización para el oponente")).start();
 	}
 	
 	public void desbindearTodo(boolean inclusoConexion){
-		
 		try {
 			Registry registro = LocateRegistry.getRegistry(PUERTO);
 			String[] lista = registro.list();
@@ -507,16 +502,9 @@ public class Conexion implements Conectable{
 				}
 			}
 		} catch (Exception ex) {
-			System.out.println("Método desbindearTodo de la clase Conexion.");
+			System.out.println("Excepción en método desbindearTodo de la clase Conexion: ");
+			ex.printStackTrace();
 		}
-		/*try{
-			UnicastRemoteObject.unexportObject(this.ventana, true);
-			UnicastRemoteObject.unexportObject(this.circuitoPropio, true);
-			UnicastRemoteObject.unexportObject(this.tanqueLocalLigadoOponente, true);
-			UnicastRemoteObject.unexportObject(this.bolaBuenaLocal, true);
-			UnicastRemoteObject.unexportObject(this.bolaMalaLocal, true);
-		}catch(Exception e){}
-		*/
 	}
 	public int getID(){
 		return this.miID;

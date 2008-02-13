@@ -6,7 +6,6 @@ import java.rmi.RemoteException;
 
 public interface Conectable extends Remote {
 	public void setClaveOponente(double clave) throws RemoteException;
-	public void darTurno() throws RemoteException;
 	public String leer(String archivo) throws RemoteException, IOException;
 	public void copiarDeHostRemoto(String archivoOrigenRemoto, String archivoDestinoLocal) throws IOException; 
 }
