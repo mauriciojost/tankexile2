@@ -17,9 +17,7 @@ import java.util.logging.Logger;
 // Clase cuya función es establecer la comunicación entre los dos hosts.
 import javax.swing.JOptionPane;
 public class Conexion implements Conectable{
-
 	private Conectable conexionRemoto;
-	
 	private VentanaControlable ventanaRemota; // Interfaz con la que se hace la manipulación de la ventana remota de selección de circuitos.
 	private String iPOponente; // Ip del host oponente.
 	private final int PUERTO = 4500; // Puerto al que se asocian todos los registros.
@@ -37,7 +35,6 @@ public class Conexion implements Conectable{
 	private double clavePropia; // Valor numérico generado localmente para la inicialización del turno.
 	private double claveOponente; // Valor numérico enviado desde el oponente para iniciar el turno.
 	private boolean claveOponenteRecibida = false; // Indicador de la llegada de la clave del oponente.
-	private boolean miTurno = false; // Indicador de turno de este host.
 	private int miID = -1;
 	private boolean correrHilos = true;
 	private boolean circuitoListo = false;
@@ -75,6 +72,7 @@ public class Conexion implements Conectable{
 		
 	}
 	
+	// Equivalente a 'poner a disposición instancia de la clase conexión remota'.
 	public void conectar() throws Exception{
 		Registry registry = LocateRegistry.getRegistry(iPOponente, PUERTO);
 		this.conexionRemoto = (Conectable) registry.lookup("Clave conexion");
@@ -212,7 +210,6 @@ public class Conexion implements Conectable{
 		return tanqueListo;
 	}
 	
-	
 	public void indicarChoque(){
 		Runnable hilito = new Runnable(){
 			public void run() {				
@@ -258,7 +255,6 @@ public class Conexion implements Conectable{
 			}
 		};
 	}
-	
 	
 	public String getNickTanqueOponente(){
 		String nick = null;
@@ -437,13 +433,7 @@ public class Conexion implements Conectable{
 		claveOponente = clave;
 		claveOponenteRecibida = true;
 	}
-	/*
-	public synchronized void darTurno() throws RemoteException {
-		miTurno = true;
-		this.notifyAll();
-
-	}
-	*/
+	
 	public void establecerIDs(){
 		clavePropia = (new Random()).nextDouble();
 		try{conexionRemoto.setClaveOponente(clavePropia);}catch(RemoteException e){e.printStackTrace();}
@@ -451,29 +441,10 @@ public class Conexion implements Conectable{
 			try{Thread.sleep(Finals.ESPERA_CONEXION);}catch(InterruptedException e){e.printStackTrace();}
 		}
 		if (clavePropia >= claveOponente){
-			miTurno = true;
 			miID = 1;
 		}else{
-			miTurno = false;
 			miID = 0;
 		}
-		/* CUESTION DE TURNOS...
-		while(true){
-				if (miTurno){
-					try{this.sleep(Finals.PERIODO_DE_TURNO);}catch(InterruptedException e){e.printStackTrace();}
-						miTurno=false;
-						try{
-							conexionRemoto.darTurno();
-						}catch(RemoteException e){
-							e.printStackTrace();
-						}
-				}else{
-					synchronized(this){
-						try{this.wait();}catch(InterruptedException e){e.printStackTrace();}
-					}
-				}
-			
-		}*/
 	}
 	
 	public void partidaPerdida(){
