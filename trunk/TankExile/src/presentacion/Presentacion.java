@@ -51,9 +51,9 @@ public class Presentacion extends JFrame implements MouseListener {
 		panel.setLayout(new GridLayout(1,1)); // Establece manager layout para el panel.
 		panel.setBackground(Finals.colorGris); // Establece el color de fondo del panel.
 
-		ImageIcon ii = new ImageIcon(getClass().getClassLoader().getResource("res/tank.GIF"));
+		ImageIcon imagenPresentacion = new ImageIcon(getClass().getClassLoader().getResource("res/tank.GIF"));
 		JLabel iM = new JLabel();
-		iM.setIcon(ii);
+		iM.setIcon(imagenPresentacion);
 		iM.setOpaque(false);
 		iM.setSize(Finals.ANCHO_VENTANA-250, Finals.ALTO_VENTANA-480);
 		panel.add(iM);
@@ -65,10 +65,10 @@ public class Presentacion extends JFrame implements MouseListener {
 		} catch (InterruptedException ex) {
 			Logger.getLogger(Presentacion.class.getName()).log(Level.SEVERE, null, ex);
 		}
-
-		panel.removeAll(); // Se remueven los objetos que se encontrataban contenidos en el panel.
-		panel.setLayout(new GridLayout(4,1)); // Establece manager layout para el panel.
+		panel.remove(iM); // Se remueven los objetos que se encontrataban contenidos en el panel.
+		panel.repaint();
 		
+		panel.setLayout(new GridLayout(4,1)); // Establece manager layout para el panel.
 		// Creacion de los componentes que conforman la interface de usuario.
 		Creador creador = new Creador();
 		
@@ -106,10 +106,9 @@ public class Presentacion extends JFrame implements MouseListener {
 		panel_botones.add(this.bSalida = creador.crearBoton("Salida", "Cerrar", this));
 		
 		
-		estado = new JTextField(" ");
+		estado = new JTextField("Ingrese la dirección IP del oponente.");
 		estado.setEditable(false);
 		estado.setBackground(Finals.colorGris);
-		
 		panel.add(panel_ip_propio);
 		panel.add(panel_ip_oponente);
 		panel.add(panel_botones);

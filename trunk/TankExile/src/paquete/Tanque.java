@@ -1,37 +1,32 @@
 package paquete;
 
-import java.applet.Applet;
-import java.applet.AudioClip;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.HashMap;
 import javax.imageio.ImageIO;
 
 
 public class Tanque implements Controlable{
-	private static final int TRAMAS_CHOQUE = 2; // Cantidad de imágenes del tanque respecto de la situación de choque.
 	public static final int MAX_VELOCIDAD = 4; // Velocidad máxima.
 	public static final int MIN_VELOCIDAD = 2; // Velocidad mínima.
 	public static final int U_VELOCIDAD = 2; // Parámetro utilizado para determinar la gravedad de un choque según su velocidad.
+	private static final int TRAMAS_CHOQUE = 2; // Cantidad de imágenes del tanque respecto de la situación de choque.
 	private static final int PERIODO_CHOQUE_CHICO = 50; // Duración de los efectos de un choque.
 	private static final int PERIODO_CHOQUE_GRANDE = 150; // Duración de los efectos de un choque.
 	private static final int TRAMAS_MOVIMIENTO = 18; // Cantidad de imágenes del tanque.
 	private static final int PERIODO_MOVIMENTO = 1;
-	private int contadorSubTramaChoque; // Contador auxiliar para la situación de choque.
 	private final int SUB_PERIODO_CHOQUE = 5; // Duración de un sub período de choque.
-	
-	
+	private int contadorSubTramaChoque; // Contador auxiliar para la situación de choque.
 	private int vX; // Velocidad horizontal del tanque.
 	private int vY; // Velocidad vertical del tanque.
 	private int trancoTanque = Tanque.MIN_VELOCIDAD; // Tamaño del tranco de avance del tanque (unidad de avance).
-	private boolean teclasHabilitadas = true; // Indicador de habilitación o no de teclado para comandar el tanque.
-	private boolean choqueGrande = false; // Indicador de magnitud del último choque.
 	private int temporizadorMovimento = 0; 
 	private int movimientoTrama = 0;
+	private boolean teclasHabilitadas = true; // Indicador de habilitación o no de teclado para comandar el tanque.
+	private boolean choqueGrande = false; // Indicador de magnitud del último choque.
+	
 	
 	private boolean arriba,abajo,izquierda,derecha; // Booleanos representativas de la directiva de la dirección a adoptar.
 	private int direccion = Finals.ARRIBA; // Atributo representativo de la dirección actual del tanque.
@@ -174,7 +169,6 @@ public class Tanque implements Controlable{
 		if(circuito.llegueAMiMeta(this)){ // Detección de llegada a la meta.
 			this.choque(false);
 		}
-		
 					
 		// Efectos del estado de choque.
 		if (choque){
@@ -243,6 +237,12 @@ public class Tanque implements Controlable{
 		actualizarVelocidades();
 	}
 	
+	public void noIrArriba(){ 
+		arriba=false;
+		actualizarVelocidades();
+	}
+	
+	
 	public void irAbajo(){
 		forzarTeclasSueltas();
 		if (teclasHabilitadas){ 
@@ -251,7 +251,12 @@ public class Tanque implements Controlable{
 		}
 		actualizarVelocidades();
 	}
-	
+
+	public void noIrAbajo(){ 
+		
+		abajo=false;
+		actualizarVelocidades();
+	}
 	public void irIzquierda(){
 		forzarTeclasSueltas();
 		if (teclasHabilitadas){ 
@@ -260,41 +265,25 @@ public class Tanque implements Controlable{
 		}
 		actualizarVelocidades();
 	}
-	
+	public void noIrIzquierda(){ 
+		izquierda=false;
+		actualizarVelocidades();
+	}
 	public void irDerecha(){ 
 		forzarTeclasSueltas();
 		if (teclasHabilitadas){
 			derecha = true;
 			direccion = Finals.DERECHA;
 		}
-		actualizarVelocidades();
+		actualizarVelocidades();	
 	}
-	
-	public void acelerar(){
-		trancoTanque = Tanque.MAX_VELOCIDAD;
-		actualizarVelocidades();
-	}
-	public void noAcelerar(){
-		trancoTanque = Tanque.MIN_VELOCIDAD;
-		actualizarVelocidades();
-	}
-	
-	public void noIrArriba(){ 
-		arriba=false;
-		actualizarVelocidades();
-	}
-	public void noIrAbajo(){ 
-		abajo=false;
-		actualizarVelocidades();
-	}
-	public void noIrIzquierda(){ 
-		izquierda=false;
-		actualizarVelocidades();
-	}
-	public void noIrDerecha(){ 
+	public void noIrDerecha(){
 		derecha=false;
 		actualizarVelocidades();
 	}
+	
+	
+
 	
 	public void setDireccion(int direccion){
 		this.direccion = direccion;
@@ -315,16 +304,9 @@ public class Tanque implements Controlable{
 	
 
 	public void setTodo(int x, int y, int direccion, int movimientoTrama, int choqueTrama, boolean moviendose){
-//		if((sonido_habilitado? ((this.X != x || this.Y != y) && !ayuda_sonido):false)){
-//			audio.reproduccion(); // Reproduce sonido para movimiento del oponente.
-//			ayuda_sonido = true; // No deja ingresar a este if
-//		}else{
-//			audio.detener();
-//			ayuda_sonido = false; // Se podra ingresar al if (sujeto a las demas condiciones)
-//		}
-		this.moviendose = moviendose;
 		this.X = x;
 		this.Y = y;
+		this.moviendose = moviendose;
 		this.direccion = direccion;
 		this.movimientoTrama = movimientoTrama;
 		this.choqueTrama = choqueTrama;
