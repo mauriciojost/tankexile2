@@ -5,12 +5,15 @@ import java.io.IOException;
 
 // Clase que contiene en sí la información sobre los elementos que componen el circuito de juego.
 import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Iterator;
 import javax.swing.JOptionPane;
 import presentacion.Conexion;
 import presentacion.PrePartida;
 public class Circuito implements CircuitoControlable {
 	private CargadorCircuitoTXT cargadorTXT; // Permite la conversión del archivo txt a circuito.
-	private Bloque matrizDeBloques[][] = new Bloque [Finals.BLOQUES_NUM][Finals.BLOQUES_NUM]; // Matriz que contiene los elementos Bloque que son mapeados en la pantalla.
+	//private Bloque matrizDeBloques[][] = new Bloque [Finals.BLOQUES_NUM][Finals.BLOQUES_NUM]; // Matriz que contiene los elementos Bloque que son mapeados en la pantalla.
+	private ArrayList<Bloque> bloques = new ArrayList<Bloque>();
 	private Meta metas[] = new Meta[2];
 	private Conexion conexion;
 	
@@ -23,12 +26,12 @@ public class Circuito implements CircuitoControlable {
 			for (int i = 0; i < Finals.BLOQUES_NUM; i++) {
 				// En caso de estar en un borde, es creado automáticamente un muro.
 				if ((j==0)||(i==0)||(i==Finals.BLOQUES_NUM-1)||(j==Finals.BLOQUES_NUM-1)){
-					this.agregarBloque(i, j, new Muro(i,j));
+					this.agregarBloque(new Muro(i,j));
 				}else{
 				// En caso de no estar en un borde, se procede a leer el archivo para obtener el elemento a ligar al circuito.
 					try {
 						bloque = cargadorTXT.getBloqueLeido(i,j); // El elemento a crear es leído para ser agregado al circuito.
-						this.agregarBloque(i, j, bloque); // Es agregado el bloque leído al circuito.
+						this.agregarBloque(bloque); // Es agregado el bloque leído al circuito.
 						if (bloque instanceof Meta){ // Es verificada la posibilidad de que este bloque sea una meta, para vincularla con alguno de los atributos.
 							metas[Math.abs(((Meta)bloque).getNumero()%2)] = (Meta)bloque ;
 						}
@@ -51,8 +54,11 @@ public class Circuito implements CircuitoControlable {
 	}
 	
 	// Método privado que añade un bloque dado al circuito (tanto a la matriz como al grupo de objetos a representar).
-	private void agregarBloque(int i,int j, Bloque bloque){
-		this.setBloqueEnMatriz(i, j, bloque); // Es agregado a la matriz el bloque dado (o nada en caso de ser un null).
+	private void agregarBloque(Bloque bloque){
+		//this.setBloqueEnMatriz(i, j, bloque); // Es agregado a la matriz el bloque dado (o nada en caso de ser un null).
+		if (bloque!=null){
+			bloques.add(bloque);
+		}
 	}
 	
 	public void setConexion(Conexion conexion){
@@ -64,23 +70,30 @@ public class Circuito implements CircuitoControlable {
 	
 	// Método que realiza la llamada de pintado de cada elemento constitutivo del circuito (bloques).
 	public void pintar(Graphics2D g){
-		for (int i = 0; i < Finals.BLOQUES_NUM; i++) {
+		Iterator iterador = bloques.iterator();
+		while(iterador.hasNext()){
+			((Bloque)iterador.next()).pintar(g);
+		}
+		/*for(int i=0; i<bloques.size();i++){
+			bloques.get(i).pintar(g);
+		}*/
+		/*for (int i = 0; i < Finals.BLOQUES_NUM; i++) {
 			for (int j = 0; j < Finals.BLOQUES_NUM; j++) {
 				if (matrizDeBloques[i][j]!=null){
 					matrizDeBloques[i][j].pintar(g);
 				}
 			}
-		}
+		}*/
 	}
 	
 	// Método que brinda el bloque correspondiente a las coordenadas dadas.
-	public Muro getMuro (int bloqueX, int bloqueY){
-		if (this.getBloqueEnMatriz(bloqueX, bloqueY) instanceof Muro){
-			return (Muro)this.getBloqueEnMatriz(bloqueX, bloqueY);
-		}else{
-			return (Muro)null;
-		}
-	}
+	//public Muro getMuro (int bloqueX, int bloqueY){
+	//	if (this.getBloqueEnMatriz(bloqueX, bloqueY) instanceof Muro){
+	//		return (Muro)this.getBloqueEnMatriz(bloqueX, bloqueY);
+	//	}else{
+	//		return (Muro)null;
+	//	}
+	//}
 	
 	// Metodo que indica si el tanque dado ha llegado a su objetivo (meta del oponente).
 	public boolean llegueAMiMeta(Tanque tanque){
@@ -108,7 +121,7 @@ public class Circuito implements CircuitoControlable {
 	
 	// Método llamado remotamente para indicar que el jugador remoto ya ha llegado a su meta.
 	public void oponenteLlego() throws RemoteException{
-		PrePartida.getPrePartida().setEstado("Usted ha perdido.");
+		PrePartida.getPrePartida().setEstado("Fin del juego. Usted ha perdido.");
 		PrePartida.getPrePartida().setVisible(true);
 		Partida.getPartida().finalizar();
 		JOptionPane.showMessageDialog(null, "Fin del juego. Usted ha perdido...");
@@ -119,16 +132,29 @@ public class Circuito implements CircuitoControlable {
 	// Además indica al circuito remoto la existencia de choques.
 	public boolean hayColision(Tanque tanque){
 		boolean hayChoque = false; // Variable booleana que indica la existencia o no de choque con al menos un muro.
-		int bloqueX = tanque.getX()/Finals.BLOQUE_LADO_LONG; // Cálculo de la coordenada (en matriz) del bloque superior izquierdo a analizar (coordenada X).
+		/*int bloqueX = tanque.getX()/Finals.BLOQUE_LADO_LONG; // Cálculo de la coordenada (en matriz) del bloque superior izquierdo a analizar (coordenada X).
 		int bloqueY = tanque.getY() / Finals.BLOQUE_LADO_LONG; // Cálculo de la coordenada del bloque superior izquierdo a analizar (coordenada Y).
 		boolean bloqueXrebase = (tanque.getX()%Finals.BLOQUE_LADO_LONG)>0; // Variable que indica posibilidad de múltiple colisión (coordenada X).
 		boolean bloqueYrebase = (tanque.getY() % Finals.BLOQUE_LADO_LONG)>0; // Ídem (coordenada Y). Será true si el tanque estará entre dos cuadrantes horizontalmente.
-		
+		*/
 		
 		Rectangle tanqueRec = tanque.getBounds();
+		for(int i=0; i<bloques.size();i++){
+			Bloque bloque = (Bloque)bloques.get(i);
+			
+			
+			if (tanqueRec.intersects(bloque.getBounds())){
+				if(bloque instanceof Muro){
+					((Muro)bloque).deterioro(tanque.getVelocidad()); // Se provoca en el muro indicado un deterioro.
+					conexion.choqueNuevoCircuitoLocal(i, tanque.getVelocidad());
+					hayChoque = true;
+				}
+			}
+		}
 		
+		/*
 		for(int i=0; i<Finals.BLOQUES_NUM;i++){
-			for(int j=0; j<Finals.BLOQUES_NUM;j++){
+			for(int j=0; j<Finals.BLOQUES_NUM;j++){		
 				if ((this.matrizDeBloques[i][j])instanceof Muro){
 					if (tanqueRec.intersects(this.matrizDeBloques[i][j].getBounds())){
 						this.getMuro(i, j).deterioro(tanque.getVelocidad()); // Se provoca en el muro indicado un deterioro.
@@ -136,9 +162,8 @@ public class Circuito implements CircuitoControlable {
 						hayChoque = true;
 					}
 					//if ((this.matrizDeBloques[i][j])instanceof Meta)
-				}
-			}
-		}
+		}	}	}
+		*/
 		/*
 		
 		if (hayMuro(bloqueX, bloqueY)){
@@ -182,22 +207,34 @@ public class Circuito implements CircuitoControlable {
 	
 	// Método que indica mediante un booleano si ha existido un solapamiento con los muros del circuito, por parte del tanque indicado como parámetro.
 	private boolean solapamiento(Tanque tanque){
-		boolean hayChoque = false; // Variable booleana que indica la existencia o no de choque con al menos un muro.
+		/*boolean hayChoque = false; // Variable booleana que indica la existencia o no de choque con al menos un muro.
 		int bloqueX = tanque.getX()/Finals.BLOQUE_LADO_LONG; // Cálculo de la coordenada (en matriz) del bloque superior izquierdo a analizar (coordenada X).
 		int bloqueY = tanque.getY() / Finals.BLOQUE_LADO_LONG; // Cálculo de la coordenada del bloque superior izquierdo a analizar (coordenada Y).
 		boolean bloqueXrebase = (tanque.getX()%Finals.BLOQUE_LADO_LONG)>0; // Variable que indica posibilidad de múltiple colisión (coordenada X).
 		boolean bloqueYrebase = (tanque.getY() % Finals.BLOQUE_LADO_LONG)>0; // Ídem (coordenada Y). Será true si el tanque estará entre dos cuadrantes horizontalmente.
-								
+		
+		*/
+		Iterator iterador = bloques.iterator();
+		Rectangle tanqueRec = tanque.getBounds();
+		while(iterador.hasNext()){
+			if (tanqueRec.intersects(((Bloque)iterador.next()).getBounds())){
+				return true;
+			}
+		}
+		return false;
+			
+		/*
 		if ((hayMuro(bloqueX, bloqueY))||(bloqueXrebase && hayMuro(bloqueX+1,bloqueY))|| (bloqueYrebase && hayMuro(bloqueX,bloqueY+1))||(bloqueYrebase && bloqueXrebase && hayMuro(bloqueX+1,bloqueY+1))){
 			hayChoque=true; // En caso de haber muro solapado en la parte superior izquierda del tanque, hay choque.
 		}	
 		return hayChoque; // Es retornado un booleano que indica la existencia o no de un choque.
+		*/
 	}
 	
 	// Método que indica la existencia o no de un muro en las coordenadas indicadas del circuito.
-	private boolean hayMuro(int x, int y){
-		return (this.getBloqueEnMatriz(x, y) instanceof Muro);
-	}
+	//private boolean hayMuro(int x, int y){
+	//	return (this.getBloqueEnMatriz(x, y) instanceof Muro);
+	//}
 	
 	// Método que retorna el objeto de la clase Meta solicitado.
 	public Meta getMeta(int numero){
@@ -205,17 +242,18 @@ public class Circuito implements CircuitoControlable {
 	}
 	
 	// Método que retorna el bloque indicado por sus coordenadas.
-	private Bloque getBloqueEnMatriz(int bloqueX, int bloqueY){
-		return matrizDeBloques[Math.abs(bloqueX%matrizDeBloques.length)][Math.abs(bloqueY%matrizDeBloques.length)];
-	}
+	//private Bloque getBloqueEnMatriz(int bloqueX, int bloqueY){
+	//	return matrizDeBloques[Math.abs(bloqueX%matrizDeBloques.length)][Math.abs(bloqueY%matrizDeBloques.length)];
+	//}
 	
 	// Método que asocia la matriz con un bloque.
-	private void setBloqueEnMatriz(int bloqueX, int bloqueY, Bloque bloque){
+	/*private void setBloqueEnMatriz(int bloqueX, int bloqueY, Bloque bloque){
 		matrizDeBloques[Math.abs(bloqueX%matrizDeBloques.length)][Math.abs(bloqueY%matrizDeBloques.length)] = bloque;
-	}
+	}*/
 
 	// Método llamado remotamente, que indica un nuevo choque para representar en los muros, con sus parámetros como un array.
 	public void informarChoque(int parametrosDelChoque[]) throws RemoteException {
-		this.getMuro(parametrosDelChoque[0], parametrosDelChoque[1]).deterioro(parametrosDelChoque[2]);
+		((Muro)bloques.get(parametrosDelChoque[0])).deterioro(parametrosDelChoque[1]);
+		//this.getMuro(parametrosDelChoque[0], parametrosDelChoque[1]).deterioro(parametrosDelChoque[2]);
 	}
 }	
