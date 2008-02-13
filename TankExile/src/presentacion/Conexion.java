@@ -417,8 +417,8 @@ public class Conexion implements Conectable{
 		this.circuitoPropio = circuitoPropio;
 	}
 	
-	public void choqueNuevoCircuitoLocal(int bloqueX, int bloqueY, int magnitudDelChoque){
-		int choque[] = {bloqueX,bloqueY,magnitudDelChoque};
+	public void choqueNuevoCircuitoLocal(int indice, int magnitudDelChoque){
+		int choque[] = {indice,magnitudDelChoque};
 		this.choquesPendientesCircuitoRemoto.add(choque);
 	}
 	public Runnable getHiloManejadorDeCircuitoRemoto(){
