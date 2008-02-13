@@ -1,6 +1,7 @@
 package paquete;
 
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
@@ -324,5 +325,8 @@ public class Tanque implements Controlable{
 	}
 	public void detenerReproduccion(){
 		audio_movimiento.detener();
+	}
+	public Rectangle getBounds(){
+		return new Rectangle(this.X, this.Y, Finals.BLOQUE_LADO_LONG, Finals.BLOQUE_LADO_LONG);
 	}
 }	

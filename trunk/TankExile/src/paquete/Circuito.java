@@ -1,5 +1,6 @@
 package paquete;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.io.IOException;
 
 // Clase que contiene en sí la información sobre los elementos que componen el circuito de juego.
@@ -122,7 +123,24 @@ public class Circuito implements CircuitoControlable {
 		int bloqueY = tanque.getY() / Finals.BLOQUE_LADO_LONG; // Cálculo de la coordenada del bloque superior izquierdo a analizar (coordenada Y).
 		boolean bloqueXrebase = (tanque.getX()%Finals.BLOQUE_LADO_LONG)>0; // Variable que indica posibilidad de múltiple colisión (coordenada X).
 		boolean bloqueYrebase = (tanque.getY() % Finals.BLOQUE_LADO_LONG)>0; // Ídem (coordenada Y). Será true si el tanque estará entre dos cuadrantes horizontalmente.
-								
+		
+		
+		Rectangle tanqueRec = tanque.getBounds();
+		
+		for(int i=0; i<Finals.BLOQUES_NUM;i++){
+			for(int j=0; j<Finals.BLOQUES_NUM;j++){
+				if ((this.matrizDeBloques[i][j])instanceof Muro){
+					if (tanqueRec.intersects(this.matrizDeBloques[i][j].getBounds())){
+						this.getMuro(i, j).deterioro(tanque.getVelocidad()); // Se provoca en el muro indicado un deterioro.
+						conexion.choqueNuevoCircuitoLocal(i, j, tanque.getVelocidad());
+						hayChoque = true;
+					}
+					//if ((this.matrizDeBloques[i][j])instanceof Meta)
+				}
+			}
+		}
+		/*
+		
 		if (hayMuro(bloqueX, bloqueY)){
 			hayChoque=true; // En caso de haber muro solapado en la parte superior izquierda del tanque, hay choque.
 			this.getMuro(bloqueX, bloqueY).deterioro(tanque.getVelocidad()); // Se provoca en el muro indicado un deterioro.
@@ -144,6 +162,8 @@ public class Circuito implements CircuitoControlable {
 			this.getMuro(bloqueX+1, bloqueY+1).deterioro(tanque.getVelocidad()); // Se deteriora el muro.
 			conexion.choqueNuevoCircuitoLocal(bloqueX+1, bloqueY+1, tanque.getVelocidad());
 		}
+		
+		*/
 		
 		if (hayChoque){
 			// Corrección de la posición del tanque involucrado.
