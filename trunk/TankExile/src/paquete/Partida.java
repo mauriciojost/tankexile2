@@ -90,7 +90,7 @@ public class Partida extends Canvas implements Finals, Runnable{
 		circuito = new Circuito(nombreCircuitoTXT); // Creación del circuito de juego.
 		circuito.setConexion(conexion);
 		tanquePropio = new Tanque(circuito, yoID); // Creación del tanque comandado por el jugador en este host.
-		
+		circuito.setTanqueLocal(tanquePropio);
 		tanqueLocalLigadoOponente = new Tanque(circuito, otroID); // Creación del tanque que será ligado al registro de RMI para ser comandado por el host remoto.
 		conexion.setTanqueLocalOponente(tanqueLocalLigadoOponente); 
 		conexion.bindearTanqueLocalOponente(); // El tanque anterior es puesto a disposición del host remoto.
@@ -180,6 +180,7 @@ public class Partida extends Canvas implements Finals, Runnable{
     public void actualizarEscena(){
 		tanquePropio.actuar();
 		tanqueLocalLigadoOponente.actuarResumido();
+		circuito.actuar();
     }
 	
 	

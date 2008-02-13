@@ -448,17 +448,17 @@ public class Conexion implements Conectable{
 	}
 	
 	public void partidaPerdida(){
-		Runnable hilitoMensajeOponente = new Runnable(){
-			public void run(){
-				try {
-					circuitoRemotoAControlar.oponenteLlego();
-				} catch (RemoteException ex) {
-					System.out.println("Error en el método finDePartida en la clase Conexion.");
-					Logger.getLogger(Conexion.class.getName()).log(Level.SEVERE, null, ex);
-				}
-			}
-		};
-		(new Thread(hilitoMensajeOponente, "Hilo del mensaje de finalización para el oponente")).start();
+		//Runnable hilitoMensajeOponente = new Runnable(){
+		//	public void run(){
+		try {
+			circuitoRemotoAControlar.oponenteLlego();
+		} catch (RemoteException ex) {
+			System.out.println("Error en el método finDePartida en la clase Conexion.");
+			Logger.getLogger(Conexion.class.getName()).log(Level.SEVERE, null, ex);
+		}
+		//	}
+		//};
+		//(new Thread(hilitoMensajeOponente, "Hilo del mensaje de finalización para el oponente")).start();
 	}
 	
 	public void desbindearTodo(boolean inclusoConexion){

@@ -132,6 +132,17 @@ public class Tanque implements Controlable{
 		return rotator.filter(img, null);
 	}
 	
+	
+    
+	public void setMoviendose(boolean estaMoviendose){
+		moviendose = estaMoviendose;
+	}
+	
+	public boolean getMoviendose(){
+		return moviendose;
+	}
+	
+	
 	// Método de actuación resumida del tanque, que sólo reproduce o nó un sonido según la situación o no de movimiento. Usado por el tanque oponente.
 	public void actuarResumido() {
 		if (moviendose){
@@ -144,23 +155,16 @@ public class Tanque implements Controlable{
 			ayuda_sonido = false;
 		}
     }
-    
-	public void setMoviendose(boolean estaMoviendose){
-		moviendose = estaMoviendose;
-	}
-	
-	public boolean getMoviendose(){
-		return moviendose;
-	}
 	
 	// Método de actuación del tanque.
 	public void actuar() {
 		X+=vX; // Actualización de la posición.
 		Y+=vY;
 		
-		if(circuito.hayColision(this)){ // Detección de colisiones. Responsabilidades del circuito.
-			this.choque(false);// En caso de haberla, sufrir efectos del mismo.
-		}
+		
+		//if (circuito.hayColision(this)){ // Detección de colisiones. Responsabilidades del circuito.
+			//this.choque(false);// En caso de haberla, sufrir efectos del mismo.
+		//}
 		
 		
 		// Efectos del estado de choque.
