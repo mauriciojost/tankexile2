@@ -7,6 +7,7 @@ import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import javax.imageio.ImageIO;
+import presentacion.Conexion;
 
 
 public class Tanque implements Controlable{
@@ -38,7 +39,6 @@ public class Tanque implements Controlable{
 	
     private int X, Y; // Coordenadas (en píxeles) del tanque.
     private static HashMap<Integer, BufferedImage> imagenes = new HashMap<Integer, BufferedImage>(); // Conjunto de imágenes del tanque, asociadas a una clave cada una mediante un HashMap.
-    private static Circuito circuito; // Circuito en el cual está el tanque.
 	private int id; // Identificador del tanque.
 
 	private boolean ayuda_sonido = false;
@@ -86,9 +86,9 @@ public class Tanque implements Controlable{
     
 	// Constructor.
 	@SuppressWarnings("static-access")
-	public Tanque(Circuito circuito, int id) {
+	public Tanque(int id) {
 		this.id = id;
-		this.circuito = circuito;	
+		
 		
 		// Carga de las imágenes estáticamente.
 		if (imagenes.isEmpty())
@@ -299,7 +299,7 @@ public class Tanque implements Controlable{
 		choqueGrande = (this.trancoTanque==Tanque.MAX_VELOCIDAD)  || agravante; // Cuando un choque se quiere forzar a ser grande, se utiliza 'agravante' en true.
 		trancoTanque = Tanque.MIN_VELOCIDAD; // Modifica velocidad despues de comprobar el tipo de choque.
 		contadorSubTramaChoque=0;
-		circuito.getConexion().indicarChoque();
+		Conexion.getConexion().indicarChoque();
 	}
 	
 	public void choqueResumido(){

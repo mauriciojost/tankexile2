@@ -93,6 +93,7 @@ public class Circuito implements CircuitoControlable {
 	// Método que mantiene la coherencia entre el circuito y su tanque local.
 	// También ejecuta: el efecto de deterioro del muro correspondiente (en caso de colisión) y la corrección de la posición del tanque.
 	// Además indica al circuito remoto la existencia de choques.
+	// Indica además la llegada a la meta.
 	public void hayColision(Tanque tanque){
 		boolean hayChoque = false; // Variable booleana que indica la existencia o no de choque con al menos un muro.
 		Meta miMeta = metas[Math.abs((tanque.getID()+1)%2)];
@@ -106,7 +107,7 @@ public class Circuito implements CircuitoControlable {
 					conexion.choqueNuevoCircuitoLocal(i, tanque.getVelocidad());
 					hayChoque = true;
 				}
-				if (bloque instanceof Meta){
+				else if (bloque instanceof Meta){
 					if (miMeta.equals(bloque)){
 						PrePartida.getPrePartida().setEstado("Fin del juego. Usted ha ganado...");
 						PrePartida.getPrePartida().setVisible(true);
@@ -126,11 +127,10 @@ public class Circuito implements CircuitoControlable {
 				case Finals.IZQUIERDA:	while(this.solapamiento(tanque)){tanque.setX(tanque.getX()+Tanque.U_VELOCIDAD);}
 				case Finals.DERECHA:	while(this.solapamiento(tanque)){tanque.setX(tanque.getX()-Tanque.U_VELOCIDAD);}
 			}
+			
 			tanque.choque(false);
+			
 		}
-		
-		
-		
 	}
 	
 	// Método que indica mediante un booleano si ha existido un solapamiento con los muros del circuito, por parte del tanque indicado como parámetro.
