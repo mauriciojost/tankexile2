@@ -2,6 +2,7 @@
 package paquete;
 
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.rmi.RemoteException;
 import java.util.Random;
@@ -101,7 +102,9 @@ public class Bola extends Thread implements BolaControlable{
 	
 	public void actuarResumido(){
 		// Es sólo verificada la condición de choque con el tanque local.
-		if((tanquePropio.getX() > x-20)&&(tanquePropio.getX() < x+20)&&(tanquePropio.getY() > y-20)&&(tanquePropio.getY() < y+20))
+		
+		Rectangle bolaRec = new Rectangle(x,y,Finals.BLOQUE_LADO_LONG,Finals.BLOQUE_LADO_LONG);
+		if (bolaRec.intersects(tanquePropio.getBounds()))
 			if (buena)
 				tanquePropio.setVelocidad(Tanque.MAX_VELOCIDAD); // La bola buena aumenta la velocidad.
 			else
