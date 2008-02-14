@@ -51,8 +51,20 @@ public class Conexion implements Conectable{
 	 		4. Demás.
 	 */
 	
+	
+	public static Conexion getConexion(String iPOponente){
+		if (instanciaConexion!=null){
+			return new Conexion(iPOponente);
+		}else{
+			return instanciaConexion;
+		}
+	}
+	public static Conexion getConexion(){
+		return instanciaConexion;
+	}
+	
 	// Constructor.
-	public Conexion(String iPOponente){
+	private Conexion(String iPOponente){
 		this.iPOponente = iPOponente;
 		instanciaConexion = this;
 		try{
@@ -484,7 +496,5 @@ public class Conexion implements Conectable{
 	public int getOtroID(){
 		return ((this.miID+1) % 2);
 	}
-	public static Conexion getConexion(){
-		return instanciaConexion;
-	}
+	
 }
