@@ -6,6 +6,7 @@ import javax.imageio.ImageIO;
 
 // Clase que representa a los muros en el circuito. 
 public class Muro extends Bloque{
+	public static final int UNIDAD_DE_MAGNITUD = 2;
 	private static final int NUMERO_DE_IMAGENES=5;
 	private static BufferedImage imagenes[] = new BufferedImage[NUMERO_DE_IMAGENES]; // Conjunto de imágenes asociadas a la clase Muro.
 	private int tramaActual = 0; // Atributo que representa al número de imagen x (en imagenes[x]) que se ha de representar para este bloque al pintarlo en la pantalla.
@@ -30,7 +31,7 @@ public class Muro extends Bloque{
 	
 	// Método que realiza una variación en la imagen a mostrar, dando un efecto de deterioro en el bloque.
 	public void deterioro(int magnitud){
-		tramaActual = ( tramaActual + ( magnitud / Tanque.U_VELOCIDAD ) ); // Se toma la trama 1 del arreglo de imágenes.
+		tramaActual = ( tramaActual + ( magnitud / Muro.UNIDAD_DE_MAGNITUD ) ); // Se toma la trama 1 del arreglo de imágenes.
 		if (tramaActual > (imagenes.length - 1)){
 			tramaActual = imagenes.length -1;
 		}

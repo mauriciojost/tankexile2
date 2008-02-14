@@ -140,7 +140,7 @@ public class Presentacion extends JFrame implements MouseListener {
 		}
 		
 		
-		this.conexion = new Conexion(area_ip.getText());
+		this.conexion = Conexion.getConexion(area_ip.getText());
 		
 		Runnable hilito = new Runnable(){
 			public void run(){

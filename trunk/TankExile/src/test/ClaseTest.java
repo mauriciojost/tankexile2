@@ -19,11 +19,11 @@ public class ClaseTest extends Canvas{
 	private BufferStrategy estrategia;
 	private JFrame ventana;
 	private Tanque tanque;
+	private Muro muro;
 	private int contador = 0;
 	public ClaseTest(){
 		ventana = new JFrame("TankExile"); // Armado de la ventana.
 		JPanel panel = (JPanel)ventana.getContentPane(); // Obtención de su JPanel.
-		//this.setBounds(0,0,Finals.ANCHO_VENTANA,Finals.ALTO_VENTANA); // Establecimiento de las dimensiones de este objeto Partida.
 		panel.setBounds(0, 0, Finals.ANCHO_VENTANA,Finals.ALTO_VENTANA);
 		panel.add(this); // El panel pintará este canvas (definido por esta instancia de Partida).
 		ventana.setBounds(0,0,Finals.ANCHO_VENTANA+6,Finals.ALTO_VENTANA+30); // Establecimiento de las dimensiones de la ventana.
@@ -32,9 +32,6 @@ public class ClaseTest extends Canvas{
 			new WindowAdapter(){
 				@Override
 				public void windowClosing(WindowEvent e) {
-					//getPrePartida().setEstado("Partida abortada.");
-					//getPrePartida().setVisible(true);
-					//finalizar();
 					System.exit(0);
 				}
 			}
@@ -45,6 +42,7 @@ public class ClaseTest extends Canvas{
 	}
 	public void testearX(){
 		tanque = new Tanque(1);
+		muro = new Muro(1,0);
 		
 		Thread hilo = new Thread(
 			new Runnable(){
@@ -52,7 +50,7 @@ public class ClaseTest extends Canvas{
 					while(true){
 						actuar();
 						pintar();
-						try{Thread.sleep(50);}catch(Exception e){}
+						try{Thread.sleep(400);}catch(Exception e){}
 					}
 					
 				}
@@ -66,11 +64,14 @@ public class ClaseTest extends Canvas{
 		g.setColor(Color.white);
 		g.drawRect(0, 0, 100, 100);
 		tanque.pintar(g);
+		muro.pintar(g);
 		estrategia.show();
 	}
 	public void actuar(){
-		contador=(contador+1)%16;
-		tanque.setTodo(0,0,Finals.ARRIBA, contador,0,true);
+		contador++;
+		tanque.setTodo(0,0,(contador/10)%4, contador%16,0,true);
+		muro.deterioro(1*Muro.UNIDAD_DE_MAGNITUD);
+		tanque.choque(false);
 	}
 	public static void main(String args[]){
 		ClaseTest testeo = new ClaseTest();
