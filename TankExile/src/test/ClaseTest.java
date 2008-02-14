@@ -19,6 +19,7 @@ public class ClaseTest extends Canvas{
 	private BufferStrategy estrategia;
 	private JFrame ventana;
 	private Tanque tanque;
+	private Tanque otroTanque;
 	private Muro muro;
 	private int contador = 0;
 	public ClaseTest(){
@@ -41,16 +42,26 @@ public class ClaseTest extends Canvas{
 		estrategia = this.getBufferStrategy();
 	}
 	public void testearX(){
+		
 		tanque = new Tanque(1);
+		otroTanque = new Tanque(0);
+		
 		muro = new Muro(1,0);
-		Conexion.getConexion(null);
+		try{Conexion.getConexion(null).conectar();}catch(Exception e){e.printStackTrace();}
+		Conexion.getConexion().setTanquePropio(tanque);
+		Conexion.getConexion().setTanqueLocalOponente(otroTanque);
+		Conexion.getConexion().bindearTanqueLocalOponente();
+		try{Conexion.getConexion().ponerADisposicionTanqueRemoto();}catch(Exception e){e.printStackTrace();}
+		(new Thread(Conexion.getConexion().getHiloManejadorDeTanqueRemoto())).start();
+		
+		
 		Thread hilo = new Thread(
 			new Runnable(){
 				public void run(){
 					while(true){
 						actuar();
 						pintar();
-						try{Thread.sleep(400);}catch(Exception e){}
+						try{Thread.sleep(100);}catch(Exception e){}
 					}
 					
 				}
@@ -64,6 +75,8 @@ public class ClaseTest extends Canvas{
 		g.setColor(Color.white);
 		g.drawRect(0, 0, 100, 100);
 		tanque.pintar(g);
+		tanque.setY(20);
+		otroTanque.pintar(g);
 		muro.pintar(g);
 		estrategia.show();
 	}
