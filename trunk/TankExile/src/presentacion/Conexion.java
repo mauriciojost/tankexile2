@@ -53,7 +53,7 @@ public class Conexion implements Conectable{
 	
 	
 	public static Conexion getConexion(String iPOponente){
-		if (instanciaConexion!=null){
+		if (instanciaConexion==null){
 			return new Conexion(iPOponente);
 		}else{
 			return instanciaConexion;

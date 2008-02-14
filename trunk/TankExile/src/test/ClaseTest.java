@@ -43,7 +43,7 @@ public class ClaseTest extends Canvas{
 	public void testearX(){
 		tanque = new Tanque(1);
 		muro = new Muro(1,0);
-		
+		Conexion.getConexion(null);
 		Thread hilo = new Thread(
 			new Runnable(){
 				public void run(){
