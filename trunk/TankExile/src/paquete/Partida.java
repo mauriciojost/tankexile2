@@ -211,8 +211,8 @@ public class Partida extends Canvas implements Runnable{
 		int metaOX  = circuito.getMeta(conexion.getOtroID()).getX() + 25;
 		int metaOY  = circuito.getMeta(conexion.getOtroID()).getY() + 10;
 		
-		g.drawString(((nickPropio!=null)?nickPropio:("Jugador local " + (conexion.getID()+1))), metaPX, metaPY); // Grafica el nick propio
-		g.drawString(((nickOponente!=null)?nickOponente:("Jugador oponente " + (int)(((conexion.getID()+1)%2)+1))), metaOX, metaOY); // Grafica el nick oponente
+		g.drawString((((nickPropio!=null)&&(!nickPropio.equals("")))?nickPropio:("Jugador local " + (conexion.getID()+1))), metaPX, metaPY); // Grafica el nick propio
+		g.drawString((((nickOponente!=null)&&(!nickOponente.equals("")))?nickOponente:("Jugador oponente " + (int)(((conexion.getID()+1)%2)+1))), metaOX, metaOY); // Grafica el nick oponente
 			
 		// Pintado de los tanques y las bolas.
 		tanqueLocalLigadoOponente.pintar(g);

@@ -50,28 +50,19 @@ public class PrePartida extends JFrame implements MouseListener, VentanaControla
 	
 	
 	public static PrePartida getPrePartida(Presentacion presentacion, Conexion conexion){
-		if (prePartida != null){
-			PrePartida.conexion = conexion;
-			PrePartida.presentacion = presentacion;
-			return prePartida;
-		}else{
-			
-			PrePartida.conexion = conexion;
-			PrePartida.presentacion = presentacion;
+		PrePartida.conexion = conexion;
+		PrePartida.presentacion = presentacion;
+		if (prePartida == null){
 			prePartida = new PrePartida(presentacion);
-			return prePartida;
 		}
+		return prePartida;
 	}
-	
-	
 	
 	public void setVentanaRemota(VentanaControlable ventanaRemota){
 		PrePartida.ventanaRemota = ventanaRemota;
 	}
 	
-
 	// Constructor de la clase.
-	
 	private PrePartida(Presentacion presentacion){
 		super("Tank Exile - Pre Partida");
 		
