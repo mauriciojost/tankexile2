@@ -52,8 +52,10 @@ public class Configurador extends JFrame implements MouseListener {
 		panel_nick_propio.add(sonido);
 		panel.add(panel_nick_propio);
 		panel.add(volver);
-		
 		setVisible(true);
+		//campo_nick_propio.setFocusable(true);
+		//campo_nick_propio.requestFocus();
+		campo_nick_propio.requestFocusInWindow();
 	}
 	
 	public void responderSonido(){
