@@ -89,8 +89,9 @@ public class Partida extends Canvas implements Runnable{
 		circuito = new Circuito(nombreCircuitoTXT); // Creación del circuito de juego.
 		circuito.setConexion(conexion);
 		tanquePropio = new Tanque(yoID); // Creación del tanque comandado por el jugador en este host.
-		circuito.setTanqueLocal(tanquePropio);
+		
 		tanqueLocalLigadoOponente = new Tanque(otroID); // Creación del tanque que será ligado al registro de RMI para ser comandado por el host remoto.
+		circuito.setTanques(tanquePropio, tanqueLocalLigadoOponente);
 		conexion.setTanqueLocalOponente(tanqueLocalLigadoOponente); 
 		conexion.bindearTanqueLocalOponente(); // El tanque anterior es puesto a disposición del host remoto.
 		conexion.setTanquePropio(tanquePropio); // La conexión esta lista para ser establecida, el hilo conexión observará al tanque y con sus parámetros comandará al tanque remoto puesto en el registro de RMI.

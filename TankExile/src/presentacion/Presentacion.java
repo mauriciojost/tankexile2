@@ -120,6 +120,9 @@ public class Presentacion extends JFrame implements MouseListener {
 		this.area_ip.requestFocus();
 		this.area_ip.selectAll();
 		
+		this.area_ip.setText(""); //BORRAR!!!!!!!!
+		this.bConectar.requestFocus(); //TAMBIÉN BORRAR!!!!!!
+		
 	}
 	
 	public void setEstado(String estado){

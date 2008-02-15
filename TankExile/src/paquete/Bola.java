@@ -120,7 +120,14 @@ public class Bola extends Thread implements BolaControlable, ElementoDeJuego{
 	}
 
 	public void eventoChoque(ElementoDeJuego contraQuien) {
-		throw new UnsupportedOperationException("Not supported yet.");
+		try {
+			Class[] arregloDeClases = {contraQuien.getClass()};
+			this.getClass().getMethod("eventoChoqueCon" + contraQuien.getNombre(), (Class[]) arregloDeClases);
+		} catch (NoSuchMethodException ex) {
+			Logger.getLogger(Tanque.class.getName()).log(Level.SEVERE, null, ex);
+		} catch (SecurityException ex) {
+			Logger.getLogger(Tanque.class.getName()).log(Level.SEVERE, null, ex);
+		}
 	}
 
 	public String getNombre() {
@@ -129,4 +136,18 @@ public class Bola extends Thread implements BolaControlable, ElementoDeJuego{
 	public Rectangle getBounds(){
 		return new Rectangle(x,y,Finals.BLOQUE_LADO_LONG, Finals.BLOQUE_LADO_LONG);
 	}
+	public void eventoChoqueConTanque(Tanque tanque){
+		System.out.println("eventoChoqueConTanque(...)");
+	}
+	public void eventoChoqueConMuro(Muro muro){
+		System.out.println("eventoChoqueConMuro(...)");
+	}
+	public void eventoChoqueConMeta(Meta meta){
+		System.out.println("eventoChoqueConMeta(...)");
+	}
+	public void eventoChoqueConTanque(Bola bola){
+		System.out.println("eventoChoqueConBola(...)");
+	}
+	
+	
 }
