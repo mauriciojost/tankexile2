@@ -363,6 +363,27 @@ public class Tanque implements Controlable, ElementoDeJuego{
 	
 	public void eventoChoqueConTanque(Tanque tanque){
 		System.out.println(this.getNombre() +"."+ "eventoChoqueConTanque(...)");
+		
+		switch (this.getDireccion()){
+				// Según la dirección del tanque, este es llevado hacia atrás hasta la condición de no solapamiento.
+				case Finals.ABAJO:		while(this.getBounds().intersects(tanque.getBounds())){this.setY(this.getY()-Tanque.U_VELOCIDAD);}
+				case Finals.ARRIBA:		while(this.getBounds().intersects(tanque.getBounds())){this.setY(this.getY()+Tanque.U_VELOCIDAD);}
+				case Finals.IZQUIERDA:	while(this.getBounds().intersects(tanque.getBounds())){this.setX(this.getX()+Tanque.U_VELOCIDAD);}
+				case Finals.DERECHA:	while(this.getBounds().intersects(tanque.getBounds())){this.setX(this.getX()-Tanque.U_VELOCIDAD);}
+			}
+		
+		teclasHabilitadas = false;
+		choque = true;
+		if(sonido_habilitado){
+			audio_choque.reproduccionSimple();
+		} // Reproduce sonido para choque local.
+		forzarTeclasSueltas();
+		actualizarVelocidades();
+		temporizadorChoque=0;
+		choqueGrande = (this.trancoTanque==Tanque.MAX_VELOCIDAD); // Cuando un choque se quiere forzar a ser grande, se utiliza 'agravante' en true.
+		trancoTanque = Tanque.MIN_VELOCIDAD; // Modifica velocidad despues de comprobar el tipo de choque.
+		contadorSubTramaChoque=0;
+		Conexion.getConexion().indicarChoque();
 
 	}
 	public void eventoChoqueConMuro(Muro muro){
@@ -396,6 +417,10 @@ public class Tanque implements Controlable, ElementoDeJuego{
 	}
 	public void eventoChoqueConBola(Bola bola){
 		System.out.println(this.getNombre() +"."+ "eventoChoqueConBola(...)");
+		if(bola.getBuena())
+			setVelocidad(Tanque.MAX_VELOCIDAD);
+		else
+			choque(true);
 	}
 	
 		

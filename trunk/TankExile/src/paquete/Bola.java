@@ -42,6 +42,12 @@ public class Bola extends Thread implements BolaControlable, ElementoDeJuego{
 			System.exit(0);
 		}
 		correrHilos = true; // Se permite la ejecución de los hilos.
+		///////////////////////////////////////
+		this.setX(rnd.nextInt(Finals.BLOQUES_NUM) * Finals.BLOQUE_LADO_LONG);
+			this.setY(rnd.nextInt(Finals.BLOQUES_NUM) * Finals.BLOQUE_LADO_LONG);
+			this.vx = (rnd.nextBoolean()?1:-1) * vx;
+			this.vy = (rnd.nextBoolean()?1:-1) * vy;
+		///////////////////////////////////////
 	}
 
 	public void pintar(Graphics2D g){
@@ -114,6 +120,10 @@ public class Bola extends Thread implements BolaControlable, ElementoDeJuego{
 		this.x = x;
 		this.y = y;
 	}
+	
+	public boolean getBuena(){
+		return buena;
+	}
 
 	public void eventoChoque(ElementoDeJuego contraQuien) {
 
@@ -137,11 +147,7 @@ public class Bola extends Thread implements BolaControlable, ElementoDeJuego{
 	
 	public void eventoChoqueConTanque(Tanque tanque){
 		System.out.println(this.getNombre() +"."+ "eventoChoqueConTanque(...)");
-		if(buena){
-			tanquePropio.setVelocidad(Tanque.MAX_VELOCIDAD); // La bola buena aumenta la velocidad.
-		}else{
-			tanquePropio.choque(true); // La bola mala produce el efecto de choque y establece la velocidad estandar.
-		}
+
 	}
 	
 	public void eventoChoqueConMuro(Muro muro){
