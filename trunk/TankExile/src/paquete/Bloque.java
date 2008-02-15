@@ -3,6 +3,7 @@ import java.awt.Graphics2D;
 
 // Clase cuyos objetos son las unidades de conformación del circuito de juego.
 import java.awt.Rectangle;
+import java.lang.reflect.InvocationTargetException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 public abstract class Bloque implements ElementoDeJuego{	
@@ -16,12 +17,27 @@ public abstract class Bloque implements ElementoDeJuego{
 	public void eventoChoque(ElementoDeJuego contraQuien) {
 		try {
 			Class[] arregloDeClases = {contraQuien.getClass()};
-			this.getClass().getMethod("eventoChoqueCon" + contraQuien.getNombre(), (Class[]) arregloDeClases);
+			Object[] arrayArgumentos = {contraQuien};
+			this.getClass().getMethod("eventoChoqueCon" + contraQuien.getNombre(), (Class[]) arregloDeClases).invoke(this, arrayArgumentos);
+		} catch (IllegalAccessException ex) {
+			Logger.getLogger(Bloque.class.getName()).log(Level.SEVERE, null, ex);
+		} catch (IllegalArgumentException ex) {
+			Logger.getLogger(Bloque.class.getName()).log(Level.SEVERE, null, ex);
+		} catch (InvocationTargetException ex) {
+			Logger.getLogger(Bloque.class.getName()).log(Level.SEVERE, null, ex);
 		} catch (NoSuchMethodException ex) {
-			Logger.getLogger(Tanque.class.getName()).log(Level.SEVERE, null, ex);
+			Logger.getLogger(Bloque.class.getName()).log(Level.SEVERE, null, ex);
 		} catch (SecurityException ex) {
-			Logger.getLogger(Tanque.class.getName()).log(Level.SEVERE, null, ex);
+			Logger.getLogger(Bloque.class.getName()).log(Level.SEVERE, null, ex);
 		}
+	}
+	
+	public void eventoChoqueConTanque(Tanque tanque){
+		System.out.println("eventoChoqueConTanque(...)");
+	}
+	
+	public void eventoChoqueConTanque(Bola bola){
+		System.out.println("eventoChoqueConBola(...)");
 	}
 	
 	// Método que brinda la imagen a mostrar para este bloque. Abstracto.

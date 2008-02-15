@@ -4,6 +4,7 @@ package paquete;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
+import java.lang.reflect.InvocationTargetException;
 import java.rmi.RemoteException;
 import java.util.Random;
 import java.util.logging.Level;
@@ -25,7 +26,7 @@ public class Bola extends Thread implements BolaControlable, ElementoDeJuego{
 	private int currentFrame; // Indicador de la imagen a mostrar.
 	private boolean soyLocal = false; // Indicador de que la bola actual es controlada localmente, y no de forma remota.
 	private Random rnd = new Random(); // Generador de números pseudo aleatorios usados en el rebote de las bolas.
-	
+	private Rectangle r_bola;
 	// Contructor.
 	public Bola(boolean buena, Tanque tanquePropio) {
 		this.setName(buena?"Hilo bola buena":"Hilo bola mala");
@@ -34,6 +35,7 @@ public class Bola extends Thread implements BolaControlable, ElementoDeJuego{
 		try {
 			if (imagen[0]== null) imagen[0] = ImageIO.read(getClass().getClassLoader().getResource("res/bolaBuena.gif"));
 			if (imagen[1]== null) imagen[1] = ImageIO.read(getClass().getClassLoader().getResource("res/bolaMala.gif"));
+			
 		} catch (Exception e) {
 			System.out.println("Error: no se ha podido realizar la carga de imágenes de la clase Bola, "+e.getClass().getName()+" "+e.getMessage());
 			System.exit(0);
@@ -73,7 +75,7 @@ public class Bola extends Thread implements BolaControlable, ElementoDeJuego{
 		}else{
 			while(correrHilos){
 				actuarResumido();
-				try {Thread.sleep(Finals.PERIODO_BOLA);} catch (InterruptedException ex) {Logger.getLogger(Bola.class.getName()).log(Level.SEVERE, null, ex);}
+				try {Thread.sleep(8);} catch (InterruptedException ex) {Logger.getLogger(Bola.class.getName()).log(Level.SEVERE, null, ex);}
 			}
 		}
 	}
@@ -81,14 +83,18 @@ public class Bola extends Thread implements BolaControlable, ElementoDeJuego{
 	public void actuar() {
 		x+=vx;
 		y+=vy;
-			
+				
+		//
+		/*
 		// Es verificada la condición de contacto con el tanque local.
-		if((tanquePropio.getX() > x-20)&&(tanquePropio.getX() < x+20)&&(tanquePropio.getY() > y-20)&&(tanquePropio.getY() < y+20))
+		if((tanquePropio.getX() > x-20)&&(tanquePropio.getX() < x+20)&&(tanquePropio.getY() > y-20)&&(tanquePropio.getY() < y+20)){
 			if(buena)
 				tanquePropio.setVelocidad(Tanque.MAX_VELOCIDAD); // La bola buena aumenta la velocidad.
 			else
 				tanquePropio.choque(true); // La bola mala produce el efecto de choque y establece la velocidad estandar.
-			
+
+		}
+		//*/
 		// Es verificada la condición de rebote.
 		if (x < 0)
 			vx = (Bola.MIN_VELOCIDAD + rnd.nextInt(Bola.RANGO_VELOCIDAD));
@@ -120,14 +126,39 @@ public class Bola extends Thread implements BolaControlable, ElementoDeJuego{
 	}
 
 	public void eventoChoque(ElementoDeJuego contraQuien) {
+
 		try {
 			Class[] arregloDeClases = {contraQuien.getClass()};
-			this.getClass().getMethod("eventoChoqueCon" + contraQuien.getNombre(), (Class[]) arregloDeClases);
+			Object[] arrayArgumentos = {contraQuien};
+			this.getClass().getMethod("eventoChoqueCon" + contraQuien.getNombre(), (Class[]) arregloDeClases).invoke(this, arrayArgumentos);
+		} catch (IllegalAccessException ex) {
+			Logger.getLogger(Bola.class.getName()).log(Level.SEVERE, null, ex);
+		} catch (IllegalArgumentException ex) {
+			Logger.getLogger(Bola.class.getName()).log(Level.SEVERE, null, ex);
+		} catch (InvocationTargetException ex) {
+			Logger.getLogger(Bola.class.getName()).log(Level.SEVERE, null, ex);
 		} catch (NoSuchMethodException ex) {
-			Logger.getLogger(Tanque.class.getName()).log(Level.SEVERE, null, ex);
+			Logger.getLogger(Bola.class.getName()).log(Level.SEVERE, null, ex);
 		} catch (SecurityException ex) {
-			Logger.getLogger(Tanque.class.getName()).log(Level.SEVERE, null, ex);
+			Logger.getLogger(Bola.class.getName()).log(Level.SEVERE, null, ex);
 		}
+
+	}
+	
+	public void eventoChoqueConTanque(Tanque tanque){
+		System.out.println("eventoChoqueConTanque(...)");
+		if(buena)
+				tanquePropio.setVelocidad(Tanque.MAX_VELOCIDAD); // La bola buena aumenta la velocidad.
+			else
+				tanquePropio.choque(true); // La bola mala produce el efecto de choque y establece la velocidad estandar.
+	}
+	
+	public void eventoChoqueConMuro(Muro muro){
+		System.out.println("eventoChoqueConMuro(...)");
+	}
+	
+	public void eventoChoqueConMeta(Meta meta){
+		System.out.println("eventoChoqueConMeta(...)");
 	}
 
 	public String getNombre() {
@@ -136,18 +167,5 @@ public class Bola extends Thread implements BolaControlable, ElementoDeJuego{
 	public Rectangle getBounds(){
 		return new Rectangle(x,y,Finals.BLOQUE_LADO_LONG, Finals.BLOQUE_LADO_LONG);
 	}
-	public void eventoChoqueConTanque(Tanque tanque){
-		System.out.println("eventoChoqueConTanque(...)");
-	}
-	public void eventoChoqueConMuro(Muro muro){
-		System.out.println("eventoChoqueConMuro(...)");
-	}
-	public void eventoChoqueConMeta(Meta meta){
-		System.out.println("eventoChoqueConMeta(...)");
-	}
-	public void eventoChoqueConTanque(Bola bola){
-		System.out.println("eventoChoqueConBola(...)");
-	}
-	
 	
 }

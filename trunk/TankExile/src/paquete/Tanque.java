@@ -5,6 +5,7 @@ import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -28,6 +29,7 @@ public class Tanque implements Controlable, ElementoDeJuego{
 	private int vY; // Velocidad vertical del tanque.
 	private int trancoTanque = Tanque.MIN_VELOCIDAD; // Tamaño del tranco de avance del tanque (unidad de avance).
 	private int temporizadorMovimento = 0; 
+
 	private int movimientoTrama = 0;
 	private boolean teclasHabilitadas = true; // Indicador de habilitación o no de teclado para comandar el tanque.
 	private boolean choqueGrande = false; // Indicador de magnitud del último choque.
@@ -343,12 +345,20 @@ public class Tanque implements Controlable, ElementoDeJuego{
 	public void eventoChoque(ElementoDeJuego contraQuien) {
 		try {
 			Class[] arregloDeClases = {contraQuien.getClass()};
-			this.getClass().getMethod("eventoChoqueCon" + contraQuien.getNombre(), (Class[]) arregloDeClases);
+			Object[] arrayArgumentos = {contraQuien};
+			this.getClass().getMethod("eventoChoqueCon" + contraQuien.getNombre(), (Class[]) arregloDeClases).invoke(this, arrayArgumentos);
+		} catch (IllegalAccessException ex) {
+			Logger.getLogger(Tanque.class.getName()).log(Level.SEVERE, null, ex);
+		} catch (IllegalArgumentException ex) {
+			Logger.getLogger(Tanque.class.getName()).log(Level.SEVERE, null, ex);
+		} catch (InvocationTargetException ex) {
+			Logger.getLogger(Tanque.class.getName()).log(Level.SEVERE, null, ex);
 		} catch (NoSuchMethodException ex) {
 			Logger.getLogger(Tanque.class.getName()).log(Level.SEVERE, null, ex);
 		} catch (SecurityException ex) {
 			Logger.getLogger(Tanque.class.getName()).log(Level.SEVERE, null, ex);
 		}
+		
 	}
 	
 	public void eventoChoqueConTanque(Tanque tanque){

@@ -49,7 +49,14 @@ public class ClaseTest extends Canvas{
 		muro = new Muro(1,0); // Creación de un muro.
 		mostrar("Muro creado con éxito.");
 		
+
+		tanque = new Tanque(1);
+		otroTanque = new Tanque(0);
+				
+		muro = new Muro(1,0);
+
 		mostrar("Estableciendo comunicación...");
+
 		try{Conexion.getConexion(null).conectar();}catch(Exception e){e.printStackTrace();}
 		Conexion.getConexion().setTanquePropio(tanque);
 		Conexion.getConexion().setTanqueLocalOponente(otroTanque);
@@ -77,6 +84,15 @@ public class ClaseTest extends Canvas{
 		hilo.start();
 		mostrar("Hilo principal del juego iniciado.");
 	}
+//	public void testearSonido(){
+//		Thread hilo1 = new Thread({
+//			new Runnable(){
+//				public void run(){
+//					
+//				}
+//			}
+//		}
+//	}
 	
 	// Método que realiza el nuevo dibujo de los objetos indicados.
 	public void pintar(){
@@ -104,6 +120,7 @@ public class ClaseTest extends Canvas{
 		otroTanque.actuarResumido();
 		muro.deterioro(1*Muro.UNIDAD_DE_MAGNITUD); // El muro es deteriorado.
 		//tanque.choque(false); // Es indicado al tanque que se ha producido un choque, para visualizar su comportamiento.
+
 	}
 	public static void main(String args[]){
 		ClaseTest testeo = new ClaseTest();
