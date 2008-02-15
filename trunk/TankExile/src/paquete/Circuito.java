@@ -36,6 +36,7 @@ public class Circuito implements CircuitoControlable {
 					// En caso de no estar en un borde, se procede a leer el archivo para obtener el elemento a ligar al circuito.
 					try {
 						bloque = cargadorTXT.getBloqueLeido(i,j); // El elemento a crear es leído para ser agregado al circuito.
+						
 					} catch (IOException ex) {
 						System.out.println("Error de IO al leer el circuito.");
 						ex.printStackTrace();
@@ -43,6 +44,7 @@ public class Circuito implements CircuitoControlable {
 					}
 				}
 				this.agregarBloque(bloque); // Es agregado el bloque leído al circuito.
+				
 			}
 		}
 		
@@ -71,6 +73,7 @@ public class Circuito implements CircuitoControlable {
 			if (bloque instanceof Meta){ // Es verificada la posibilidad de que este bloque sea una meta, para vincularla con alguno de los atributos.
 				metas[Math.abs(((Meta)bloque).getNumero()%2)] = (Meta)bloque ;
 			}
+			bloque.setIndice(bloques.indexOf(bloque));
 		}
 	}
 	

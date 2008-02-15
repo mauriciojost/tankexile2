@@ -8,7 +8,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 public abstract class Bloque implements ElementoDeJuego{	
 	private int x, y; //Atributos que representan las coordenadas reales (píxeles) del bloque.
-		
+	private int indice=-1;
+	
 	public Bloque(int bx, int by) {
 		x = bx * Finals.BLOQUE_LADO_LONG; // Cálculo de las coordenadas reales del bloque.
 		y = by * Finals.BLOQUE_LADO_LONG;
@@ -44,6 +45,16 @@ public abstract class Bloque implements ElementoDeJuego{
 
 	// Método que brinda la imagen a mostrar para este bloque. Abstracto.
 	public abstract void pintar(Graphics2D g);
+	
+	
+	public int getIndice(){
+		return indice;
+	}
+	public void setIndice(int indice){
+		this.indice = indice;
+	}
+	
+	
 	
 	// Métodos que permiten obtener la posición real (en pixeles desde la esquina superior izquierda) del bloque.
 	public int getX(){return x;}

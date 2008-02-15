@@ -5,6 +5,7 @@ import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 
 // Clase que representa a los muros en el circuito. 
+import presentacion.Conexion;
 public class Muro extends Bloque{
 	public static final int UNIDAD_DE_MAGNITUD = 2;
 	private static final int NUMERO_DE_IMAGENES=5;
@@ -43,6 +44,8 @@ public class Muro extends Bloque{
 	
 	public void eventoChoqueConTanque(Tanque tanque){
 		System.out.println(this.getNombre() +"."+ "eventoChoqueConTanque(...)");
+		this.deterioro(tanque.getVelocidad()/Tanque.U_VELOCIDAD); // Se provoca en el muro indicado un deterioro.
+		Conexion.getConexion().choqueNuevoCircuitoLocal(this.getIndice(), tanque.getVelocidad());
 
 	}
 	
