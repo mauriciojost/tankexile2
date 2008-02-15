@@ -1,10 +1,13 @@
 package paquete;
 
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 
 // Clase cuyos objetos son parte del circuito, cada uno es partida para un tanque y llegada para el otro.
+import presentacion.Conexion;
+import presentacion.PrePartida;
 public class Meta extends Bloque{
 	private static BufferedImage imagenes[] = new BufferedImage[2]; // Conjunto de imágenes asociadas a la clase Meta.
 	private int numeroDeMeta; // Atributo que representa el número de meta.
@@ -39,9 +42,19 @@ public class Meta extends Bloque{
 	
 	public void eventoChoqueConTanque(Tanque tanque){
 		System.out.println(this.getNombre() +"."+ "eventoChoqueConTanque(...)");
-
+		if (this.numeroDeMeta == otroID(tanque.getID())){
+			PrePartida.getPrePartida().setEstado("Fin del juego. Usted ha ganado...", Font.BOLD);
+			PrePartida.getPrePartida().setVisible(true);
+			Conexion.getConexion().partidaPerdida();
+			Partida.getPartida().finalizar();
+		}
 	}
+	private int otroID(int id){
+		return ((id+1)%2);
+	}
+	
 	public void eventoChoqueConBola(Bola bola){
 		System.out.println(this.getNombre() + ": eventoChoqueConBola(...)");
 	}
+	
 }
