@@ -2,6 +2,7 @@
 package paquete;
 
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.lang.reflect.InvocationTargetException;
@@ -144,16 +145,40 @@ public class Bola extends Thread implements BolaControlable, ElementoDeJuego{
 	}
 	
 	public void eventoChoqueConMuro(Muro muro){
-		if ((vy > 0) && (muro.getY()>this.y)){ // Bajando y el muro está más abajo.
+		
+		/*
+	          ar	
+		   --------
+		  |        |
+		 i|        |d
+		  |        |
+		   --------
+		     ab
+		 */
+		
+		
+		Rectangle arriba = new Rectangle(muro.getX()+Finals.BLOQUE_LADO_LONG/2,muro.getY(),1,1);
+		Rectangle abajo = new Rectangle(muro.getX()+Finals.BLOQUE_LADO_LONG/2,muro.getY()+Finals.BLOQUE_LADO_LONG,1,1);
+		Rectangle derecha = new Rectangle(muro.getX()+Finals.BLOQUE_LADO_LONG,muro.getY()+Finals.BLOQUE_LADO_LONG/2,1,1);
+		Rectangle izquierda = new Rectangle(muro.getX(),muro.getY()+Finals.BLOQUE_LADO_LONG/2,1,1);
+		
+		
+		
+		
+		System.out.println(this.getNombre() +"."+ "eventoChoqueConMuro(...)");
+		System.out.printf("vy=%d muro.getY()=%d this.y=%d this.y+20=%d \n",vy,muro.getY(),this.y,this.y+20 );
+		
+		if (arriba.intersects(this.getBounds())){
 			vy = -(Bola.MIN_VELOCIDAD + rnd.nextInt(Bola.RANGO_VELOCIDAD));
+			
 		}
-		if ((vx > 0) && (muro.getX()>this.x)){ // A la derecha y el muro está más a la derecha.
+		if (izquierda.intersects(this.getBounds())){ // A la derecha y el muro está más a la derecha.
 			vx = -(Bola.MIN_VELOCIDAD + rnd.nextInt(Bola.RANGO_VELOCIDAD));
 		}
-		if ((vy < 0) && (muro.getY()<this.y)){ // Subiendo y el muro está más arriba.
+		if (abajo.intersects(this.getBounds())){ // Subiendo y el muro está más arriba.
 			vy = (Bola.MIN_VELOCIDAD + rnd.nextInt(Bola.RANGO_VELOCIDAD));
 		}
-		if ((vx < 0) && (muro.getX()<this.x)){ // A la izquierda y el muro está más a la izquierda.
+		if (derecha.intersects(this.getBounds())){ // A la izquierda y el muro está más a la izquierda.
 			vx = (Bola.MIN_VELOCIDAD + rnd.nextInt(Bola.RANGO_VELOCIDAD));
 		}
 		
