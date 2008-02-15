@@ -118,6 +118,16 @@ public class Circuito implements CircuitoControlable {
 				bloque.eventoChoque(tanqueLocal);
 			}	
 		}
+		for (int j=0; j<bolas.size();j++){
+			Bola bola = (Bola)bolas.get(j);
+			for(int i=0; i<bloques.size();i++){
+				Bloque bloque = (Bloque)bloques.get(i);
+				if (bola.getBounds().intersects(bloque.getBounds())){
+					bola.eventoChoque(bloque);
+					bloque.eventoChoque(bola);
+				}	
+			}
+		}
 		
 		for(int i=0; i<bolas.size();i++){
 			Bola bola = (Bola)bolas.get(i);

@@ -83,18 +83,7 @@ public class Bola extends Thread implements BolaControlable, ElementoDeJuego{
 	public void actuar() {
 		x+=vx;
 		y+=vy;
-				
-		//
-		/*
-		// Es verificada la condición de contacto con el tanque local.
-		if((tanquePropio.getX() > x-20)&&(tanquePropio.getX() < x+20)&&(tanquePropio.getY() > y-20)&&(tanquePropio.getY() < y+20)){
-			if(buena)
-				tanquePropio.setVelocidad(Tanque.MAX_VELOCIDAD); // La bola buena aumenta la velocidad.
-			else
-				tanquePropio.choque(true); // La bola mala produce el efecto de choque y establece la velocidad estandar.
-
-		}
-		//*/
+		
 		// Es verificada la condición de rebote.
 		if (x < 0)
 			vx = (Bola.MIN_VELOCIDAD + rnd.nextInt(Bola.RANGO_VELOCIDAD));
@@ -147,16 +136,36 @@ public class Bola extends Thread implements BolaControlable, ElementoDeJuego{
 	
 	public void eventoChoqueConTanque(Tanque tanque){
 		System.out.println(this.getNombre() +"."+ "eventoChoqueConTanque(...)");
-
-		if(buena)
-				tanquePropio.setVelocidad(Tanque.MAX_VELOCIDAD); // La bola buena aumenta la velocidad.
-			else
-				tanquePropio.choque(true); // La bola mala produce el efecto de choque y establece la velocidad estandar.
+		if(buena){
+			tanquePropio.setVelocidad(Tanque.MAX_VELOCIDAD); // La bola buena aumenta la velocidad.
+		}else{
+			tanquePropio.choque(true); // La bola mala produce el efecto de choque y establece la velocidad estandar.
+		}
 	}
 	
 	public void eventoChoqueConMuro(Muro muro){
-		System.out.println(this.getNombre() +"."+ "eventoChoqueConMuro(...)");
-
+		if ((vy > 0) && (muro.getY()>this.y)){ // Bajando y el muro está más abajo.
+			vy = -(Bola.MIN_VELOCIDAD + rnd.nextInt(Bola.RANGO_VELOCIDAD));
+		}
+		if ((vx > 0) && (muro.getX()>this.x)){ // A la derecha y el muro está más a la derecha.
+			vx = -(Bola.MIN_VELOCIDAD + rnd.nextInt(Bola.RANGO_VELOCIDAD));
+		}
+		if ((vy < 0) && (muro.getY()<this.y)){ // Subiendo y el muro está más arriba.
+			vy = (Bola.MIN_VELOCIDAD + rnd.nextInt(Bola.RANGO_VELOCIDAD));
+		}
+		if ((vx < 0) && (muro.getX()<this.x)){ // A la izquierda y el muro está más a la izquierda.
+			vx = (Bola.MIN_VELOCIDAD + rnd.nextInt(Bola.RANGO_VELOCIDAD));
+		}
+		
+		
+		/*if (x < 0)
+			vx = (Bola.MIN_VELOCIDAD + rnd.nextInt(Bola.RANGO_VELOCIDAD));
+		if (x > Finals.ANCHO_VENTANA-Finals.BLOQUE_LADO_LONG)
+		  vx = -(Bola.MIN_VELOCIDAD + rnd.nextInt(Bola.RANGO_VELOCIDAD));
+		if (y < 0)
+			
+		if ( y > Finals.ALTO_VENTANA-Finals.BLOQUE_LADO_LONG) 
+			vy = -(Bola.MIN_VELOCIDAD + rnd.nextInt(Bola.RANGO_VELOCIDAD));*/
 	}
 	
 	public void eventoChoqueConMeta(Meta meta){
