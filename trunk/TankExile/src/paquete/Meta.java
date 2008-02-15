@@ -17,7 +17,6 @@ public class Meta extends Bloque{
 			// Carga de las imágenes en la Clase (puesto que son las mismas para cada objeto de la misma).
 			if (imagenes[0]==null) imagenes[0] = ImageIO.read(getClass().getClassLoader().getResource("res/meta0.gif"));
 			if (imagenes[1]==null) imagenes[1] = ImageIO.read(getClass().getClassLoader().getResource("res/meta1.gif"));
-			
 		} catch (Exception e) {
 			System.out.println("Error: no se ha podido realizar la carga de imágenes de la clase Meta, " + e.getClass().getName()+" "+e.getMessage());
 			System.exit(0);
@@ -38,17 +37,16 @@ public class Meta extends Bloque{
 		return "Meta";
 	}
 	
-	
 	public void eventoChoqueConTanque(Tanque tanque){
-		System.out.println("eventoChoqueConTanque(...)");
+		System.out.println(this.getNombre() +"."+ "eventoChoqueConTanque(...)");
 	}
 	public void eventoChoqueConMuro(Muro muro){
-		System.out.println("eventoChoqueConMuro(...)");
+		System.out.println(this.getNombre() +"."+ "eventoChoqueConMuro(...)");
 	}
 	public void eventoChoqueConMeta(Meta meta){
-		System.out.println("eventoChoqueConMeta(...)");
+		System.out.println(this.getNombre() +"."+ "eventoChoqueConMeta(...)");
 	}
 	public void eventoChoqueConTanque(Bola bola){
-		System.out.println("eventoChoqueConBola(...)");
+		System.out.println(this.getNombre() +"."+ "eventoChoqueConBola(...)");
 	}
 }

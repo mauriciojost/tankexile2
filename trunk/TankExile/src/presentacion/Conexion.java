@@ -239,7 +239,7 @@ public class Conexion implements Conectable{
 	// Método utilizado por el hilo de conexión para lograr el control del tanque propio remoto.
 	public void manejarTanqueRemoto(){
 		try {
-			tanqueRemotoAControlar.setTodo(tanquePropio.getX(), tanquePropio.getY(), tanquePropio.getDireccion(), tanquePropio.getMovimientoTrama(), tanquePropio.getChoqueTrama(), tanquePropio.getMoviendose());
+			tanqueRemotoAControlar.setTodo(tanquePropio.getX()+20, tanquePropio.getY()+20, tanquePropio.getDireccion(), tanquePropio.getMovimientoTrama(), tanquePropio.getChoqueTrama(), tanquePropio.getMoviendose());
 		} catch (RemoteException ex) {
 			System.out.println("Error en el manejo del tanque remoto, clase Conexion. El oponente ha finalizado la sesión.");
 			Logger.getLogger(Conexion.class.getName()).log(Level.SEVERE, null, ex);

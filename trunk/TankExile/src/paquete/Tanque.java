@@ -362,16 +362,28 @@ public class Tanque implements Controlable, ElementoDeJuego{
 	}
 	
 	public void eventoChoqueConTanque(Tanque tanque){
-		System.out.println("eventoChoqueConTanque(...)");
+		System.out.println(this.getNombre() +"."+ "eventoChoqueConTanque(...)");
 	}
 	public void eventoChoqueConMuro(Muro muro){
-		System.out.println("eventoChoqueConMuro(...)");
+		System.out.println(this.getNombre() +"."+ "eventoChoqueConMuro(...)");
+		teclasHabilitadas = false;
+		choque = true;
+		if(sonido_habilitado){
+			audio_choque.reproduccionSimple();
+		} // Reproduce sonido para choque local.
+		forzarTeclasSueltas();
+		actualizarVelocidades();
+		temporizadorChoque=0;
+		choqueGrande = (this.trancoTanque==Tanque.MAX_VELOCIDAD); // Cuando un choque se quiere forzar a ser grande, se utiliza 'agravante' en true.
+		trancoTanque = Tanque.MIN_VELOCIDAD; // Modifica velocidad despues de comprobar el tipo de choque.
+		contadorSubTramaChoque=0;
+		Conexion.getConexion().indicarChoque();
 	}
 	public void eventoChoqueConMeta(Meta meta){
-		System.out.println("eventoChoqueConMeta(...)");
+		System.out.println(this.getNombre() +"."+ "eventoChoqueConMeta(...)");
 	}
-	public void eventoChoqueConTanque(Bola bola){
-		System.out.println("eventoChoqueConBola(...)");
+	public void eventoChoqueConBola(Bola bola){
+		System.out.println(this.getNombre() +"."+ "eventoChoqueConBola(...)");
 	}
 	
 	public String getNombre(){

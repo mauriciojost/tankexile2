@@ -42,15 +42,15 @@ public class Muro extends Bloque{
 	}
 	
 	public void eventoChoqueConTanque(Tanque tanque){
-		System.out.println("eventoChoqueConTanque(...)");
+		System.out.println(this.getNombre() +"."+ "eventoChoqueConTanque(...)");
 	}
 	public void eventoChoqueConMuro(Muro muro){
-		System.out.println("eventoChoqueConMuro(...)");
+		System.out.println(this.getNombre() +"."+ "eventoChoqueConMuro(...)");
 	}
 	public void eventoChoqueConMeta(Meta meta){
-		System.out.println("eventoChoqueConMeta(...)");
+		System.out.println(this.getNombre() +"."+ "eventoChoqueConMeta(...)");
 	}
 	public void eventoChoqueConTanque(Bola bola){
-		System.out.println("eventoChoqueConBola(...)");
+		System.out.println(this.getNombre() +"."+ "eventoChoqueConBola(...)");
 	}
 }
