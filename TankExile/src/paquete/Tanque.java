@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
-import paquete.ElementoDeJuego;
 import presentacion.Conexion;
 
 
