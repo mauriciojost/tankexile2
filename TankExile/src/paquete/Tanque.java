@@ -363,6 +363,7 @@ public class Tanque implements Controlable, ElementoDeJuego{
 	
 	public void eventoChoqueConTanque(Tanque tanque){
 		System.out.println(this.getNombre() +"."+ "eventoChoqueConTanque(...)");
+
 	}
 	public void eventoChoqueConMuro(Muro muro){
 		System.out.println(this.getNombre() +"."+ "eventoChoqueConMuro(...)");
@@ -378,6 +379,7 @@ public class Tanque implements Controlable, ElementoDeJuego{
 		trancoTanque = Tanque.MIN_VELOCIDAD; // Modifica velocidad despues de comprobar el tipo de choque.
 		contadorSubTramaChoque=0;
 		Conexion.getConexion().indicarChoque();
+
 	}
 	public void eventoChoqueConMeta(Meta meta){
 		System.out.println(this.getNombre() +"."+ "eventoChoqueConMeta(...)");
@@ -386,6 +388,7 @@ public class Tanque implements Controlable, ElementoDeJuego{
 		System.out.println(this.getNombre() +"."+ "eventoChoqueConBola(...)");
 	}
 	
+		
 	public String getNombre(){
 		return "Tanque";
 	}
