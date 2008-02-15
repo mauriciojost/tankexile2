@@ -32,7 +32,7 @@ public class Muro extends Bloque{
 	
 	// Método que realiza una variación en la imagen a mostrar, dando un efecto de deterioro en el bloque.
 	public void deterioro(int magnitud){
-		tramaActual = ( tramaActual + ( magnitud / Muro.UNIDAD_DE_MAGNITUD ) ); // Se toma la trama 1 del arreglo de imágenes.
+		tramaActual = ( tramaActual + ( magnitud ) / Muro.UNIDAD_DE_MAGNITUD ); // Se toma la trama 1 del arreglo de imágenes.
 		if (tramaActual > (imagenes.length - 1)){
 			tramaActual = imagenes.length -1;
 		}
@@ -44,8 +44,10 @@ public class Muro extends Bloque{
 	
 	public void eventoChoqueConTanque(Tanque tanque){
 		System.out.println(this.getNombre() +"."+ "eventoChoqueConTanque(...)");
-		this.deterioro(tanque.getVelocidad()/Tanque.U_VELOCIDAD); // Se provoca en el muro indicado un deterioro.
+
+		deterioro(tanque.getVelocidad()); // Se provoca en el muro indicado un deterioro.
 		Conexion.getConexion().choqueNuevoCircuitoLocal(this.getIndice(), tanque.getVelocidad());
+
 	}
 	
 	public void eventoChoqueConBola(Bola bola){
