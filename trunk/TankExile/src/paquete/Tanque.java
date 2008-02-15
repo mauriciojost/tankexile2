@@ -6,11 +6,14 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.imageio.ImageIO;
+import paquete.ElementoDeJuego;
 import presentacion.Conexion;
 
 
-public class Tanque implements Controlable{
+public class Tanque implements Controlable, ElementoDeJuego{
 	public static final int U_VELOCIDAD = 2; // Parámetro utilizado para determinar la gravedad de un choque según su velocidad.
 	public static final int MAX_VELOCIDAD = U_VELOCIDAD * 2; // Velocidad máxima.
 	public static final int MIN_VELOCIDAD = U_VELOCIDAD; // Velocidad mínima.
@@ -335,5 +338,33 @@ public class Tanque implements Controlable{
 	
 	public Rectangle getBounds(){
 		return new Rectangle(this.X, this.Y, Finals.BLOQUE_LADO_LONG, Finals.BLOQUE_LADO_LONG);
+	}
+
+	public void eventoChoque(ElementoDeJuego contraQuien) {
+		try {
+			Class[] arregloDeClases = {contraQuien.getClass()};
+			this.getClass().getMethod("eventoChoqueCon" + contraQuien.getNombre(), (Class[]) arregloDeClases);
+		} catch (NoSuchMethodException ex) {
+			Logger.getLogger(Tanque.class.getName()).log(Level.SEVERE, null, ex);
+		} catch (SecurityException ex) {
+			Logger.getLogger(Tanque.class.getName()).log(Level.SEVERE, null, ex);
+		}
+	}
+	
+	public void eventoChoqueConTanque(Tanque tanque){
+		System.out.println("eventoChoqueConTanque(...)");
+	}
+	public void eventoChoqueConMuro(Muro muro){
+		System.out.println("eventoChoqueConMuro(...)");
+	}
+	public void eventoChoqueConMeta(Meta meta){
+		System.out.println("eventoChoqueConMeta(...)");
+	}
+	public void eventoChoqueConTanque(Bola bola){
+		System.out.println("eventoChoqueConBola(...)");
+	}
+	
+	public String getNombre(){
+		return "Tanque";
 	}
 }	
