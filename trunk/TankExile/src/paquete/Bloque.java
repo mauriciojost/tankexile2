@@ -3,7 +3,7 @@ import java.awt.Graphics2D;
 
 // Clase cuyos objetos son las unidades de conformación del circuito de juego.
 import java.awt.Rectangle;
-public abstract class Bloque{	
+public abstract class Bloque implements ElementoDeJuego{	
 	private int x, y; //Atributos que representan las coordenadas reales (píxeles) del bloque.
 		
 	public Bloque(int bx, int by) {

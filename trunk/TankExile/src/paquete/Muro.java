@@ -36,4 +36,12 @@ public class Muro extends Bloque{
 			tramaActual = imagenes.length -1;
 		}
 	}
+
+	public void eventoChoque(ElementoDeJuego contraQuien) {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	public String getNombre() {
+		return "Muro";
+	}
 }
