@@ -9,6 +9,7 @@ import paquete.*;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
@@ -48,12 +49,12 @@ public class PrePartida extends JFrame implements MouseListener, VentanaControla
 
     private JButton b_elegir_circuito;
 	
-	
+	// Método que permite tener referencias, a la instancia de Presentacion y de Conexión, por parte de la instancia de PrePartida.
 	public static PrePartida getPrePartida(Presentacion presentacion, Conexion conexion){
 		PrePartida.conexion = conexion;
 		PrePartida.presentacion = presentacion;
 		if (prePartida == null){
-			prePartida = new PrePartida(presentacion);
+			prePartida = new PrePartida(presentacion); // En caso de no existir instancia, la crea.
 		}
 		return prePartida;
 	}
@@ -67,7 +68,7 @@ public class PrePartida extends JFrame implements MouseListener, VentanaControla
 		super("Tank Exile - Pre Partida");
 		
 	
-		setBounds(presentacion.getX(),presentacion.getY(),Finals.ANCHO_VENTANA-250,385);
+		setBounds(presentacion.getX(),presentacion.getY(),Finals.ANCHO_VENTANA-250,385); // Establece posición y tamaño de la ventana.
 		setResizable(false); // No se permite dar nuevo tamaño a la ventana.
 		
 		JPanel panel = (JPanel)this.getContentPane(); // Panel donde se grafican los objetos (bloques)que componen el escenario y los tanques que representan a cada jugador.
@@ -81,7 +82,7 @@ public class PrePartida extends JFrame implements MouseListener, VentanaControla
 			}
 		); // Se define un objeto que escucha los eventos sobre la ventana.
 		
-		Creador creador = new Creador();
+		Creador creador = new Creador(); // Objeto que puede crear paneles, botones, areas y campos de texto.
 		
 		JPanel panel_icono = creador.crearPanel(new Dimension(Finals.ANCHO_VENTANA-250,150), new FlowLayout());
 		
@@ -92,12 +93,12 @@ public class PrePartida extends JFrame implements MouseListener, VentanaControla
 		iM.setSize(200, 200);
 		panel_icono.add(iM);
 		
-		b_inicio = creador.crearBoton("Inicio", "Comienza la partida", this);
+		b_inicio = creador.crearBoton("Inicio", "Comienza la partida", this); // (texto, tool tip text, listener).
 		b_inicio.setEnabled(false);
 		
 				
 		b_elegir_circuito = creador.crearBoton("Elegir Circuito", "Permite seleccion de circuito", this);
-		b_elegir_circuito.setEnabled(conexion.getID()==1);
+		b_elegir_circuito.setEnabled(conexion.getID()==1); // Quien tenga ID = 1 será quien pueda seleccionar circuito.
 		
 		JButton b_opciones = creador.crearBoton("Opciones", "Permite configuracion", this);
 		
@@ -116,13 +117,13 @@ public class PrePartida extends JFrame implements MouseListener, VentanaControla
 		panel.add(panel_icono);
 		panel.add(panel_botones);
 		
-		setVisible(true);
+		setVisible(true); // Se hace visible la ventana.
 		
-		PrePartida.conexion = conexion;
-		PrePartida.prePartida = this;
-		PrePartida.presentacion = presentacion;
+//		PrePartida.conexion = conexion;
+//		PrePartida.prePartida = this;
+//		PrePartida.presentacion = presentacion;
 		
-		setEstado("Conexión establecida con éxito.");
+		setEstado(" Conexión establecida con éxito.", Font.PLAIN); // Crear instancia de PrePartida implica que se ha establecido la conexión.
 	}
 	
 	public void setSonidoHabilitado(boolean s){
@@ -140,15 +141,18 @@ public class PrePartida extends JFrame implements MouseListener, VentanaControla
 	public String getNickPropio(){
 		return nick_propio;
 	}
-
-	public void setEstado(String noticia){
-		estado.setText(noticia);
+	// Método que muestra mensaje de estado de la aplicación.
+	public void setEstado(String noticia, int estilo){
+		estado.setFont(new Font("Arial",estilo,12));
+		estado.setText(noticia); 
+		
 	}
 	
-	// Metodo que responde al evento sobre el boton Jugar.
+	// Metodo que responde al evento sobre el boton Inicio.
 	public void responderInicio() {
         if (!b_inicio.isEnabled()) return;
         
+		// Quien tiene el ID = 1, es quien selecciona circuito y por tanto, quien indica cuando se habilita el botón Inicio en el host remoto.
 		if (conexion.getID()==1)
 			try{ventanaRemota.setInicioHabilitado(true);}catch(Exception e){e.printStackTrace();}
         
@@ -171,41 +175,38 @@ public class PrePartida extends JFrame implements MouseListener, VentanaControla
 		ic.close();
 		oc.close();
 	}
-	public void setCircuitoSeleccionado(File circuitoSeleccionado, boolean propio){
-		
+	
+	// Método invocado cuando se ha validado el circuito seleccionado.
+	public void setCircuitoSeleccionado(File circuitoSeleccionado){
+		// SE PUEDE EVITAR EL PROPIO PORQUE SIEMPRE SELECCIONO UN CIRCUITO PROPIO.
 		try {
-			if (propio) {
-				conexion.enviarAHostRemoto(circuitoSeleccionado.getPath(), NOMBRE_CIRCUITO_TEMPORAL);				
-				try {copiarArchivo(circuitoSeleccionado.getPath(), NOMBRE_CIRCUITO_TEMPORAL);}catch(Exception e){e.printStackTrace();}
-			} else {
-				conexion.copiarDeHostRemoto(circuitoSeleccionado.getPath(), NOMBRE_CIRCUITO_TEMPORAL);
-			}
+			conexion.enviarAHostRemoto(circuitoSeleccionado.getPath(), NOMBRE_CIRCUITO_TEMPORAL);				
+			try {copiarArchivo(circuitoSeleccionado.getPath(), NOMBRE_CIRCUITO_TEMPORAL);}catch(Exception e){e.printStackTrace();}
 		} catch (IOException ex) {
 			System.err.println("Error al intentar copiar en el método de Conexion copiarDeHostRemoto.");
 			Logger.getLogger(Partida.class.getName()).log(Level.SEVERE, null, ex);
 		}	
 			
-		b_inicio.setEnabled(true);
-		
-		
+		b_inicio.setEnabled(true); // Se habilita botón Inicio luego de haber seleccionado circuito. Se puede iniciar el juego.
+				
 		this.circuitoSeleccionado = new File(NOMBRE_CIRCUITO_TEMPORAL);	
 		this.circuitoSeleccionado.deleteOnExit();
 	}
-    // Método que responde al evento sobre el boton Elegir Circuito.
-	public void responderElegir() {
+    // Método invocado cuando se hace click en el botón Elegir Circuito.
+	public void responderElegirCircuito() {
 		if (this.b_elegir_circuito.isEnabled()){
 			this.escenografia = new Escenografia(prePartida);
 			this.dispose();
 		}
 	}
-
-	public void responderOpcion(){
+	// Método invocado cuando se hace click en el botón Opciones.
+	public void responderOpciones(){
 		//configurar sonido y nombre del jugador
 		this.dispose();
 		this.configurador = new Configurador(prePartida);
 		
 	}
-	
+	// Método invocado cuando se hace click en el botón Salida.
     public void responderSalida(){
 		System.exit(0);
 	}
@@ -214,11 +215,11 @@ public class PrePartida extends JFrame implements MouseListener, VentanaControla
 		return prePartida;
 
 	}
-        
+	// Método que responder al evento click sobre la ventana de la instancia de PrePartida.
 	public void mouseClicked(MouseEvent e) {
 		try {
-			String nombre = new String(((JButton)e.getSource()).getText());
-			nombre = nombre.substring(0, 6);
+			String nombre = new String(((JButton)e.getSource()).getText()); 
+			nombre = nombre.replaceAll(" ", ""); // Quita los espacios del texto obtenido del botón clickeado.
 			this.getClass().getMethod("responder"+nombre, (Class[])null).invoke(this, (Object[])null);
 		} catch (Exception ex) {	
 			ex.printStackTrace();

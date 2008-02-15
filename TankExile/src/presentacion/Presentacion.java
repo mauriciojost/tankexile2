@@ -35,23 +35,25 @@ public class Presentacion extends JFrame implements MouseListener {
 	// Constructor de la clase.
 	private Presentacion(int x, int y){
 		super("TankExile - Presentación");
-		setBounds(x,y, Finals.ANCHO_VENTANA-250, Finals.ALTO_VENTANA-450); // Reajusta tamaño de la ventana, sin modificar su posición.
+		setBounds(x,y, Finals.ANCHO_VENTANA-250, Finals.ALTO_VENTANA-450); // Establece posición y tamaño de la ventana.
 		setResizable(false); // Impide modificar tamaño de la ventana.
-		//setDefaultCloseOperation(EXIT_ON_CLOSE);
-		
+				
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
 				System.exit(0);
 			}
-		}); // Se define un objeto que escucha y resonde a los eventos sobre la ventana.
+		}); // Se define un objeto que escucha y responde a los eventos sobre la ventana.
 		
 		JPanel panel = (JPanel) getContentPane(); // Panel donde se grafica la interface de usuario.
 		panel.setPreferredSize(new Dimension(Finals.ANCHO_VENTANA-250, Finals.ALTO_VENTANA-480)); // Establece tamaño para el panel.
 		panel.setLayout(new GridLayout(1,1)); // Establece manager layout para el panel.
 		panel.setBackground(Finals.colorGris); // Establece el color de fondo del panel.
 
+
+		// Se presenta imagen en la ventana de bienvenida de la aplicación.
 		ImageIcon imagenPresentacion = new ImageIcon(getClass().getClassLoader().getResource("res/tank.GIF"));
+
 		JLabel iM = new JLabel();
 		iM.setIcon(imagenPresentacion);
 		iM.setOpaque(false);
@@ -70,9 +72,9 @@ public class Presentacion extends JFrame implements MouseListener {
 		
 		panel.setLayout(new GridLayout(4,1)); // Establece manager layout para el panel.
 		// Creacion de los componentes que conforman la interface de usuario.
-		Creador creador = new Creador();
+		Creador creador = new Creador(); // Objeto que instancia paneles, botones, areas y campos de texto.
 		
-		JTextArea titulo_ip_propio = creador.crearArea("IP propio: ", false, Finals.colorGris);//Cambie esta linea
+		JTextArea titulo_ip_propio = creador.crearArea("IP propio: ", false, Finals.colorGris); // (texto, visibilidad, color de fondo)
 		
 		JPanel panel_ip_propio = creador.crearPanel(new Dimension(Finals.ANCHO_VENTANA-250,(Finals.ALTO_VENTANA-480)/3),new FlowLayout(FlowLayout.LEFT));
 		panel_ip_propio.add(titulo_ip_propio);
@@ -95,14 +97,13 @@ public class Presentacion extends JFrame implements MouseListener {
 		area_ip.requestFocus();
 		area_ip.selectAll();
 		this.area_ip = area_ip;
-		//this.campo_ip_oponente = ip_oponente;
-				
+						
 		JPanel panel_ip_oponente = creador.crearPanel(new Dimension(Finals.ANCHO_VENTANA-250, (Finals.ALTO_VENTANA-480)/3),new FlowLayout(FlowLayout.LEFT));
 		panel_ip_oponente.add(titulo_ip_oponente);
 		panel_ip_oponente.add(area_ip);
 		
 		JPanel panel_botones = creador.crearPanel(new Dimension(Finals.ANCHO_VENTANA-250,(Finals.ALTO_VENTANA-480)/3), new FlowLayout(FlowLayout.TRAILING));
-		panel_botones.add(this.bConectar = creador.crearBoton("Conectar", "Intenta conexion con IP ingresado", this));
+		panel_botones.add(this.bConectar = creador.crearBoton("Conectar", "Intenta conexion con IP ingresado", this)); // creadorBoton(texto, tool tip text, listener).
 		panel_botones.add(this.bSalida = creador.crearBoton("Salida", "Cerrar", this));
 		
 		
@@ -116,7 +117,7 @@ public class Presentacion extends JFrame implements MouseListener {
 		
 		setVisible(true);
 		presentacion1 = this;
-
+		// Se establece el foco sobre el area de texto donde se ingresa el IP oponente.
 		this.area_ip.requestFocus();
 		this.area_ip.selectAll();
 		
@@ -132,37 +133,37 @@ public class Presentacion extends JFrame implements MouseListener {
 	public static Presentacion getPresentacion() {
 		return presentacion1;
 	}
-	
-	public void responderConect(){
+	// Método invocado cuando se presiona click sobre el boton Conectar.
+	public void responderConectar(){
 		if (!bConectar.isEnabled()) return;
 
 		
-		if (conexion != null){
+		if (conexion != null){ // Se asegura de desconectar una conexion previa y detiene los hilos asociados a ella.
 			conexion.desbindearTodo(true);
 			conexion.stopHilos();	
 		}
 		
 		
 		this.conexion = Conexion.getConexion(area_ip.getText());
-		
+		// Hilo que realiza los intenetos de conexión
 		Runnable hilito = new Runnable(){
 			public void run(){
-				bConectar.setEnabled(false);
-				area_ip.setEnabled(false);
+				bConectar.setEnabled(false); // Se deshabilita el boton Conextar.
+				area_ip.setEnabled(false); // Se deshabilita el area donde se ingresa IP oponente.
 				int intentos;
-				for (intentos = 0; intentos<Finals.CANTIDAD_DE_INTENTOS_DE_CONEXION;intentos++){
+				for (intentos = 0; intentos<Finals.CANTIDAD_DE_INTENTOS_DE_CONEXION;intentos++){ // Bucle que intenta establecer conexión.
 				
 					String mensaje = "Intentando establecer conexión (intento "+(intentos+1)+"/"+Finals.CANTIDAD_DE_INTENTOS_DE_CONEXION+")...";
 					System.out.println(mensaje);
-					setEstado(mensaje); 
+					setEstado(mensaje); // Se visualiza el estado de la conexión.
 					try{
-						conexion.conectar();
+						conexion.conectar(); // Intento de conexión.
 					}catch(Exception ex){
 						System.out.println("Fallo en el intento. Intentando conexión nuevamente...");
 						//ex.printStackTrace();
 						try{Thread.sleep(Finals.ESPERA_CONEXION);}catch(InterruptedException r){}
 					}
-					if (conexion.conexionLista()) break;
+					if (conexion.conexionLista()) break; // Comprueba condición de salida del bucle (la conexión se ha establecido).
 				}
 				if (intentos==Finals.CANTIDAD_DE_INTENTOS_DE_CONEXION){
 					JOptionPane.showMessageDialog(null, "No se ha podido establecer la conexión con el host remoto.");
@@ -174,15 +175,15 @@ public class Presentacion extends JFrame implements MouseListener {
 				conexion.establecerIDs();
 				dispose();
 				
-				prePartida = PrePartida.getPrePartida(presentacion1, conexion);
+				prePartida = PrePartida.getPrePartida(presentacion1, conexion); // Se crea una instancia de la clase PrePartida.
 				
 				conexion.setVentanaRemota(prePartida);
-				conexion.bindearMiVentana();
+				conexion.bindearMiVentana(); // Pone a disposición la ventana de PrePartida para el host remoto (permite controlar el botón Inicio).
 				System.out.println("Servidor de ventana listo.");
 				
 				do{
 					try{
-						ventanaRemota = conexion.ponerADisposicionVentanaRemota();
+						ventanaRemota = conexion.ponerADisposicionVentanaRemota(); // Se intenta obtener la ventana PrePartida del host remoto.
 					}catch(Exception ex){
 						System.out.println("Fallo en el intento de conexión con la ventana remota. Intentando conexión nuevamente...");
 						try{Thread.sleep(Finals.ESPERA_CONEXION);}catch(InterruptedException r){}
@@ -199,15 +200,14 @@ public class Presentacion extends JFrame implements MouseListener {
 		(new Thread(hilito, "Hilo de representación de los intentos de conexión")).start();
 		
 	}
-	
+	// Método invocado cuando se presiona click sobre el botón Salida. 
 	public void responderSalida(){
 		System.exit(0);
 	}
-	
+	// Método que responde al evento click sobre la ventana de la instancia de Presentacion.
 	public void mouseClicked(MouseEvent e) {
 		try {
 			String nombre = new String(((JButton)e.getSource()).getText());
-			nombre = nombre.substring(0, 6); // Utiliza los 6 primeros caracteres del texto obtenido del boton.
 			this.getClass().getMethod("responder"+nombre, (Class[])null).invoke(this, (Object[])null);
 		} catch (Exception ex) {
 			Logger.getLogger(PrePartida.class.getName()).log(Level.SEVERE, null, ex);

@@ -76,69 +76,14 @@ public class Escenografia extends JFrame implements MouseListener, ListSelection
 		
 		Creador creador = new Creador();
 		
-		b_seleccion = creador.crearBoton("Seleccionar", "", this);
+		b_seleccion = creador.crearBoton("Seleccionar", "Utilizar circuito seleccionado", this);
 		
-		/*
-		b_seleccion.addActionListener(
-			new ActionListener(){
-				public void actionPerformed(ActionEvent e) {
-					System.out.println("1 - " + lista.getSelectedValue());
-					System.out.println("2 - "+ lista.getSelectedIndex());
-					// LINEA REEE IMPORTANTE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-					prePartida.setCircuitoSeleccionado((File)lista.getSelectedValue());
-					// LINEA REEE IMPORTANTE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-					Escenografia.getEsc().dispose();
-					
-					PrePartida.getPrePartida1().setVisible(true);
-				}
-			}
-		);
-		*/
-		// cancelar
-		b_cancelar = creador.crearBoton("Cancelar", "Cede la seleccion al oponente", this);
-		/*
-		b_cancelar.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e) {
-				Escenografia.getEsc().dispose();
-
-				PrePartida.getPrePartida1().setLocation(Escenografia.getEsc().getX(), Escenografia.getEsc().getY());
-
-				PrePartida.getPrePartida1().setVisible(true);
-
-				PrePartida.getPrePartida1().setEstado("Estado: Se ha seleccionado un circuito.");
-            //hay que implementar la vuelta atras a la pagina que la precede
-			}
-		});
-		*/
+		b_cancelar = creador.crearBoton("Cancelar", "", this);
+		
 		JPanel panel_boton = creador.crearPanel(new Dimension(Finals.ANCHO_VENTANA-200, 115), new FlowLayout(FlowLayout.CENTER));
 		panel_boton.add(b_seleccion);
 		panel_boton.add(b_cancelar);
 		
-		/*
-		MouseListener mouseListener = new MouseAdapter() {
-            @Override
-			public void mouseClicked(MouseEvent e) {
-				if (e.getSource() instanceof JButton){
-					try {
-						String nombre = new String(((JButton)e.getSource()).getText());
-						nombre = nombre.substring(0, 6);
-						System.out.println("Nombre: "+nombre);
-						this.getClass().getMethod("responder"+nombre, (Class[])null).invoke(this, (Object[])null);
-					} catch (Exception ex) {	
-						ex.printStackTrace();
-					} 
-				}else{
-					if (e.getClickCount() == 2) {
-						indeX = lista.locationToIndex(e.getPoint());
-						System.out.println("Double clicked on Item " + indeX);
-						lista.setSelectedIndex(indeX);
-					}
-				}
-			}
-		};
-		lista.addMouseListener(mouseListener);
-		*/
-		//lista.addMouseListener(this);
 		estado.setText("Estado:                     ");
 		estado.setEditable(false);
 		estado.setBackground(Finals.colorGris);
@@ -152,9 +97,7 @@ public class Escenografia extends JFrame implements MouseListener, ListSelection
 		
 		setVisible(true);
 		escenografia=this;
-		//frame.add(escenografia.getEsc());
-		//frame.setVisible(true);
-                
+		        
 	}
 	
 	public JSplitPane getSplitPane() {
@@ -190,18 +133,18 @@ public class Escenografia extends JFrame implements MouseListener, ListSelection
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 	
-	public void responderSelecc(){
+	public void responderSeleccionar(){
 		File archivo = (File)lista.getSelectedValue();
-		if (paquete.CargadorCircuitoTXT.validarCircuito(archivo.getPath())){
+		if (paquete.CargadorCircuitoTXT.validarCircuito(archivo.getPath())){ // Se selecciona circuito sujeto a la condición de que este sea validado.
 			//////////////////MAURICIO//////////////////////////////////
 			// Esta parte ha de ser modificada. Donde el true se ha de especificar si el archivo es propio o remoto (ver con qué criterio).
-			prePartida.setCircuitoSeleccionado(archivo,true); // <<<----
+			prePartida.setCircuitoSeleccionado(archivo); // <<<----
 			ultimoArchivoElegido = archivo;
 			this.dispose();
 			prePartida.setLocation(this.getX(), this.getY());
 			prePartida.setVisible(true);
 			System.out.println("Circuito validado correctamente.");
-			this.prePartida.setEstado("Circuito: '"+ultimoArchivoElegido+"'.");
+			this.prePartida.setEstado("Circuito: '"+ultimoArchivoElegido+"'.", Font.PLAIN);
 		}else{
 			JOptionPane.showMessageDialog(null, "Circuito no válido.");
 
@@ -210,20 +153,19 @@ public class Escenografia extends JFrame implements MouseListener, ListSelection
 		
 	}
 	
-	public void responderCancel(){
+	public void responderCancelar(){
 		this.dispose();
 		prePartida.setLocation(this.getX(), this.getY());
 		prePartida.setVisible(true);
 		if (ultimoArchivoElegido!=null){
-			this.prePartida.setEstado("Circuito: '"+ultimoArchivoElegido+"'.");
+			this.prePartida.setEstado("Circuito: '"+ultimoArchivoElegido+"'.", Font.PLAIN);
 		}
-		// ACA SE DEBE ASIGNAR LA RESPONSABILIDAD DE ELEGIR CIRCUITO AL OPONENTE!!!!
+		
 	}
 	
 	public void mouseClicked(MouseEvent e) {
 		try {
 			String nombre = new String(((JButton)e.getSource()).getText());
-			nombre = nombre.substring(0, 6);
 			this.getClass().getMethod("responder"+nombre, (Class[])null).invoke(this, (Object[])null);
 		} catch (Exception ex) {	
 			ex.printStackTrace();

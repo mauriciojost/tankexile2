@@ -184,6 +184,7 @@ public class Partida extends Canvas implements Runnable{
 		tanquePropio.actuar();
 		tanqueLocalLigadoOponente.actuarResumido();
 		circuito.actuar();
+
     }
 	
 	

@@ -1,4 +1,5 @@
 package paquete;
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.io.IOException;
@@ -90,7 +91,7 @@ public class Circuito implements CircuitoControlable {
 	
 	// Método llamado remotamente para indicar que el jugador remoto ya ha llegado a su meta.
 	public void oponenteLlego() throws RemoteException{
-		PrePartida.getPrePartida().setEstado("Fin del juego. Usted ha perdido.");
+		PrePartida.getPrePartida().setEstado(" Fin del juego. Usted ha perdido.", Font.BOLD);
 		PrePartida.getPrePartida().setVisible(true);
 		Partida.getPartida().finalizar();
 		//JOptionPane.showMessageDialog(null, "Fin del juego. Usted ha perdido...");
@@ -138,7 +139,7 @@ public class Circuito implements CircuitoControlable {
 				}
 				else if (bloque instanceof Meta){
 					if (miMeta.equals(bloque)){
-						PrePartida.getPrePartida().setEstado("Fin del juego. Usted ha ganado...");
+						PrePartida.getPrePartida().setEstado("Fin del juego. Usted ha ganado...", Font.BOLD);
 						PrePartida.getPrePartida().setVisible(true);
 						conexion.partidaPerdida();
 						Partida.getPartida().finalizar();
