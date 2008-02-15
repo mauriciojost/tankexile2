@@ -147,6 +147,7 @@ public class Bola extends Thread implements BolaControlable, ElementoDeJuego{
 	
 	public void eventoChoqueConTanque(Tanque tanque){
 		System.out.println(this.getNombre() +"."+ "eventoChoqueConTanque(...)");
+
 		if(buena)
 				tanquePropio.setVelocidad(Tanque.MAX_VELOCIDAD); // La bola buena aumenta la velocidad.
 			else
@@ -155,10 +156,12 @@ public class Bola extends Thread implements BolaControlable, ElementoDeJuego{
 	
 	public void eventoChoqueConMuro(Muro muro){
 		System.out.println(this.getNombre() +"."+ "eventoChoqueConMuro(...)");
+
 	}
 	
 	public void eventoChoqueConMeta(Meta meta){
 		System.out.println(this.getNombre() +"."+ "eventoChoqueConMeta(...)");
+
 	}
 
 	public String getNombre() {
