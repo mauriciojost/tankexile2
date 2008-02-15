@@ -37,11 +37,20 @@ public class Muro extends Bloque{
 		}
 	}
 
-	public void eventoChoque(ElementoDeJuego contraQuien) {
-		throw new UnsupportedOperationException("Not supported yet.");
-	}
-
 	public String getNombre() {
 		return "Muro";
+	}
+	
+	public void eventoChoqueConTanque(Tanque tanque){
+		System.out.println("eventoChoqueConTanque(...)");
+	}
+	public void eventoChoqueConMuro(Muro muro){
+		System.out.println("eventoChoqueConMuro(...)");
+	}
+	public void eventoChoqueConMeta(Meta meta){
+		System.out.println("eventoChoqueConMeta(...)");
+	}
+	public void eventoChoqueConTanque(Bola bola){
+		System.out.println("eventoChoqueConBola(...)");
 	}
 }

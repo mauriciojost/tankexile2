@@ -33,12 +33,22 @@ public class Meta extends Bloque{
 	public int getNumero(){
 		return numeroDeMeta;
 	}
-
-	public void eventoChoque(ElementoDeJuego contraQuien) {
-		throw new UnsupportedOperationException("Not supported yet.");
-	}
-
+	
 	public String getNombre() {
 		return "Meta";
+	}
+	
+	
+	public void eventoChoqueConTanque(Tanque tanque){
+		System.out.println("eventoChoqueConTanque(...)");
+	}
+	public void eventoChoqueConMuro(Muro muro){
+		System.out.println("eventoChoqueConMuro(...)");
+	}
+	public void eventoChoqueConMeta(Meta meta){
+		System.out.println("eventoChoqueConMeta(...)");
+	}
+	public void eventoChoqueConTanque(Bola bola){
+		System.out.println("eventoChoqueConBola(...)");
 	}
 }

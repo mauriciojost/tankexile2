@@ -3,12 +3,25 @@ import java.awt.Graphics2D;
 
 // Clase cuyos objetos son las unidades de conformación del circuito de juego.
 import java.awt.Rectangle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 public abstract class Bloque implements ElementoDeJuego{	
 	private int x, y; //Atributos que representan las coordenadas reales (píxeles) del bloque.
 		
 	public Bloque(int bx, int by) {
 		x = bx * Finals.BLOQUE_LADO_LONG; // Cálculo de las coordenadas reales del bloque.
 		y = by * Finals.BLOQUE_LADO_LONG;
+	}
+	
+	public void eventoChoque(ElementoDeJuego contraQuien) {
+		try {
+			Class[] arregloDeClases = {contraQuien.getClass()};
+			this.getClass().getMethod("eventoChoqueCon" + contraQuien.getNombre(), (Class[]) arregloDeClases);
+		} catch (NoSuchMethodException ex) {
+			Logger.getLogger(Tanque.class.getName()).log(Level.SEVERE, null, ex);
+		} catch (SecurityException ex) {
+			Logger.getLogger(Tanque.class.getName()).log(Level.SEVERE, null, ex);
+		}
 	}
 	
 	// Método que brinda la imagen a mostrar para este bloque. Abstracto.

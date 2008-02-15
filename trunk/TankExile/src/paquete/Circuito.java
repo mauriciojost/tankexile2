@@ -18,6 +18,7 @@ public class Circuito implements CircuitoControlable {
 	private Meta metas[] = new Meta[2];
 	private Conexion conexion;
 	private Tanque tanqueLocal;
+	private Tanque tanqueOponente;
 	
 	// Constructor de la clase.
 	public Circuito(String nombreCircuitoTXT){
@@ -55,13 +56,13 @@ public class Circuito implements CircuitoControlable {
 	public void agregarBola(Bola bola){
 		bolas.add(bola);
 	}
-	public void setTanqueLocal(Tanque tanqueLocal){
+	public void setTanques(Tanque tanqueLocal, Tanque tanqueOponente){
 		this.tanqueLocal = tanqueLocal;
+		this.tanqueOponente = tanqueOponente;
+		
 	}
-	// Método que se encarga de mantener la coherencia entre el circuito y su tanque local.
-	public void actuar(){
-		this.hayColision();
-	}
+	
+	
 	// Método privado que añade un bloque dado al circuito (tanto a la matriz como al grupo de objetos a representar).
 	private void agregarBloque(Bloque bloque){
 		if (bloque!=null){
@@ -99,10 +100,12 @@ public class Circuito implements CircuitoControlable {
 	// También ejecuta: el efecto de deterioro del muro correspondiente (en caso de colisión) y la corrección de la posición del tanque.
 	// Además indica al circuito remoto la existencia de choques.
 	// Indica además la llegada a la meta.
-	public void hayColision(){
-		boolean hayChoque = false; // Variable booleana que indica la existencia o no de choque con al menos un muro.
-		Meta miMeta = metas[Math.abs((tanqueLocal.getID()+1)%2)];
+	// Método que se encarga de mantener la coherencia entre el circuito y su tanque local.
+	public void actuar(){
+		//boolean hayChoque = false; // Variable booleana que indica la existencia o no de choque con al menos un muro.
+		//Meta miMeta = metas[Math.abs((tanqueLocal.getID()+1)%2)];
 		Rectangle tanqueRec = tanqueLocal.getBounds();
+		Rectangle tanqueRec2 = this.tanqueOponente.getBounds();
 		
 		for(int i=0; i<bloques.size();i++){
 			Bloque bloque = (Bloque)bloques.get(i);
@@ -119,7 +122,10 @@ public class Circuito implements CircuitoControlable {
 				bola.eventoChoque(tanqueLocal);
 			}	
 		}
-		
+		if (tanqueRec.intersects(tanqueRec2)){
+			tanqueLocal.eventoChoque(tanqueOponente);
+			tanqueOponente.eventoChoque(tanqueLocal);
+		}
 		
 		/* ANTES DE POLIMORFISMO
 		for(int i=0; i<bloques.size();i++){
@@ -141,7 +147,7 @@ public class Circuito implements CircuitoControlable {
 			}
 		}
 		*/
-		
+		/*
 		if (hayChoque){
 			// Corrección de la posición del tanque involucrado.
 			switch (tanqueLocal.getDireccion()){
@@ -154,7 +160,7 @@ public class Circuito implements CircuitoControlable {
 			
 			tanqueLocal.choque(false);
 			
-		}
+		}*/
 	}
 	
 	// Método que indica mediante un booleano si ha existido un solapamiento con los muros del circuito, por parte del tanque indicado como parámetro.
