@@ -31,8 +31,17 @@ public abstract class Bloque implements ElementoDeJuego{
 			Logger.getLogger(Bloque.class.getName()).log(Level.SEVERE, null, ex);
 		}
 	}
+	/*
+
+	public void eventoChoqueConTanque(Tanque tanque){
+		System.out.println("eventoChoqueConTanque(...)");
+	}
 	
-		
+	public void eventoChoqueConTanque(Bola bola){
+		System.out.println("eventoChoqueConBola(...)");
+	}
+	*/
+
 	// Método que brinda la imagen a mostrar para este bloque. Abstracto.
 	public abstract void pintar(Graphics2D g);
 	

@@ -367,6 +367,16 @@ public class Tanque implements Controlable, ElementoDeJuego{
 	}
 	public void eventoChoqueConMuro(Muro muro){
 		System.out.println(this.getNombre() +"."+ "eventoChoqueConMuro(...)");
+		
+		
+		switch (this.getDireccion()){
+				// Según la dirección del tanque, este es llevado hacia atrás hasta la condición de no solapamiento.
+				case Finals.ABAJO:		while(this.getBounds().intersects(muro.getBounds())){this.setY(this.getY()-Tanque.U_VELOCIDAD);}
+				case Finals.ARRIBA:		while(this.getBounds().intersects(muro.getBounds())){this.setY(this.getY()+Tanque.U_VELOCIDAD);}
+				case Finals.IZQUIERDA:	while(this.getBounds().intersects(muro.getBounds())){this.setX(this.getX()+Tanque.U_VELOCIDAD);}
+				case Finals.DERECHA:	while(this.getBounds().intersects(muro.getBounds())){this.setX(this.getX()-Tanque.U_VELOCIDAD);}
+			}
+		
 		teclasHabilitadas = false;
 		choque = true;
 		if(sonido_habilitado){
