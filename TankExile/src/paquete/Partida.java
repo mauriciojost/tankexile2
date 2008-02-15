@@ -126,6 +126,9 @@ public class Partida extends Canvas implements Runnable{
 		// Creación y bindeo de las bolas.
 		bolaBuena = new Bola(true,tanquePropio);
 		bolaMala = new Bola(false,tanquePropio);
+		circuito.agregarBola(bolaBuena);
+		circuito.agregarBola(bolaMala);
+		
 		conexion.setBolasLocales(bolaBuena, bolaMala);
 		conexion.bindearBolasLocales();
 		System.out.println("Servidor de bolas listo.");

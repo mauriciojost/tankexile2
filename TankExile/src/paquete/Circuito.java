@@ -13,6 +13,8 @@ public class Circuito implements CircuitoControlable {
 	private CargadorCircuitoTXT cargadorTXT; // Permite la conversión del archivo txt a circuito.
 	//private Bloque matrizDeBloques[][] = new Bloque [Finals.BLOQUES_NUM][Finals.BLOQUES_NUM]; // Matriz que contiene los elementos Bloque que son mapeados en la pantalla.
 	private ArrayList<Bloque> bloques = new ArrayList<Bloque>();
+	private ArrayList<Bola> bolas = new ArrayList<Bola>();
+	
 	private Meta metas[] = new Meta[2];
 	private Conexion conexion;
 	private Tanque tanqueLocal;
@@ -50,12 +52,15 @@ public class Circuito implements CircuitoControlable {
 		cargadorTXT.cerrarArchivo();
 	}
 	
+	public void agregarBola(Bola bola){
+		bolas.add(bola);
+	}
 	public void setTanqueLocal(Tanque tanqueLocal){
 		this.tanqueLocal = tanqueLocal;
 	}
 	// Método que se encarga de mantener la coherencia entre el circuito y su tanque local.
 	public void actuar(){
-		this.hayColision(tanqueLocal);
+		this.hayColision();
 	}
 	// Método privado que añade un bloque dado al circuito (tanto a la matriz como al grupo de objetos a representar).
 	private void agregarBloque(Bloque bloque){
@@ -94,11 +99,29 @@ public class Circuito implements CircuitoControlable {
 	// También ejecuta: el efecto de deterioro del muro correspondiente (en caso de colisión) y la corrección de la posición del tanque.
 	// Además indica al circuito remoto la existencia de choques.
 	// Indica además la llegada a la meta.
-	public void hayColision(Tanque tanque){
+	public void hayColision(){
 		boolean hayChoque = false; // Variable booleana que indica la existencia o no de choque con al menos un muro.
-		Meta miMeta = metas[Math.abs((tanque.getID()+1)%2)];
-		Rectangle tanqueRec = tanque.getBounds();
+		Meta miMeta = metas[Math.abs((tanqueLocal.getID()+1)%2)];
+		Rectangle tanqueRec = tanqueLocal.getBounds();
 		
+		for(int i=0; i<bloques.size();i++){
+			Bloque bloque = (Bloque)bloques.get(i);
+			if (tanqueRec.intersects(bloque.getBounds())){
+				tanqueLocal.eventoChoque(bloque);
+				bloque.eventoChoque(tanqueLocal);
+			}	
+		}
+		
+		for(int i=0; i<bolas.size();i++){
+			Bola bola = (Bola)bolas.get(i);
+			if (tanqueRec.intersects(bola.getBounds())){
+				tanqueLocal.eventoChoque(bola);
+				bola.eventoChoque(tanqueLocal);
+			}	
+		}
+		
+		
+		/* ANTES DE POLIMORFISMO
 		for(int i=0; i<bloques.size();i++){
 			Bloque bloque = (Bloque)bloques.get(i);
 			if (tanqueRec.intersects(bloque.getBounds())){
@@ -117,18 +140,19 @@ public class Circuito implements CircuitoControlable {
 				}
 			}
 		}
+		*/
 		
 		if (hayChoque){
 			// Corrección de la posición del tanque involucrado.
-			switch (tanque.getDireccion()){
+			switch (tanqueLocal.getDireccion()){
 				// Según la dirección del tanque, este es llevado hacia atrás hasta la condición de no solapamiento.
-				case Finals.ABAJO:		while(this.solapamiento(tanque)){tanque.setY(tanque.getY()-Tanque.U_VELOCIDAD);}
-				case Finals.ARRIBA:		while(this.solapamiento(tanque)){tanque.setY(tanque.getY()+Tanque.U_VELOCIDAD);}
-				case Finals.IZQUIERDA:	while(this.solapamiento(tanque)){tanque.setX(tanque.getX()+Tanque.U_VELOCIDAD);}
-				case Finals.DERECHA:	while(this.solapamiento(tanque)){tanque.setX(tanque.getX()-Tanque.U_VELOCIDAD);}
+				case Finals.ABAJO:		while(this.solapamiento(tanqueLocal)){tanqueLocal.setY(tanqueLocal.getY()-Tanque.U_VELOCIDAD);}
+				case Finals.ARRIBA:		while(this.solapamiento(tanqueLocal)){tanqueLocal.setY(tanqueLocal.getY()+Tanque.U_VELOCIDAD);}
+				case Finals.IZQUIERDA:	while(this.solapamiento(tanqueLocal)){tanqueLocal.setX(tanqueLocal.getX()+Tanque.U_VELOCIDAD);}
+				case Finals.DERECHA:	while(this.solapamiento(tanqueLocal)){tanqueLocal.setX(tanqueLocal.getX()-Tanque.U_VELOCIDAD);}
 			}
 			
-			tanque.choque(false);
+			tanqueLocal.choque(false);
 			
 		}
 	}

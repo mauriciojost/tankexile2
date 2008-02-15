@@ -33,4 +33,12 @@ public class Meta extends Bloque{
 	public int getNumero(){
 		return numeroDeMeta;
 	}
+
+	public void eventoChoque(ElementoDeJuego contraQuien) {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	public String getNombre() {
+		return "Meta";
+	}
 }

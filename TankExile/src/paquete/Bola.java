@@ -11,7 +11,7 @@ import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 
 // Clase que representa a cada bola del juego.
-public class Bola extends Thread implements BolaControlable{
+public class Bola extends Thread implements BolaControlable, ElementoDeJuego{
 	private static int RANGO_VELOCIDAD = 4;
 	private static int MIN_VELOCIDAD = 1;
 	private static BufferedImage imagen[] = new BufferedImage[2];
@@ -117,5 +117,16 @@ public class Bola extends Thread implements BolaControlable{
 	public void setTodo(int x, int y) throws RemoteException {
 		this.x = x;
 		this.y = y;
+	}
+
+	public void eventoChoque(ElementoDeJuego contraQuien) {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	public String getNombre() {
+		return "Bola";
+	}
+	public Rectangle getBounds(){
+		return new Rectangle(x,y,Finals.BLOQUE_LADO_LONG, Finals.BLOQUE_LADO_LONG);
 	}
 }
