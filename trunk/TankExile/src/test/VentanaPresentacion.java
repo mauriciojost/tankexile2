@@ -242,7 +242,6 @@ public class VentanaPresentacion extends javax.swing.JFrame {
 		java.awt.EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				new VentanaPresentacion().setVisible(true);
-				
 			}
 		});
 	}
