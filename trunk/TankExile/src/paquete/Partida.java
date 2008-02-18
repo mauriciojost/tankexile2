@@ -156,7 +156,7 @@ public class Partida extends Canvas implements Runnable{
 		}
 		
 		// Las bolas comienzan a actuar por sí mismas.
-		bolaBuena.start();
+		bolaBuena.start();/////////////////////////////////////////////////////////////////////////////////////////////////////
 		bolaMala.start();
 		
 		// El circiuto local es bindeado.
@@ -184,7 +184,6 @@ public class Partida extends Canvas implements Runnable{
 		tanquePropio.actuar();
 		tanqueLocalLigadoOponente.actuarResumido();
 		circuito.actuar();
-
     }
 	
 	
@@ -204,8 +203,13 @@ public class Partida extends Canvas implements Runnable{
 		g.setColor(Color.WHITE);
 		g.fillRect(0,0,this.getWidth(),this.getHeight());
 		
+		
+		
+		
 		// Pintado del circuito.
 		circuito.pintar(g);
+		bolaBuena.pintar(g);
+		bolaMala.pintar(g);
 		
 		// Pintado de las leyendas.
 		g.setColor(Finals.COLOR_LEYENDAS_PARTIDA);
@@ -222,8 +226,7 @@ public class Partida extends Canvas implements Runnable{
 		// Pintado de los tanques y las bolas.
 		tanqueLocalLigadoOponente.pintar(g);
 		tanquePropio.pintar(g);
-		bolaBuena.pintar(g);
-		bolaMala.pintar(g);
+		
 		
 		// Se muestra lo pintado.
 		estrategia.show();

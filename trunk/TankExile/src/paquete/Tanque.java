@@ -165,12 +165,6 @@ public class Tanque implements Controlable, ElementoDeJuego{
 		X+=vX; // Actualización de la posición.
 		Y+=vY;
 		
-		
-		//if (circuito.hayColision(this)){ // Detección de colisiones. Responsabilidades del circuito.
-			//this.choque(false);// En caso de haberla, sufrir efectos del mismo.
-		//}
-		
-		
 		// Efectos del estado de choque.
 		if (choque){
 			contadorSubTramaChoque++;

@@ -52,20 +52,17 @@ public class Conexion implements Conectable{
 	 */
 	
 	
-	public static Conexion getConexion(String iPOponente){
+	public static Conexion getConexion(){
 		if (instanciaConexion==null){
-			return new Conexion(iPOponente);
+			return new Conexion();
 		}else{
 			return instanciaConexion;
 		}
 	}
-	public static Conexion getConexion(){
-		return instanciaConexion;
-	}
-	
+
 	// Constructor.
-	private Conexion(String iPOponente){
-		this.iPOponente = iPOponente;
+	private Conexion(){
+		
 		instanciaConexion = this;
 		try{
 			LocateRegistry.createRegistry(PUERTO); // Es tomado el puerto PUERTO y creado un registro asociado sobre él.
@@ -86,7 +83,8 @@ public class Conexion implements Conectable{
 	}
 	
 	// Equivalente a 'poner a disposición instancia de la clase conexión remota'.
-	public void conectar() throws Exception{
+	public void conectar(String iPOponente) throws Exception{
+		this.iPOponente = iPOponente;
 		Registry registry = LocateRegistry.getRegistry(iPOponente, PUERTO);
 		this.conexionRemoto = (Conectable) registry.lookup("Clave conexion");
 		System.out.println("Conexión exitosa.");

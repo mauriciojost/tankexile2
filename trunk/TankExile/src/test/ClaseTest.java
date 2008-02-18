@@ -57,7 +57,7 @@ public class ClaseTest extends Canvas{
 
 		mostrar("Estableciendo comunicación...");
 
-		try{Conexion.getConexion(null).conectar();}catch(Exception e){e.printStackTrace();}
+		try{Conexion.getConexion().conectar(null);}catch(Exception e){e.printStackTrace();}
 		Conexion.getConexion().setTanquePropio(tanque);
 		Conexion.getConexion().setTanqueLocalOponente(otroTanque);
 		Conexion.getConexion().bindearTanqueLocalOponente();

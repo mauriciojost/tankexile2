@@ -25,10 +25,12 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import test.VentanaPresentacion;
 
 public class PrePartida extends JFrame implements MouseListener, VentanaControlable{
 	private final String NOMBRE_CIRCUITO_TEMPORAL = "temporal.tmp";
 	private static Presentacion presentacion;
+	private static VentanaPresentacion presentacion1;
 
 	private static VentanaControlable ventanaRemota;
 	private static Conexion conexion;
@@ -55,6 +57,15 @@ public class PrePartida extends JFrame implements MouseListener, VentanaControla
 		PrePartida.presentacion = presentacion;
 		if (prePartida == null){
 			prePartida = new PrePartida(presentacion); // En caso de no existir instancia, la crea.
+		}
+		return prePartida;
+	}
+	
+	public static PrePartida getPrePartida(VentanaPresentacion presentacion, Conexion conexion){
+		PrePartida.conexion = conexion;
+		PrePartida.presentacion1 = presentacion;
+		if (prePartida == null){
+			//prePartida = new PrePartida(presentacion); // En caso de no existir instancia, la crea.
 		}
 		return prePartida;
 	}

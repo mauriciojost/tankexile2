@@ -43,9 +43,7 @@ public class Muro extends Bloque{
 	}
 	
 	public void eventoChoqueConTanque(Tanque tanque){
-		System.out.println(this.getNombre() +"."+ "eventoChoqueConTanque(...)");
-
-		deterioro(tanque.getVelocidad()); // Se provoca en el muro indicado un deterioro.
+		deterioro(tanque.getVelocidad()/Tanque.U_VELOCIDAD); // Se provoca en el muro indicado un deterioro.
 		Conexion.getConexion().choqueNuevoCircuitoLocal(this.getIndice(), tanque.getVelocidad());
 
 	}

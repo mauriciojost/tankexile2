@@ -42,6 +42,10 @@ public class Circuito implements CircuitoControlable {
 						ex.printStackTrace();
 						System.exit(-1);
 					}
+					if ((i==Finals.BLOQUES_NUM/2)&&(j==Finals.BLOQUES_NUM/2)){bloque=null;}
+					if ((i==Finals.BLOQUES_NUM/2+1)&&(j==Finals.BLOQUES_NUM/2)){bloque=null;}
+					if ((i==Finals.BLOQUES_NUM/2)&&(j==Finals.BLOQUES_NUM/2+1)){bloque=null;}
+					if ((i==Finals.BLOQUES_NUM/2+1)&&(j==Finals.BLOQUES_NUM/2+1)){bloque=null;}
 				}
 				this.agregarBloque(bloque); // Es agregado el bloque leído al circuito.
 				
@@ -94,7 +98,22 @@ public class Circuito implements CircuitoControlable {
 	
 	// Método llamado remotamente para indicar que el jugador remoto ya ha llegado a su meta.
 	public void oponenteLlego() throws RemoteException{
-		PrePartida.getPrePartida().setEstado(" Fin del juego. Usted ha perdido.", Font.BOLD);
+		
+		(new Thread(
+			new Runnable(){
+				public void run(){
+					String mensaje = "Fin del juego. Usted ha perdido.";
+					for (int i=0; i<10;i++){
+						PrePartida.getPrePartida().setEstado("", Font.BOLD);
+						try{Thread.sleep(300);}catch(Exception e){e.printStackTrace();}
+						PrePartida.getPrePartida().setEstado(mensaje, Font.BOLD);
+						try{Thread.sleep(300);}catch(Exception e){e.printStackTrace();}
+						
+					}
+				}
+			}
+		)).start();
+		
 		PrePartida.getPrePartida().setVisible(true);
 		Partida.getPartida().finalizar();
 		//JOptionPane.showMessageDialog(null, "Fin del juego. Usted ha perdido...");
@@ -140,41 +159,6 @@ public class Circuito implements CircuitoControlable {
 			tanqueLocal.eventoChoque(tanqueOponente);
 			tanqueOponente.eventoChoque(tanqueLocal);
 		}
-		
-		/* ANTES DE POLIMORFISMO
-		for(int i=0; i<bloques.size();i++){
-			Bloque bloque = (Bloque)bloques.get(i);
-			if (tanqueRec.intersects(bloque.getBounds())){
-				if(bloque instanceof Muro){
-					((Muro)bloque).deterioro(tanque.getVelocidad()); // Se provoca en el muro indicado un deterioro.
-					conexion.choqueNuevoCircuitoLocal(i, tanque.getVelocidad());
-					hayChoque = true;
-				}
-				else if (bloque instanceof Meta){
-					if (miMeta.equals(bloque)){
-						PrePartida.getPrePartida().setEstado("Fin del juego. Usted ha ganado...", Font.BOLD);
-						PrePartida.getPrePartida().setVisible(true);
-						conexion.partidaPerdida();
-						Partida.getPartida().finalizar();
-					}
-				}
-			}
-		}
-		*/
-		/*
-		if (hayChoque){
-			// Corrección de la posición del tanque involucrado.
-			switch (tanqueLocal.getDireccion()){
-				// Según la dirección del tanque, este es llevado hacia atrás hasta la condición de no solapamiento.
-				case Finals.ABAJO:		while(this.solapamiento(tanqueLocal)){tanqueLocal.setY(tanqueLocal.getY()-Tanque.U_VELOCIDAD);}
-				case Finals.ARRIBA:		while(this.solapamiento(tanqueLocal)){tanqueLocal.setY(tanqueLocal.getY()+Tanque.U_VELOCIDAD);}
-				case Finals.IZQUIERDA:	while(this.solapamiento(tanqueLocal)){tanqueLocal.setX(tanqueLocal.getX()+Tanque.U_VELOCIDAD);}
-				case Finals.DERECHA:	while(this.solapamiento(tanqueLocal)){tanqueLocal.setX(tanqueLocal.getX()-Tanque.U_VELOCIDAD);}
-			}
-			
-			tanqueLocal.choque(false);
-			
-		}*/
 	}
 	
 	// Método que indica mediante un booleano si ha existido un solapamiento con los muros del circuito, por parte del tanque indicado como parámetro.
