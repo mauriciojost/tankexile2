@@ -5,7 +5,7 @@ import java.awt.Color;
 public interface Finals{	
 
 	public static final int PERIODO =			4;
-	public static final int PERIODO_BOLA =		10;
+	public static final int PERIODO_BOLA =		4;
 	public static final int PERIODO_DE_TURNO =	3000;
 	public static final int BLOQUES_NUM =		32;
 	public static final int BLOQUE_LADO_LONG =	20;

@@ -70,7 +70,7 @@ public class TestSonido  extends Canvas{
 		
 		muro = new Muro(15,15);
 		otroTanque = new Tanque(0);
-		try{Conexion.getConexion(null).conectar();}catch(Exception e){e.printStackTrace();}
+		try{Conexion.getConexion().conectar(null);}catch(Exception e){e.printStackTrace();}
 		Conexion.getConexion().setTanquePropio(tanque);
 		Conexion.getConexion().setTanqueLocalOponente(otroTanque);
 		Conexion.getConexion().bindearTanqueLocalOponente();

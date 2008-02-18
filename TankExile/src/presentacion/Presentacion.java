@@ -144,7 +144,7 @@ public class Presentacion extends JFrame implements MouseListener {
 		}
 		
 		
-		this.conexion = Conexion.getConexion(area_ip.getText());
+		this.conexion = Conexion.getConexion();
 		// Hilo que realiza los intenetos de conexión
 		Runnable hilito = new Runnable(){
 			public void run(){
@@ -157,7 +157,7 @@ public class Presentacion extends JFrame implements MouseListener {
 					System.out.println(mensaje);
 					setEstado(mensaje); // Se visualiza el estado de la conexión.
 					try{
-						conexion.conectar(); // Intento de conexión.
+						conexion.conectar(area_ip.getText()); // Intento de conexión.
 					}catch(Exception ex){
 						System.out.println("Fallo en el intento. Intentando conexión nuevamente...");
 						//ex.printStackTrace();
@@ -175,6 +175,7 @@ public class Presentacion extends JFrame implements MouseListener {
 				conexion.establecerIDs();
 				dispose();
 				
+				prePartida = PrePartida.getPrePartida(presentacion1, conexion); // Se crea una instancia de la clase PrePartida.
 				prePartida = PrePartida.getPrePartida(presentacion1, conexion); // Se crea una instancia de la clase PrePartida.
 				
 				conexion.setVentanaRemota(prePartida);

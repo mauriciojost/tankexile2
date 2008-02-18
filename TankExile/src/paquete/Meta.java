@@ -41,7 +41,6 @@ public class Meta extends Bloque{
 	}
 	
 	public void eventoChoqueConTanque(Tanque tanque){
-		System.out.println(this.getNombre() +"."+ "eventoChoqueConTanque(...)");
 		if (this.numeroDeMeta == otroID(tanque.getID())){
 			PrePartida.getPrePartida().setEstado("Fin del juego. Usted ha ganado...", Font.BOLD);
 			PrePartida.getPrePartida().setVisible(true);
