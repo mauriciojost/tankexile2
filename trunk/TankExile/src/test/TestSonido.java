@@ -72,8 +72,8 @@ public class TestSonido  extends Canvas{
 		otroTanque = new Tanque(0);
 		try{Conexion.getConexion().conectar(null);}catch(Exception e){e.printStackTrace();}
 		Conexion.getConexion().setTanquePropio(tanque);
-		Conexion.getConexion().setTanqueLocalOponente(otroTanque);
-		Conexion.getConexion().bindearTanqueLocalOponente();
+		//Conexion.getConexion().setTanqueLocalOponente();
+		Conexion.getConexion().bindearTanqueLocalOponente(otroTanque);
 		try{Conexion.getConexion().ponerADisposicionTanqueRemoto();}catch(Exception e){e.printStackTrace();}
 		(new Thread(Conexion.getConexion().getHiloManejadorDeTanqueRemoto())).start();
 		
@@ -108,7 +108,7 @@ public class TestSonido  extends Canvas{
 		if(((Bloque)muro).getBounds().intersects(tanque.getBounds())){
 			tanque.choque(false);
 			tanque.setX(400);
-			muro.deterioro(tanque.getVelocidad());
+			//muro.deterioro(tanque.getVelocidad());
 		}
 		tanque.actuar();
 		

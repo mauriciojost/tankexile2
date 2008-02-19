@@ -1,35 +1,33 @@
 package paquete;
 
-
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.*;
+import java.io.Serializable;
 import java.util.HashMap;
 import javax.imageio.ImageIO;
 import presentacion.Conexion;
 
-public class Tanque implements Controlable, ElementoDeJuego{
-	public static final int U_VELOCIDAD = 2; // Parámetro utilizado para determinar la gravedad de un choque según su velocidad.
-	public static final int MAX_VELOCIDAD = U_VELOCIDAD * 2; // Velocidad máxima.
-	public static final int MIN_VELOCIDAD = U_VELOCIDAD; // Velocidad mínima.
-	private static final int TRAMAS_CHOQUE = 2; // Cantidad de imágenes del tanque respecto de la situación de choque.
-	private static final int PERIODO_CHOQUE_CHICO = 50; // Duración de los efectos de un choque.
-	private static final int PERIODO_CHOQUE_GRANDE = 150; // Duración de los efectos de un choque.
-	private static final int TRAMAS_MOVIMIENTO = 18; // Cantidad de imágenes del tanque.
-	private static final int PERIODO_MOVIMENTO = 1;
-	private final int SUB_PERIODO_CHOQUE = 5; // Duración de un sub período de choque.
+public class Tanque implements Controlable, ElementoDeJuego, Serializable{
+	public transient static final int U_VELOCIDAD = 2; // Parámetro utilizado para determinar la gravedad de un choque según su velocidad.
+	public transient static final int MAX_VELOCIDAD = U_VELOCIDAD * 2; // Velocidad máxima.
+	public transient static final int MIN_VELOCIDAD = U_VELOCIDAD; // Velocidad mínima.
+	private transient static final int TRAMAS_CHOQUE = 2; // Cantidad de imágenes del tanque respecto de la situación de choque.
+	private transient static final int PERIODO_CHOQUE_CHICO = 50; // Duración de los efectos de un choque.
+	private transient static final int PERIODO_CHOQUE_GRANDE = 150; // Duración de los efectos de un choque.
+	private transient static final int TRAMAS_MOVIMIENTO = 18; // Cantidad de imágenes del tanque.
+	private transient static final int PERIODO_MOVIMENTO = 1;
+	private transient final int SUB_PERIODO_CHOQUE = 5; // Duración de un sub período de choque.
+	
 	private int contadorSubTramaChoque; // Contador auxiliar para la situación de choque.
-	//private int vX; // Velocidad horizontal del tanque.
-	//private int vY; // Velocidad vertical del tanque.
 	private Rectangle bounds = new Rectangle(0,0,Finals.BLOQUE_LADO_LONG, Finals.BLOQUE_LADO_LONG);
 	private Point velocidad = new Point(0,0);
 	private int trancoTanque = Tanque.MIN_VELOCIDAD; // Tamaño del tranco de avance del tanque (unidad de avance).
-	private int temporizadorMovimento = 0; 
+	private transient int temporizadorMovimento = 0; 
 
 	private int movimientoTrama = 0;
-	private boolean teclasHabilitadas = true; // Indicador de habilitación o no de teclado para comandar el tanque.
-	private boolean choqueGrande = false; // Indicador de magnitud del último choque.
-	
+	private transient boolean teclasHabilitadas = true; // Indicador de habilitación o no de teclado para comandar el tanque.
+	private transient boolean choqueGrande = false; // Indicador de magnitud del último choque.
 	
 	private boolean arriba,abajo,izquierda,derecha; // Booleanos representativas de la directiva de la dirección a adoptar.
 	private int direccion = Finals.ARRIBA; // Atributo representativo de la dirección actual del tanque.
@@ -38,17 +36,27 @@ public class Tanque implements Controlable, ElementoDeJuego{
 	private int temporizadorChoque = 0; // Temporizador que permite limitar en tiempo los efectos del choque.
 	private int choqueTrama = 0; // Índice auxiliar del arreglo las imágenes del tanque.
 	
-    //private int X, Y; // Coordenadas (en píxeles) del tanque.
-    private static HashMap<Integer, BufferedImage> imagenes = new HashMap<Integer, BufferedImage>(); // Conjunto de imágenes del tanque, asociadas a una clave cada una mediante un HashMap.
+    private transient static HashMap<Integer, BufferedImage> imagenes = new HashMap<Integer, BufferedImage>(); // Conjunto de imágenes del tanque, asociadas a una clave cada una mediante un HashMap.
 	private int id; // Identificador del tanque.
 
-	private boolean ayuda_sonido = false;
-	private static boolean sonido_habilitado = false;
-	private Audio audio_movimiento;
-	private Audio audio_choque;
-	private String nickOponente; 
+	private transient boolean ayuda_sonido = false;
+	private transient static boolean sonido_habilitado = false;
+	private transient Audio audio_movimiento;
+	private transient Audio audio_choque;
+	//private String nickOponente; 
 	private boolean moviendose; 
 
+	public void imitar(Tanque tanqueAImitar){
+		
+		this.bounds.setLocation(tanqueAImitar.getPos().x+25, tanqueAImitar.getPos().y+25);
+		//this.bounds.setLocation(tanqueAImitar.getPos()); // USAR ESTO
+		this.moviendose = tanqueAImitar.getMoviendose();
+		this.direccion = tanqueAImitar.getDireccion();
+		this.movimientoTrama = tanqueAImitar.getMovimientoTrama();
+		this.choqueTrama = tanqueAImitar.getChoqueTrama();
+		 
+	}
+	
 	public boolean getSonidoHabilitado(){
 		return sonido_habilitado;
 	}
@@ -94,21 +102,10 @@ public class Tanque implements Controlable, ElementoDeJuego{
 			try{
 				for (int i = 0; i < this.TRAMAS_MOVIMIENTO;i++){
 					String nombre = "res/Tanque_arriba"+(TRAMAS_MOVIMIENTO - i-1)+".gif";
-					//String nombrec = "res/Tanque_arribac"+(TRAMAS_MOVIMIENTO - i-1)+".gif";
 					imagenes.put(new Integer(30000+i), ImageIO.read(getClass().getClassLoader().getResource(nombre)));
-					//imagenes.put(new Integer(30100+i), ImageIO.read(getClass().getClassLoader().getResource(nombrec)));
-				}
-				for (int i = 0; i < this.TRAMAS_MOVIMIENTO;i++){
 					imagenes.put(new Integer(Finals.ABAJO    *10000+ i), this.rotarImagen(imagenes.get(30000+ i),180));
-					//imagenes.put(new Integer(Finals.ABAJO    *10000 + 100+ i), this.rotarImagen(imagenes.get(30100+ i),180));
-				}
-				for (int i = 0; i < this.TRAMAS_MOVIMIENTO;i++){
 					imagenes.put(new Integer(Finals.DERECHA  *10000+ i), this.rotarImagen(imagenes.get(30000+ i), 90));
-					//imagenes.put(new Integer(Finals.DERECHA  *10000 + 100 + i), this.rotarImagen(imagenes.get(30100+ i), 90));
-				}
-				for (int i = 0; i < this.TRAMAS_MOVIMIENTO;i++){
 					imagenes.put(new Integer(Finals.IZQUIERDA*10000+ i), this.rotarImagen(imagenes.get(30000+ i),-90));
-					//imagenes.put(new Integer(Finals.IZQUIERDA*10000 + 100 + i), this.rotarImagen(imagenes.get(30100+ i),-90));
 				}
 			}catch(Exception e){
 				System.out.println("Error: no se ha podido realizar la carga de imágenes de la clase Tanque, "+e.getClass().getName()+" "+e.getMessage());
@@ -118,7 +115,6 @@ public class Tanque implements Controlable, ElementoDeJuego{
 		
 		audio_movimiento = new Audio("res/waterrun.wav");
 		audio_choque = new Audio("res/click.wav");
-		
 	}
 	
 	// Método que rota una imagen.
@@ -131,16 +127,8 @@ public class Tanque implements Controlable, ElementoDeJuego{
 		return rotator.filter(img, null);
 	}
 	
-	
-    
-	public void setMoviendose(boolean estaMoviendose){
-		moviendose = estaMoviendose;
-	}
-	
-	public boolean getMoviendose(){
-		return moviendose;
-	}
-	
+	public void setMoviendose(boolean estaMoviendose){moviendose = estaMoviendose;}
+	public boolean getMoviendose(){return moviendose;}
 	
 	// Método de actuación resumida del tanque, que sólo reproduce o nó un sonido según la situación o no de movimiento. Usado por el tanque oponente.
 	public void actuarResumido() {
@@ -195,12 +183,9 @@ public class Tanque implements Controlable, ElementoDeJuego{
 			audio_movimiento.detener();
 			ayuda_sonido = false;
 		}
-		
     }
     
-	public int getMovimientoTrama(){
-		return movimientoTrama;
-	}
+	public int getMovimientoTrama(){return movimientoTrama;}
 	
 	// Método que actualiza las velocidades según se tengan o no ciertas teclas presionadas.
 	private void actualizarVelocidades(){
@@ -212,8 +197,9 @@ public class Tanque implements Controlable, ElementoDeJuego{
 	}
   
 	// Métodos básicos de posicionamiento.
-	public int getX(){return bounds.x;}
-	public int getY(){return bounds.y;}
+	public Point getPos(){return bounds.getLocation();}
+	//public int getX(){return bounds.x;}
+	//public int getY(){return bounds.y;}
 	public void setX(int i){bounds.x=i;}
 	public void setY(int i){bounds.y=i;}
 		
@@ -241,8 +227,7 @@ public class Tanque implements Controlable, ElementoDeJuego{
 		actualizarVelocidades();
 	}
 
-	public void noIrAbajo(){ 
-		
+	public void noIrAbajo(){ 	
 		abajo=false;
 		actualizarVelocidades();
 	}
@@ -301,26 +286,26 @@ public class Tanque implements Controlable, ElementoDeJuego{
 		}
 	}
 	
-	public void setTodo(int x, int y, int direccion, int movimientoTrama, int choqueTrama, boolean moviendose){
+	/*public void setTodo(int x, int y, int direccion, int movimientoTrama, int choqueTrama, boolean moviendose){
 		bounds.x = x;
 		bounds.y = y;
 		this.moviendose = moviendose;
 		this.direccion = direccion;
 		this.movimientoTrama = movimientoTrama;
 		this.choqueTrama = choqueTrama;
-	}
+	}*/
 	
 	public int getChoqueTrama(){
 		return choqueTrama;
 	}
 	
-	public String getNickOponente(){
+	/*public String getNickOponente(){
 		return nickOponente;
 	}
 	
 	public void setNickOponente(String nickOponente){
 		this.nickOponente = nickOponente;
-	}
+	}*/
 	
 	public void detenerReproduccion(){
 		audio_movimiento.detener();
@@ -330,6 +315,7 @@ public class Tanque implements Controlable, ElementoDeJuego{
 		return bounds;
 	}
 
+	
 	public void eventoChoque(ElementoDeJuego contraQuien) {
 		try {
 			Class[] arregloDeClases = {contraQuien.getClass()};
@@ -342,53 +328,23 @@ public class Tanque implements Controlable, ElementoDeJuego{
 	}
 	
 	public void eventoChoqueConTanque(Tanque tanque){
-		System.out.println(this.getClass().getSimpleName() +"."+ "eventoChoqueConTanque(...)");
-		
-		switch (this.getDireccion()){
-				// Según la dirección del tanque, este es llevado hacia atrás hasta la condición de no solapamiento.
-				case Finals.ABAJO:		while(this.getBounds().intersects(tanque.getBounds())){this.setY(this.getY()-Tanque.U_VELOCIDAD);}
-				case Finals.ARRIBA:		while(this.getBounds().intersects(tanque.getBounds())){this.setY(this.getY()+Tanque.U_VELOCIDAD);}
-				case Finals.IZQUIERDA:	while(this.getBounds().intersects(tanque.getBounds())){this.setX(this.getX()+Tanque.U_VELOCIDAD);}
-				case Finals.DERECHA:	while(this.getBounds().intersects(tanque.getBounds())){this.setX(this.getX()-Tanque.U_VELOCIDAD);}
-			}
-		
-		teclasHabilitadas = false;
-		choque = true;
-		if(sonido_habilitado){
-			audio_choque.reproduccionSimple();
-		} // Reproduce sonido para choque local.
-		forzarTeclasSueltas();
-		actualizarVelocidades();
-		temporizadorChoque=0;
-		choqueGrande = (this.trancoTanque==Tanque.MAX_VELOCIDAD); // Cuando un choque se quiere forzar a ser grande, se utiliza 'agravante' en true.
-		trancoTanque = Tanque.MIN_VELOCIDAD; // Modifica velocidad despues de comprobar el tipo de choque.
-		contadorSubTramaChoque=0;
-		Conexion.getConexion().indicarChoque();
-
+		corregirPosicion(tanque);
+		choque(false);
 	}
-	public void eventoChoqueConMuro(Muro muro){
-		System.out.println(this.getClass().getSimpleName() +"."+ "eventoChoqueConMuro(...)");
-		
+	
+	private void corregirPosicion(ElementoDeJuego objeto){
 		switch (this.getDireccion()){
-				// Según la dirección del tanque, este es llevado hacia atrás hasta la condición de no solapamiento.
-				case Finals.ABAJO:		while(this.getBounds().intersects(muro.getBounds())){this.setY(this.getY()-Tanque.U_VELOCIDAD);}
-				case Finals.ARRIBA:		while(this.getBounds().intersects(muro.getBounds())){this.setY(this.getY()+Tanque.U_VELOCIDAD);}
-				case Finals.IZQUIERDA:	while(this.getBounds().intersects(muro.getBounds())){this.setX(this.getX()+Tanque.U_VELOCIDAD);}
-				case Finals.DERECHA:	while(this.getBounds().intersects(muro.getBounds())){this.setX(this.getX()-Tanque.U_VELOCIDAD);}
-			}
-		
-		teclasHabilitadas = false;
-		choque = true;
-		if(sonido_habilitado){
-			audio_choque.reproduccionSimple();
-		} // Reproduce sonido para choque local.
-		forzarTeclasSueltas();
-		actualizarVelocidades();
-		temporizadorChoque=0;
-		choqueGrande = (this.trancoTanque==Tanque.MAX_VELOCIDAD); // Cuando un choque se quiere forzar a ser grande, se utiliza 'agravante' en true.
-		trancoTanque = Tanque.MIN_VELOCIDAD; // Modifica velocidad despues de comprobar el tipo de choque.
-		contadorSubTramaChoque=0;
-		Conexion.getConexion().indicarChoque();
+			// Según la dirección del tanque, este es llevado hacia atrás hasta la condición de no solapamiento.
+			case Finals.ABAJO:		while(this.getBounds().intersects(objeto.getBounds())){bounds.y = (bounds.y-Tanque.U_VELOCIDAD);}
+			case Finals.ARRIBA:		while(this.getBounds().intersects(objeto.getBounds())){bounds.y = (bounds.y+Tanque.U_VELOCIDAD);}
+			case Finals.IZQUIERDA:	while(this.getBounds().intersects(objeto.getBounds())){bounds.x= (bounds.x+Tanque.U_VELOCIDAD);}
+			case Finals.DERECHA:	while(this.getBounds().intersects(objeto.getBounds())){bounds.x= (bounds.x-Tanque.U_VELOCIDAD);}
+		}
+	}
+	
+	public void eventoChoqueConMuro(Muro muro){
+		corregirPosicion(muro);
+		choque(false);
 	}
 	public void eventoChoqueConMeta(Meta meta){}
 	

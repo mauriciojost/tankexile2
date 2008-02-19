@@ -36,7 +36,7 @@ public class Partida extends Canvas implements Runnable{
 	private String nickOponente;
 	
     // Contstructor. Genera los elementos básicos de una aplicación del tipo juego.
-    public Partida(String nombreCircuitoTXT, Conexion conexion, PrePartida prePartida) {
+    public Partida(String nombreCircuitoTXT, PrePartida prePartida) {
 		instanciaPartida = this;
 		Partida.prePartida = prePartida;
 		ventana = new JFrame("TankExile"); // Armado de la ventana.
@@ -50,6 +50,7 @@ public class Partida extends Canvas implements Runnable{
 	
 
 		ventana.setBounds(0,0,Finals.ANCHO_VENTANA+6,Finals.ALTO_VENTANA+30); // Establecimiento de las dimensiones de la ventana.
+		
 		ventana.setVisible(true); // Ventana visible.
 
 		ventana.addWindowListener(
@@ -63,16 +64,17 @@ public class Partida extends Canvas implements Runnable{
 			}
 		);
 
-
+		
 		ventana.setResizable(false); // La ventana no es de tamaño ajustable.
 		this.createBufferStrategy(2); // Es creado sobre este canvas una estrategia de buffering, de dos buffers.
 		estrategia = this.getBufferStrategy(); // Sobre este objeto se aplicará el método de paint. Este realizará por sí mismo el doble buffering.
 		
-		Partida.conexion = conexion;
+		Partida.conexion = Conexion.getConexion();
 		this.yoID = conexion.getID()%2; // Son asignados los valores de ID e IP del oponente.
 		this.otroID = (conexion.getID()+1)%2;
 		//this.iPOponente = iPOponente;
 		Partida.nombreCircuitoTXT = nombreCircuitoTXT; // Asignación del nombre del archivo del circuito.
+		ventana.setLocation((Toolkit.getDefaultToolkit().getScreenSize().width-this.getSize().width)/2, (Toolkit.getDefaultToolkit().getScreenSize().height-this.getSize().height)/2);
 		
     }
     // Método que arranca la escena de la partida. Involucra la inicialización de los elementos principales del juego en sí.
@@ -86,24 +88,18 @@ public class Partida extends Canvas implements Runnable{
 		
 		tanqueLocalLigadoOponente = new Tanque(otroID); // Creación del tanque que será ligado al registro de RMI para ser comandado por el host remoto.
 		circuito.setTanques(tanquePropio, tanqueLocalLigadoOponente);
-		conexion.setTanqueLocalOponente(tanqueLocalLigadoOponente); 
-		conexion.bindearTanqueLocalOponente(); // El tanque anterior es puesto a disposición del host remoto.
+		//conexion.setTanqueLocalOponente(tanqueLocalLigadoOponente); 
+		conexion.bindearTanqueLocalOponente(tanqueLocalLigadoOponente); // El tanque anterior es puesto a disposición del host remoto.
 		conexion.setTanquePropio(tanquePropio); // La conexión esta lista para ser establecida, el hilo conexión observará al tanque y con sus parámetros comandará al tanque remoto puesto en el registro de RMI.
-		this.tanqueLocalLigadoOponente.setNickOponente(prePartida.getNickPropio()); // Nick que será leido por el host remoto.
+		this.circuito.setNickOponente(prePartida.getNickPropio()); // Nick que será leido por el host remoto.
 		
 		tanquePropio.setSonidoHabilitado(prePartida.getSonidoHabilitado());
 		
 		jugador = new Jugador(tanquePropio); // Un jugador es creado para comandar el tanque propio del host.
 		
 		this.addKeyListener(jugador); // El jugador comienza a escuchar el teclado.
-		do{
-			try{
-			conexion.ponerADisposicionTanqueRemoto(); // La conexión es establecida.
-			}catch(Exception e){
-				System.out.println("Intento fallido para obtener tanque remoto. Intentando de nuevo...");
-				try {Thread.sleep(Finals.ESPERA_CONEXION);} catch (InterruptedException ex) {ex.printStackTrace();}
-			}
-		}while(!conexion.tanqueListo());
+		
+		conexion.ponerADisposicionTanqueRemoto(); // La conexión es establecida.
 
 		hiloTanqueRemoto = new Thread(conexion.getHiloManejadorDeTanqueRemoto(), "Hilo manejador del tanque remoto");
 		// Ambos tanques son ubicados en sus metas correspondientes.
@@ -113,8 +109,6 @@ public class Partida extends Canvas implements Runnable{
 		tanqueLocalLigadoOponente.setX(circuito.getMeta(otroID).getX());
 		tanqueLocalLigadoOponente.setY(circuito.getMeta(otroID).getY());
 		
-		this.nickOponente = conexion.getNickTanqueOponente();
-		this.nickPropio = (prePartida.getNickPropio());
 		
 		hiloTanqueRemoto.start(); // El hilo que controla al tanque remoto es iniciado.
 		
@@ -131,16 +125,7 @@ public class Partida extends Canvas implements Runnable{
 		
 		if (this.yoID == 1){
 			// Se establece la responsabilidad de las bolas según la localidad o no del host.	
-			do{
-				try{
-					conexion.ponerADisposicionBolasRemotas(); // Se llama a las remotas en caso de hacer control de bolas localmente, para controlarlas.
-				}catch(Exception e){
-					try { Thread.sleep(Finals.ESPERA_CONEXION); } catch (InterruptedException ex) {ex.printStackTrace();}
-					System.out.println("Intento fallido por obtener bolas remotas... Reintentando...");
-				}
-			}while(!conexion.bolasListo());
-			System.out.println("Bolas remotas a disposición.");
-			
+			conexion.ponerADisposicionBolasRemotas(); // Se llama a las remotas en caso de hacer control de bolas localmente, para controlarlas.
 			// Es creado e iniciado el hilo que manejará a las bolas remotas.
 			hiloBolasRemotas = new Thread(conexion.getHiloManejadorDeBolas(), "Hilo manejador de bolas remotas");
 			hiloBolasRemotas.start();
@@ -153,19 +138,12 @@ public class Partida extends Canvas implements Runnable{
 		// El circiuto local es bindeado.
 		conexion.setCircuitoPropio(circuito);
 		conexion.bindearCircuitoLocal();
-		
-		do{
-			try{
-				conexion.ponerADisposicionCircuitoRemoto(); // El circuito remoto es puesto a disposición del host local.
-			}catch(Exception e){
-				try { Thread.sleep(Finals.ESPERA_CONEXION); } catch (InterruptedException ex) {ex.printStackTrace();}
-				System.out.println("Intento fallido por obtener circuito remoto... Reintentando...");
-			}
-		}while(!conexion.circuitoListo());
-		
+		conexion.ponerADisposicionCircuitoRemoto(); // El circuito remoto es puesto a disposición del host local.
 		System.out.println("Circuito remoto a disposición.");
 		
 		// Se comienza la sincronización de los dos circuitos.
+		this.nickPropio = (prePartida.getNickPropio());
+		this.nickOponente = conexion.getNickTanqueOponente();
 		hiloCircuitoRemoto = new Thread(conexion.getHiloManejadorDeCircuitoRemoto(), "Hilo manejador de circuito remoto");
 		hiloCircuitoRemoto.start();
     }
@@ -260,6 +238,6 @@ public class Partida extends Canvas implements Runnable{
 		} catch (Throwable ex) {
 			ex.printStackTrace();
 		}
-		conexion.desbindearTodo(false); // Se hace unbind de todo aquello bindeado.
+		Bindeador.getBindeador().desbindearTodo(false); // Se hace unbind de todo aquello bindeado.
 	}
 }

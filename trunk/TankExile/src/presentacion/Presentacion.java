@@ -23,7 +23,6 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 public class Presentacion extends JFrame implements MouseListener {
-	private PrePartida prePartida;
     private static JFrame presentacion;
 	private JTextField area_ip;
 	private JTextField estado;
@@ -139,7 +138,7 @@ public class Presentacion extends JFrame implements MouseListener {
 
 		
 		if (conexion != null){ // Se asegura de desconectar una conexion previa y detiene los hilos asociados a ella.
-			conexion.desbindearTodo(true);
+			Bindeador.getBindeador().desbindearTodo(true);
 			conexion.stopHilos();	
 		}
 		
@@ -175,22 +174,17 @@ public class Presentacion extends JFrame implements MouseListener {
 				conexion.establecerIDs();
 				dispose();
 				
-				prePartida = PrePartida.getPrePartida(presentacion, conexion); // Se crea una instancia de la clase PrePartida.
 				
-				conexion.setVentanaRemota(prePartida);
+				
+				conexion.setVentanaRemota(PrePartida.getPrePartida());
 				conexion.bindearMiVentana(); // Pone a disposición la ventana de PrePartida para el host remoto (permite controlar el botón Inicio).
 				System.out.println("Servidor de ventana listo.");
 				
-				do{
-					try{
-						ventanaRemota = conexion.ponerADisposicionVentanaRemota(); // Se intenta obtener la ventana PrePartida del host remoto.
-					}catch(Exception ex){
-						System.out.println("Fallo en el intento de conexión con la ventana remota. Intentando conexión nuevamente...");
-						try{Thread.sleep(Finals.ESPERA_CONEXION);}catch(InterruptedException r){}
-					}
-				}while(!conexion.ventanaLista());
+				
+				ventanaRemota = conexion.ponerADisposicionVentanaRemota(); // Se intenta obtener la ventana PrePartida del host remoto.
+				
 				System.out.println("Ventana remota a disposición.");
-				prePartida.setVentanaRemota(ventanaRemota);
+				PrePartida.getPrePartida().setVentanaRemota(ventanaRemota);
 				
 				area_ip.setEnabled(true);
 				bConectar.setEnabled(true);

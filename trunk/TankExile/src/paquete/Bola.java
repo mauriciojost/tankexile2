@@ -58,40 +58,26 @@ public class Bola extends Thread implements BolaControlable, ElementoDeJuego{
 
 	@Override
 	public void run(){
-		try {Thread.sleep(Finals.ESPERA_INICIAL_BOLAS);} catch (InterruptedException ex) {ex.printStackTrace();}
+		
 		if (soyLocal){
-			bounds.setLocation(rnd.nextInt(Finals.BLOQUES_NUM) * Finals.BLOQUE_LADO_LONG, rnd.nextInt(Finals.BLOQUES_NUM) * Finals.BLOQUE_LADO_LONG);
+			//bounds.setLocation(rnd.nextInt(Finals.BLOQUES_NUM) * Finals.BLOQUE_LADO_LONG, rnd.nextInt(Finals.BLOQUES_NUM) * Finals.BLOQUE_LADO_LONG);
+			bounds.setLocation(Finals.BLOQUES_NUM*Finals.BLOQUE_LADO_LONG/2,Finals.BLOQUES_NUM*Finals.BLOQUE_LADO_LONG/2);
 			velocidad.setLocation((rnd.nextBoolean()?1:-1) * velocidad.x, (rnd.nextBoolean()?1:-1) * velocidad.y);
-			while(correrHilos){
-				actuar(); // En caso de ser local, la bola actua teniendo en cuenta rebotes. No así cuando es controlada de forma remota.
-				try {Thread.sleep(Finals.PERIODO_SINCRONIZACION_BOLAS);} catch (InterruptedException ex) {ex.printStackTrace();}
-			}
-		}else{
-			while(correrHilos){
-				actuarResumido();
-				try {Thread.sleep(Finals.PERIODO_SINCRONIZACION_BOLAS);} catch (InterruptedException ex) {ex.printStackTrace();}
-			}
+		}
+		try {Thread.sleep(2000);} catch (InterruptedException ex) {ex.printStackTrace();}
+		while(correrHilos){
+			actuar(); // En caso de ser local, la bola actua teniendo en cuenta rebotes. No así cuando es controlada de forma remota.
+			try {Thread.sleep(Finals.PERIODO_SINCRONIZACION_BOLAS);} catch (InterruptedException ex) {ex.printStackTrace();}
 		}
 	}
 	
 	public void actuar() {
 		bounds.x+=velocidad.x;
 		bounds.y+=velocidad.y;
-		
-		// Es verificada la condición de rebote.
-		if (bounds.x < 0)
-			velocidad.x = (Bola.MIN_VELOCIDAD + rnd.nextInt(Bola.RANGO_VELOCIDAD));
-		if (bounds.x > Finals.ANCHO_VENTANA-Finals.BLOQUE_LADO_LONG)
-			velocidad.x = -(Bola.MIN_VELOCIDAD + rnd.nextInt(Bola.RANGO_VELOCIDAD));
-		if (bounds.y < 0)
-			velocidad.y = (Bola.MIN_VELOCIDAD + rnd.nextInt(Bola.RANGO_VELOCIDAD));
-		if (bounds.y > Finals.ALTO_VENTANA-Finals.BLOQUE_LADO_LONG) 
-			velocidad.y = -(Bola.MIN_VELOCIDAD + rnd.nextInt(Bola.RANGO_VELOCIDAD));
 	}
 	
 	public void actuarResumido(){
-		// Es sólo verificada la condición de choque con el tanque local.
-		
+		// Es sólo verificada la condición de choque con el tanque local.	
 		Rectangle bolaRec = new Rectangle(bounds.x,bounds.y,Finals.BLOQUE_LADO_LONG,Finals.BLOQUE_LADO_LONG);
 		if (bolaRec.intersects(tanquePropio.getBounds()))
 			if (buena)
@@ -119,32 +105,38 @@ public class Bola extends Thread implements BolaControlable, ElementoDeJuego{
 		}
 	}
 	
-	public void eventoChoqueConTanque(Tanque tanque){}
+	public void eventoChoqueConTanque(Tanque tanque){
+		rebotar(tanque);
+	}
 	public void eventoChoqueConMeta(Meta meta){}
-	public void eventoChoqueConMuro(Muro muro){
-		
+	
+	
+	private void rebotar(ElementoDeJuego objeto){
 		Point arriba = new Point(bounds.x+Finals.BLOQUE_LADO_LONG/2,bounds.y+MARGEN);
 		Point abajo = new Point(bounds.x+Finals.BLOQUE_LADO_LONG/2,bounds.y+Finals.BLOQUE_LADO_LONG-MARGEN);
 		Point derecha = new Point(bounds.x+Finals.BLOQUE_LADO_LONG-MARGEN,bounds.y+Finals.BLOQUE_LADO_LONG/2);
 		Point izquierda = new Point(bounds.x+MARGEN,bounds.y+Finals.BLOQUE_LADO_LONG/2);
 		
-		if (muro.getBounds().contains(arriba)){	
+		if (objeto.getBounds().contains(arriba)){	
 			velocidad.y = (Bola.MIN_VELOCIDAD + rnd.nextInt(Bola.RANGO_VELOCIDAD));
 			//System.out.printf("Choque con rec arriba.");
 		}
-		else if (muro.getBounds().contains(abajo)){ // Subiendo y el muro está más arriba.
+		else if (objeto.getBounds().contains(abajo)){ // Subiendo y el muro está más arriba.
 			velocidad.y =-(Bola.MIN_VELOCIDAD + rnd.nextInt(Bola.RANGO_VELOCIDAD));
 			//System.out.printf("Choque con rec abajo.");
 		}
-		if (muro.getBounds().contains(izquierda)){ // A la derecha y el muro está más a la derecha.
+		if (objeto.getBounds().contains(izquierda)){ // A la derecha y el muro está más a la derecha.
 			velocidad.x =(Bola.MIN_VELOCIDAD + rnd.nextInt(Bola.RANGO_VELOCIDAD));
 			//System.out.printf("Choque con rec izquierda.");
 		}
-		else if (muro.getBounds().contains(derecha)){ // A la izquierda y el muro está más a la izquierda.
+		else if (objeto.getBounds().contains(derecha)){ // A la izquierda y el muro está más a la izquierda.
 			velocidad.x =-(Bola.MIN_VELOCIDAD + rnd.nextInt(Bola.RANGO_VELOCIDAD));
 			//System.out.printf("Choque con rec derecha.");
 		}
-
+	}
+	
+	public void eventoChoqueConMuro(Muro muro){
+		rebotar(muro);
 	}
 
 	public Rectangle getBounds(){
