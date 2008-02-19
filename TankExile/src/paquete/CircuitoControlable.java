@@ -9,4 +9,5 @@ public interface CircuitoControlable extends Remote {
 	public void informarChoque(int[] parametrosDelChoque) throws RemoteException;
 	// Indica a un circuito que el oponente (remoto) ha llegado.
 	public void oponenteLlego() throws RemoteException;
+	public String getNickOponente() throws RemoteException;
 }

@@ -1,5 +1,6 @@
 package test;
 
+import java.awt.Toolkit;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import javax.swing.JFrame;
@@ -9,10 +10,8 @@ import presentacion.Conexion;
 import presentacion.PrePartida;
 import presentacion.VentanaControlable;
 
-public class VentanaPresentacion extends javax.swing.JFrame {
+public class VentanaPresentacion extends JFrame {
 	private static JFrame presentacion;
-	private static Conexion conexion;
-	private static PrePartida prePartida;
 	private VentanaControlable ventanaRemota;
 	
 	/** Creates new form VentanaPresentacion */
@@ -25,6 +24,8 @@ public class VentanaPresentacion extends javax.swing.JFrame {
 			ex.printStackTrace();
 		}
 		
+		this.setLocation((Toolkit.getDefaultToolkit().getScreenSize().width-this.getSize().width)/2, (Toolkit.getDefaultToolkit().getScreenSize().height-this.getSize().height)/2);
+	
 		
 	}
 	public void setEstado(String estado){
@@ -176,7 +177,6 @@ public class VentanaPresentacion extends javax.swing.JFrame {
 
 	private void botonConectarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonConectarActionPerformed
 
-		this.conexion = Conexion.getConexion();
 		// Hilo que realiza los intenetos de conexión
 		Runnable hilito = new Runnable(){
 			public void run(){
@@ -189,13 +189,13 @@ public class VentanaPresentacion extends javax.swing.JFrame {
 					System.out.println(mensaje);
 					setEstado(mensaje); // Se visualiza el estado de la conexión.
 					try{
-						conexion.conectar(iPOponente.getText()); // Intento de conexión.
+						Conexion.getConexion().conectar(iPOponente.getText()); // Intento de conexión.
 					}catch(Exception ex){
 						System.out.println("Fallo en el intento. Intentando conexión nuevamente...");
 						//ex.printStackTrace();
 						try{Thread.sleep(Finals.ESPERA_CONEXION);}catch(InterruptedException r){}
 					}
-					if (conexion.conexionLista()) break; // Comprueba condición de salida del bucle (la conexión se ha establecido).
+					if (Conexion.getConexion().conexionLista()) break; // Comprueba condición de salida del bucle (la conexión se ha establecido).
 				}
 				if (intentos==Finals.CANTIDAD_DE_INTENTOS_DE_CONEXION){
 					JOptionPane.showMessageDialog(null, "No se ha podido establecer la conexión con el host remoto.");
@@ -204,25 +204,19 @@ public class VentanaPresentacion extends javax.swing.JFrame {
 					botonConectar.setEnabled(true);
 					return;
 				}
-				conexion.establecerIDs();
+				Conexion.getConexion().establecerIDs();
 				dispose();
 				
-				prePartida = PrePartida.getPrePartida(presentacion, conexion); // Se crea una instancia de la clase PrePartida.
 				
-				conexion.setVentanaRemota(prePartida);
-				conexion.bindearMiVentana(); // Pone a disposición la ventana de PrePartida para el host remoto (permite controlar el botón Inicio).
+				
+				Conexion.getConexion().setVentanaRemota(PrePartida.getPrePartida());
+				Conexion.getConexion().bindearMiVentana(); // Pone a disposición la ventana de PrePartida para el host remoto (permite controlar el botón Inicio).
 				System.out.println("Servidor de ventana listo.");
 				
-				do{
-					try{
-						ventanaRemota = conexion.ponerADisposicionVentanaRemota(); // Se intenta obtener la ventana PrePartida del host remoto.
-					}catch(Exception ex){
-						System.out.println("Fallo en el intento de conexión con la ventana remota. Intentando conexión nuevamente...");
-						try{Thread.sleep(Finals.ESPERA_CONEXION);}catch(InterruptedException r){}
-					}
-				}while(!conexion.ventanaLista());
+				
+				ventanaRemota = Conexion.getConexion().ponerADisposicionVentanaRemota(); // Se intenta obtener la ventana PrePartida del host remoto.
 				System.out.println("Ventana remota a disposición.");
-				prePartida.setVentanaRemota(ventanaRemota);
+				PrePartida.getPrePartida().setVentanaRemota(ventanaRemota);
 				
 				iPOponente.setEnabled(true);
 				botonConectar.setEnabled(true);

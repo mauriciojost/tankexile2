@@ -1,31 +1,20 @@
 package presentacion;
 
 import paquete.*;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
-import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.Random;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 // Clase cuya función es establecer la comunicación entre los dos hosts.
 import javax.swing.JOptionPane;
 public class Conexion implements Conectable{
 	private static Conexion instanciaConexion = null;
 	private Conectable conexionRemoto;
-	private VentanaControlable ventanaRemota; // Interfaz con la que se hace la manipulación de la ventana remota de selección de circuitos.
+	
 	private String iPOponente; // Ip del host oponente.
-	private final int PUERTO = 4500; // Puerto al que se asocian todos los registros.
-	private boolean tanqueListo = false; // Indicador de la disponibilidad o no del tanque remoto para el host local.
-	private boolean ventanaLista = false; // Indicador de la disponibilidad o no de la ventana (de selección de circuito) remota para el host local.
-	private boolean conexionLista = false; //Indicador de la conexión con el host remoto.
-	private boolean bolasListo = false; //Indicador de la disponibilidad de las bolas remotas.
+	public static final int PUERTO = 4500; // Puerto al que se asocian todos los registros.
+	
 	private Tanque tanquePropio; // Tanque correspondiente al host propio (o no-remoto).
 	private Controlable tanqueRemotoAControlar; // Interfaz con la que se controla el tanque propio remoto (en el host oponente).
 	private BolaControlable bolaBuenaAControlar;
@@ -38,12 +27,13 @@ public class Conexion implements Conectable{
 	private boolean claveOponenteRecibida = false; // Indicador de la llegada de la clave del oponente.
 	private int miID = -1;
 	private boolean correrHilos = true;
-	private boolean circuitoListo = false;
+	
 	private CircuitoControlable circuitoRemotoAControlar;
 	private Circuito circuitoPropio;
 	private ArrayList<int[]> choquesPendientesCircuitoRemoto = new ArrayList<int[]>();
 	private PrePartida ventana;
 	private Tanque tanqueLocalLigadoOponente;
+	
 	/* Formato de presentación:
 			1. Bindeo.
 			2. Puesta a disposición.
@@ -62,37 +52,19 @@ public class Conexion implements Conectable{
 
 	// Constructor.
 	private Conexion(){
-		
 		instanciaConexion = this;
-		try{
-			LocateRegistry.createRegistry(PUERTO); // Es tomado el puerto PUERTO y creado un registro asociado sobre él.
-		}catch(Exception e){
-			System.out.println("Registro de la conexión realizado anteriormente.");
-		}
-		try{
-			
-			Conectable stub = (Conectable) UnicastRemoteObject.exportObject(this, PUERTO); // Es exportado el objeto instancia de Conexion.
-			Registry registry = LocateRegistry.getRegistry(PUERTO); // Es tomado el registro recientemente ligado al puerto PUERTO.
-			registry.rebind("Clave conexion", stub); // El ligado el stub al registro.
-			System.out.println("Servidor de conexion listo.");
-		}catch(Exception e){
-			System.err.println("Excepción de servidor de conexion, probablemente otra instancia del juego se encuentre en curso: " + e.toString());
-			e.printStackTrace();
-		}
-		
+		Bindeador.getBindeador().bindear(this, "Clave conexion");
 	}
 	
 	// Equivalente a 'poner a disposición instancia de la clase conexión remota'.
 	public void conectar(String iPOponente) throws Exception{
 		this.iPOponente = iPOponente;
-		Registry registry = LocateRegistry.getRegistry(iPOponente, PUERTO);
-		this.conexionRemoto = (Conectable) registry.lookup("Clave conexion");
+		conexionRemoto = (Conectable)Bindeador.getBindeador().ponerADisposicion("Clave conexion");
 		System.out.println("Conexión exitosa.");
-		conexionLista = true;	
 	}
 	
 	public boolean conexionLista(){
-		return conexionLista;
+		return Bindeador.getBindeador().getListo();
 	}
 	
 	public void setVentanaRemota(PrePartida ventana){
@@ -100,37 +72,20 @@ public class Conexion implements Conectable{
 	}
 	// Método que pone la ventana de selección de circuitos de este host a disposición del host oponente.
 	public void bindearMiVentana(){
-		
-		try{
-			LocateRegistry.createRegistry(PUERTO); // Es tomado el puerto PUERTO y creado un registro asociado sobre él.
-		}catch(Exception e){
-			System.out.println("Registro de la ventana realizado anteriormente.");
-		}
-		
-		try{
-			presentacion.VentanaControlable stub = (VentanaControlable) UnicastRemoteObject.exportObject(ventana, PUERTO); // Es exportado el objeto instancia de Conexion.
-			Registry registry = LocateRegistry.getRegistry(PUERTO); // Es tomado el registro recientemente ligado al puerto PUERTO.
-			registry.rebind("Clave ventana", stub); // El ligado el stub al registro.
-			System.out.println("Servidor de ventana de circuito listo.");
-		}catch(Exception e){
-			System.err.println("Excepción de servidor de ventana de circuito: " + e.toString());
-			e.printStackTrace();
-		}
+		Bindeador.getBindeador().bindear(ventana, "Clave ventana");
 	}
-
+	
 	// Método que pone la ventana de selección de circuitos remota a disposición de este host.
-	public VentanaControlable ponerADisposicionVentanaRemota() throws Exception{	
-		ventanaLista = false;
-		Registry registry = LocateRegistry.getRegistry(iPOponente,PUERTO);
-		this.ventanaRemota = (VentanaControlable) registry.lookup("Clave ventana");    
-		//System.out.println("Conexión de cliente exitosa. Ventana remota a disposición local.");
-		ventanaLista = true;
-		return ventanaRemota;
-	}
-	
-	
-	public boolean ventanaLista(){
-		return ventanaLista;
+	public VentanaControlable ponerADisposicionVentanaRemota(){	
+		do{
+			try{
+				return (VentanaControlable)Bindeador.getBindeador().ponerADisposicion("Clave ventana");
+			}catch(Exception ex){
+				System.out.println("Fallo en el intento de conexión con la ventana remota. Intentando conexión nuevamente...");
+				try{Thread.sleep(Finals.ESPERA_CONEXION);}catch(InterruptedException r){}
+			}
+		}while(!Bindeador.getBindeador().getListo());
+		return null;
 	}
 	
 	// Método que permite la copia de archivos. No se espera su uso por parte dle programador.
@@ -178,47 +133,24 @@ public class Conexion implements Conectable{
 		out.close();
 	}
 	
-	
-	public void setTanqueLocalOponente(Tanque tanqueLocalLigadoOponente){
-		this.tanqueLocalLigadoOponente = tanqueLocalLigadoOponente;
-	}
-	
 	// Método que pone a disposición al tanque local oponente, para que sea controlado remotamente.
-	public Tanque bindearTanqueLocalOponente(){	
-		try{
-			LocateRegistry.createRegistry(PUERTO);
-		}catch(Exception e){
-			System.out.println("Registro de los tanques realizado anteriormente.");
-		}
-		try{
-			
-			Controlable stub = (Controlable) UnicastRemoteObject.exportObject(tanqueLocalLigadoOponente, PUERTO);		
-			Registry registry = LocateRegistry.getRegistry(PUERTO);
-			registry.rebind("Clave tanques", stub);
-			System.out.println("Servidor de tanque local listo.");
-			return tanqueLocalLigadoOponente;
-		}catch(Exception e){
-			System.err.println("Excepción de servidor de tanque local: " + e.toString());
-			e.printStackTrace();
-			return null;
-		}
+	public void bindearTanqueLocalOponente(Tanque tanqueLocalLigadoOponente){
+		this.tanqueLocalLigadoOponente = tanqueLocalLigadoOponente;
+		Bindeador.getBindeador().bindear(tanqueLocalLigadoOponente, "Clave tanques");
 	}
 	
 	// Método que establece la comunicación con el tanque remoto. Utiliza un método privado.
 	// Pone al tanque remoto a disposición del host local, para su control.
 	
-	public void ponerADisposicionTanqueRemoto() throws Exception{
-		this.tanqueListo = false;
-		//System.out.println("Conexión llamando a TankRMI en el otro host (IP:" + iPOponente + "): esperando respuesta...");
-		Registry registry = LocateRegistry.getRegistry(iPOponente, PUERTO);
-		Controlable retorno = (Controlable) registry.lookup("Clave tanques");
-		System.out.println("Conexión de cliente exitosa. Tanque a disposición.");
-		this.tanqueListo = true;
-		this.tanqueRemotoAControlar = retorno;
-	}
-	
-	public boolean tanqueListo(){
-		return tanqueListo;
+	public void ponerADisposicionTanqueRemoto(){
+		do{
+			try{
+				this.tanqueRemotoAControlar = (Controlable)Bindeador.getBindeador().ponerADisposicion("Clave tanques");
+			}catch(Exception e){
+				System.out.println("Intento fallido para obtener tanque remoto. Intentando de nuevo...");
+				try {Thread.sleep(Finals.ESPERA_CONEXION);} catch (InterruptedException ex) {ex.printStackTrace();}
+			}
+		}while(!Bindeador.getBindeador().getListo());	
 	}
 	
 	public void indicarChoque(){
@@ -228,7 +160,7 @@ public class Conexion implements Conectable{
 					tanqueRemotoAControlar.choqueResumido();
 				}catch(Exception ex){
 					System.out.println("Error al indicar un choque remotamente.");
-					Logger.getLogger(Conexion.class.getName()).log(Level.SEVERE, null, ex);
+					ex.printStackTrace();
 				}
 			}
 		};
@@ -237,10 +169,10 @@ public class Conexion implements Conectable{
 	// Método utilizado por el hilo de conexión para lograr el control del tanque propio remoto.
 	public void manejarTanqueRemoto(){
 		try {
-			tanqueRemotoAControlar.setTodo(tanquePropio.getX()+20, tanquePropio.getY()+20, tanquePropio.getDireccion(), tanquePropio.getMovimientoTrama(), tanquePropio.getChoqueTrama(), tanquePropio.getMoviendose());
+			tanqueRemotoAControlar.imitar(tanquePropio);
 		} catch (RemoteException ex) {
 			System.out.println("Error en el manejo del tanque remoto, clase Conexion. El oponente ha finalizado la sesión.");
-			Logger.getLogger(Conexion.class.getName()).log(Level.SEVERE, null, ex);
+			ex.printStackTrace();
 			this.stopHilos();
 			JOptionPane.showMessageDialog(null, "El oponente abandono conexión.");
 			System.exit(0);
@@ -256,12 +188,8 @@ public class Conexion implements Conectable{
 		return new Runnable(){
 			public void run() {
 				while(correrHilos){
-					try{
-						manejarTanqueRemoto();
-						Thread.sleep(Finals.PERIODO_SINCRONIZACION_TANQUES);
-					}catch(InterruptedException ex){
-						Logger.getLogger(Conexion.class.getName()).log(Level.SEVERE, null, ex);
-					}
+					manejarTanqueRemoto();
+					try{Thread.sleep(Finals.PERIODO_SINCRONIZACION_TANQUES);}catch(InterruptedException ex){ex.printStackTrace();}
 				}
 			}
 		};
@@ -270,55 +198,32 @@ public class Conexion implements Conectable{
 	public String getNickTanqueOponente(){
 		String nick = null;
 		try {
-			nick = this.tanqueRemotoAControlar.getNickOponente();
+			nick = this.circuitoRemotoAControlar.getNickOponente();
 		} catch (RemoteException ex) {
 			System.out.println("Error al intentar obtener el nick del oponente. Clase conexión.");
+			ex.printStackTrace();
 		}
 		return nick;
 	}
 	
 	// Método que pone a disposición las bolas locales, para que sean controladas remotamente.
 	public void bindearBolasLocales(){	
-		try{
-			LocateRegistry.createRegistry(PUERTO);
-		}catch(Exception e){
-			System.out.println("Registro de las bolas realizado anteriormente.");
-		}
-		try{
-			Registry registry;
-			BolaControlable stub;
-			
-			stub = (BolaControlable) UnicastRemoteObject.exportObject(this.bolaBuenaLocal, PUERTO);
-			registry = LocateRegistry.getRegistry(PUERTO);
-			registry.rebind("Clave bolaBuena", stub);
-		
-			stub = (BolaControlable) UnicastRemoteObject.exportObject(this.bolaMalaLocal, PUERTO);		
-			registry = LocateRegistry.getRegistry(PUERTO);
-			registry.rebind("Clave bolaMala", stub);
-			
-			System.out.println("Servidor de bolas locales listo.");
-			
-		}catch(Exception e){
-			System.err.println("Excepción de servidor de bolas locales: " + e.toString());
-			e.printStackTrace();			
-		}
+		Bindeador.getBindeador().bindear(bolaBuenaLocal, "Clave bolaBuena");
+		Bindeador.getBindeador().bindear(bolaMalaLocal, "Clave bolaMala");
 	}
 	
 	// Método que pone a las bolas remotas a disposición del host local, para su control.
 	// Es privado, sólo utilizado por el método establecerComunicacionBolasRemotas().
-	public void ponerADisposicionBolasRemotas() throws Exception{
-		this.bolasListo = false;
-		//System.out.println("Conexión llamando a TankRMI en el otro host (IP:" + iPOponente + "): esperando respuesta...");
-		Registry registry = LocateRegistry.getRegistry(iPOponente, PUERTO);
-		this.bolaBuenaAControlar = (BolaControlable) registry.lookup("Clave bolaBuena");
-		this.bolaMalaAControlar = (BolaControlable) registry.lookup("Clave bolaMala");
-		System.out.println("Conexión de cliente exitosa. Tanque a disposición.");
-		this.bolasListo = true;
-		
-	}
-	
-	public boolean bolasListo(){
-		return bolasListo;
+	public void ponerADisposicionBolasRemotas(){
+		do{
+			try{
+				this.bolaBuenaAControlar = (BolaControlable)Bindeador.getBindeador().ponerADisposicion("Clave bolaBuena");
+				this.bolaMalaAControlar = (BolaControlable)Bindeador.getBindeador().ponerADisposicion("Clave bolaMala"); // Se llama a las remotas en caso de hacer control de bolas localmente, para controlarlas.
+			}catch(Exception e){
+				try { Thread.sleep(Finals.ESPERA_CONEXION); } catch (InterruptedException ex) {ex.printStackTrace();}
+				System.out.println("Intento fallido por obtener bolas remotas... Reintentando...");
+			}
+		}while(!Bindeador.getBindeador().getListo());
 	}
 	
 	public void setBolasLocales(Bola bolaBuenaLocal, Bola bolaMalaLocal){
@@ -333,11 +238,10 @@ public class Conexion implements Conectable{
 			bolaMalaAControlar.setTodo(bolaMalaLocal.getX(), bolaMalaLocal.getY());
 		} catch (RemoteException ex) {
 			System.out.println("Error en el manejo de bolas remotas, clase Conexion. El oponente ha finalizado la sesión.");
-			Logger.getLogger(Conexion.class.getName()).log(Level.SEVERE, null, ex);
+			ex.printStackTrace();
 			this.stopHilos();
 			JOptionPane.showMessageDialog(null, "El oponente abandono conexión.");
 			System.exit(0);
-
 		}
 	}
 	
@@ -355,7 +259,7 @@ public class Conexion implements Conectable{
 						manejarBolasRemotas();
 						Thread.sleep(Finals.PERIODO);
 					}catch(InterruptedException ex){
-						Logger.getLogger(Conexion.class.getName()).log(Level.SEVERE, null, ex);
+						ex.printStackTrace();
 					}
 				}
 			}
@@ -364,38 +268,20 @@ public class Conexion implements Conectable{
 	
 	// Método que pone a disposición al circuito local, para que sea controlado remotamente.
 	public void bindearCircuitoLocal(){	
-		try{
-			LocateRegistry.createRegistry(PUERTO);
-		}catch(Exception e){
-			System.out.println("Registro de los circuitos realizado anteriormente.");
-		}
-		try{
-			
-			CircuitoControlable stub = (CircuitoControlable) UnicastRemoteObject.exportObject(circuitoPropio, PUERTO);		
-			Registry registry = LocateRegistry.getRegistry(PUERTO);
-			
-			registry.rebind("Clave circuito", stub);
-			System.out.println("Servidor de circuito local listo.");
-			
-		}catch(Exception e){
-			System.err.println("Excepción de servidor de circuito local: " + e.toString());
-			e.printStackTrace();
-		}
+		Bindeador.getBindeador().bindear(circuitoPropio, "Clave circuito");
 	}
 	
 	// Método que establece la comunicación con el circuito remoto.
 	// Pone al circuito remoto a disposición del host local, para su control.
-	public void ponerADisposicionCircuitoRemoto() throws Exception{	
-		this.circuitoListo = false;
-		Registry registry = LocateRegistry.getRegistry(iPOponente, PUERTO);
-		CircuitoControlable retorno = (CircuitoControlable) registry.lookup("Clave circuito");
-		System.out.println("Conexión de circuito exitosa. Circuito remoto a disposición.");
-		this.circuitoListo = true;
-		this.circuitoRemotoAControlar = retorno;
-	}
-	
-	public boolean circuitoListo(){
-		return circuitoListo;
+	public void ponerADisposicionCircuitoRemoto(){	
+		do{
+			try{
+				this.circuitoRemotoAControlar = (CircuitoControlable)Bindeador.getBindeador().ponerADisposicion("Clave circuito");
+			}catch(Exception e){
+				try { Thread.sleep(Finals.ESPERA_CONEXION); } catch (InterruptedException ex) {ex.printStackTrace();}
+				System.out.println("Intento fallido por obtener circuito remoto... Reintentando...");
+			}
+		}while(!Bindeador.getBindeador().getListo());
 	}
 	
 	// Método utilizado por el hilo de conexión para lograr el control del tanque propio remoto.
@@ -409,7 +295,7 @@ public class Conexion implements Conectable{
 			}
 		} catch (RemoteException ex) {
 			System.out.println("Error en el manejo del circuito remoto, clase Conexion. El oponente ha finalizado la sesión.");
-			Logger.getLogger(Conexion.class.getName()).log(Level.SEVERE, null, ex);
+			ex.printStackTrace();
 			this.stopHilos();
 			JOptionPane.showMessageDialog(null, "El oponente abandono conexión.");
 			System.exit(0);
@@ -429,15 +315,12 @@ public class Conexion implements Conectable{
 		return new Runnable(){
 			public void run() {
 				while(correrHilos){
-					try{
-						manejarCircuitoRemoto();
-						Thread.sleep(Finals.PERIODO);
-					}catch(InterruptedException ex){
-						Logger.getLogger(Conexion.class.getName()).log(Level.SEVERE, null, ex);
-					}
+					manejarCircuitoRemoto();
+					try{Thread.sleep(Finals.PERIODO);}catch(InterruptedException ex){ex.printStackTrace();}
 				}
 			}
 		};
+		
 	}
 	
 	public void setClaveOponente(double clave) throws RemoteException {
@@ -459,41 +342,21 @@ public class Conexion implements Conectable{
 	}
 	
 	public void partidaPerdida(){
-		//Runnable hilitoMensajeOponente = new Runnable(){
-		//	public void run(){
 		try {
 			circuitoRemotoAControlar.oponenteLlego();
 		} catch (RemoteException ex) {
 			System.out.println("Error en el método finDePartida en la clase Conexion.");
-			Logger.getLogger(Conexion.class.getName()).log(Level.SEVERE, null, ex);
-		}
-		//	}
-		//};
-		//(new Thread(hilitoMensajeOponente, "Hilo del mensaje de finalización para el oponente")).start();
-	}
-	
-	public void desbindearTodo(boolean inclusoConexion){
-		try {
-			Registry registro = LocateRegistry.getRegistry(PUERTO);
-			String[] lista = registro.list();
-			String clave;
-			for(int i=0;i<lista.length;i++){
-				clave = lista[i];
-				if((!clave.equals("Clave conexion"))||inclusoConexion){
-					registro.unbind(clave);
-				}
-			}
-		} catch (Exception ex) {
-			System.out.println("Excepción en método desbindearTodo de la clase Conexion: ");
 			ex.printStackTrace();
 		}
 	}
+	
 	public int getID(){
 		return this.miID;
 	}
 	public int getOtroID(){
 		return ((this.miID+1) % 2);
+	}	
+	public String getIP(){
+		return this.iPOponente;
 	}
-	
 }
-

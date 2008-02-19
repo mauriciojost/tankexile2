@@ -8,19 +8,14 @@ import java.io.*;
 import java.nio.channels.FileChannel;
 
 import javax.swing.*;
+import test.VentanaPresentacion;
 
 
 public class PrePartida extends JFrame implements MouseListener, VentanaControlable{
 	private final String NOMBRE_CIRCUITO_TEMPORAL = "temporal.tmp";
-	private static JFrame presentacion;
 
 	private static VentanaControlable ventanaRemota;
-	private static Conexion conexion;
-
 	private static PrePartida prePartida;
-
-	private Escenografia escenografia;
-	private Configurador configurador;
 	private JTextField estado;
 	
 	private ImageIcon ii = new ImageIcon(getClass().getClassLoader().getResource("res/tank.GIF"));
@@ -34,32 +29,30 @@ public class PrePartida extends JFrame implements MouseListener, VentanaControla
     private JButton b_elegir_circuito;
 	
 	// Método que permite tener referencias, a la instancia de Presentacion y de Conexión, por parte de la instancia de PrePartida.
-	public static PrePartida getPrePartida(JFrame presentacion, Conexion conexion){
-		PrePartida.conexion = conexion;
-		PrePartida.presentacion = presentacion;
+	public static PrePartida getPrePartida(){
 		if (prePartida == null){
-			prePartida = new PrePartida(presentacion); // En caso de no existir instancia, la crea.
+			prePartida = new PrePartida(); // En caso de no existir instancia, la crea.
 		}
 		return prePartida;
 	}
-	
 	
 	public void setVentanaRemota(VentanaControlable ventanaRemota){
 		PrePartida.ventanaRemota = ventanaRemota;
 	}
 	
 	// Constructor de la clase.
-	private PrePartida(JFrame presentacion){
+	private PrePartida(){
 		super("Tank Exile - Pre Partida");
 		
 	
-		setBounds(presentacion.getX(),presentacion.getY(),Finals.ANCHO_VENTANA-250,385); // Establece posición y tamaño de la ventana.
+		setBounds(VentanaPresentacion.getPresentacion().getX(),VentanaPresentacion.getPresentacion().getY(),Finals.ANCHO_VENTANA-250,385); // Establece posición y tamaño de la ventana.
 		setResizable(false); // No se permite dar nuevo tamaño a la ventana.
 		
 		JPanel panel = (JPanel)this.getContentPane(); // Panel donde se grafican los objetos (bloques)que componen el escenario y los tanques que representan a cada jugador.
 		panel.setPreferredSize(new Dimension(Finals.ANCHO_VENTANA-250,385));//Finals.ALTO_VENTANA-300
+		this.setLocation((Toolkit.getDefaultToolkit().getScreenSize().width-this.getSize().width)/2, (Toolkit.getDefaultToolkit().getScreenSize().height-this.getSize().height)/2);
 		panel.setLayout(new FlowLayout());
-		panel.setBackground(Color.LIGHT_GRAY);
+		//panel.setBackground(Color.LIGHT_GRAY);
 		
 		addWindowListener(
 			new WindowAdapter() {	
@@ -83,7 +76,7 @@ public class PrePartida extends JFrame implements MouseListener, VentanaControla
 		
 				
 		b_elegir_circuito = creador.crearBoton("Elegir Circuito", "Permite seleccion de circuito", this);
-		b_elegir_circuito.setEnabled(conexion.getID()==1); // Quien tenga ID = 1 será quien pueda seleccionar circuito.
+		b_elegir_circuito.setEnabled(Conexion.getConexion().getID()==1); // Quien tenga ID = 1 será quien pueda seleccionar circuito.
 		
 		JButton b_opciones = creador.crearBoton("Opciones", "Permite configuracion", this);
 		
@@ -104,11 +97,8 @@ public class PrePartida extends JFrame implements MouseListener, VentanaControla
 		
 		setVisible(true); // Se hace visible la ventana.
 		
-//		PrePartida.conexion = conexion;
-//		PrePartida.prePartida = this;
-//		PrePartida.presentacion = presentacion;
-		
 		setEstado(" Conexión establecida con éxito.", Font.PLAIN); // Crear instancia de PrePartida implica que se ha establecido la conexión.
+		
 	}
 	
 	public void setSonidoHabilitado(boolean s){
@@ -139,18 +129,16 @@ public class PrePartida extends JFrame implements MouseListener, VentanaControla
         if (!b_inicio.isEnabled()) return;
         
 		// Quien tiene el ID = 1, es quien selecciona circuito y por tanto, quien indica cuando se habilita el botón Inicio en el host remoto.
-		if (conexion.getID()==1)
+		if (Conexion.getConexion().getID()==1)
 			try{ventanaRemota.setInicioHabilitado(true);}catch(Exception e){e.printStackTrace();}
         
         this.dispose();
         
-        try { 
-			Partida partida = new Partida(this.circuitoSeleccionado.getPath(), conexion, this);
-			partida.jugar();
-			this.dispose();
-		} catch (Exception ex) {
-			
-		}
+        
+		Partida partida = new Partida(this.circuitoSeleccionado.getPath(), this);
+		partida.jugar();
+		this.dispose();
+		
 	}
         
 	
@@ -166,7 +154,7 @@ public class PrePartida extends JFrame implements MouseListener, VentanaControla
 	public void setCircuitoSeleccionado(File circuitoSeleccionado){
 		// SE PUEDE EVITAR EL PROPIO PORQUE SIEMPRE SELECCIONO UN CIRCUITO PROPIO.
 		try {
-			conexion.enviarAHostRemoto(circuitoSeleccionado.getPath(), NOMBRE_CIRCUITO_TEMPORAL);				
+			Conexion.getConexion().enviarAHostRemoto(circuitoSeleccionado.getPath(), NOMBRE_CIRCUITO_TEMPORAL);				
 			try {copiarArchivo(circuitoSeleccionado.getPath(), NOMBRE_CIRCUITO_TEMPORAL);}catch(Exception e){e.printStackTrace();}
 		} catch (IOException ex) {
 			System.err.println("Error al intentar copiar en el método de Conexion copiarDeHostRemoto.");
@@ -180,7 +168,7 @@ public class PrePartida extends JFrame implements MouseListener, VentanaControla
     // Método invocado cuando se hace click en el botón Elegir Circuito.
 	public void responderElegirCircuito() {
 		if (this.b_elegir_circuito.isEnabled()){
-			this.escenografia = new Escenografia(prePartida);
+			Escenografia.getEscenografia().setVisible(true);
 			this.dispose();
 		}
 	}
@@ -188,18 +176,13 @@ public class PrePartida extends JFrame implements MouseListener, VentanaControla
 	public void responderOpciones(){
 		//configurar sonido y nombre del jugador
 		this.dispose();
-		this.configurador = new Configurador(prePartida);
-		
+		Configurador.getConfigurador().setVisible(true);
 	}
 	// Método invocado cuando se hace click en el botón Salida.
     public void responderSalida(){
 		System.exit(0);
 	}
 	
-	public static PrePartida getPrePartida() {
-		return prePartida;
-
-	}
 	// Método que responder al evento click sobre la ventana de la instancia de PrePartida.
 	public void mouseClicked(MouseEvent e) {
 		try {

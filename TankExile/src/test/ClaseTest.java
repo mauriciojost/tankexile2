@@ -59,8 +59,8 @@ public class ClaseTest extends Canvas{
 
 		try{Conexion.getConexion().conectar(null);}catch(Exception e){e.printStackTrace();}
 		Conexion.getConexion().setTanquePropio(tanque);
-		Conexion.getConexion().setTanqueLocalOponente(otroTanque);
-		Conexion.getConexion().bindearTanqueLocalOponente();
+		//Conexion.getConexion().setTanqueLocalOponente();
+		Conexion.getConexion().bindearTanqueLocalOponente(otroTanque);
 		try{Conexion.getConexion().ponerADisposicionTanqueRemoto();}catch(Exception e){e.printStackTrace();}
 		mostrar("Comunicación establecida con éxito.");
 		
@@ -118,7 +118,7 @@ public class ClaseTest extends Canvas{
 		tanque.setX(0); // Se fija la posición del tanque principal para poder verlo.
 		tanque.setY(0);
 		otroTanque.actuarResumido();
-		muro.deterioro(1*Muro.UNIDAD_DE_MAGNITUD); // El muro es deteriorado.
+		//muro.deterioro(1*Muro.UNIDAD_DE_MAGNITUD); // El muro es deteriorado.
 		//tanque.choque(false); // Es indicado al tanque que se ha producido un choque, para visualizar su comportamiento.
 
 	}

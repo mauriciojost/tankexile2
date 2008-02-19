@@ -5,6 +5,7 @@ import paquete.*;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.Toolkit;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -18,15 +19,15 @@ import javax.swing.JTextField;
 
 
 public class Configurador extends JFrame implements MouseListener {
-	private PrePartida prePartida;
+	
 	private JTextField campo_nick_propio;
 	private JButton evento;
+	private static Configurador configurador = null;
 	// Constructor de la clase.
-	public Configurador(PrePartida prePartida){
+	private Configurador(){
 		super("TankExile - Opciones");
-		this.prePartida = prePartida;
-		setBounds(prePartida.getX(),prePartida.getY(),Finals.ANCHO_VENTANA-250,200); // Reajusta tamaño de la ventana, sin modificar su posición.
-
+		setBounds(PrePartida.getPrePartida().getX(),PrePartida.getPrePartida().getY(),Finals.ANCHO_VENTANA-250,200); // Reajusta tamaño de la ventana, sin modificar su posición.
+		configurador = this;
 		setResizable(false); // No se permite dar nuevo tamaño a la ventana.
 		
 		JPanel panel = (JPanel)getContentPane(); // Panel donde se grafican los objetos (bloques)que componen el escenario y los tanques que representan a cada jugador.
@@ -60,33 +61,42 @@ public class Configurador extends JFrame implements MouseListener {
 		//campo_nick_propio.setFocusable(true);
 		//campo_nick_propio.requestFocus();
 		campo_nick_propio.requestFocusInWindow();
+		this.setLocation((Toolkit.getDefaultToolkit().getScreenSize().width-this.getSize().width)/2, (Toolkit.getDefaultToolkit().getScreenSize().height-this.getSize().height)/2);
 	}
+	
+	public static Configurador getConfigurador(){
+		if (configurador==null){
+			configurador = new Configurador();
+		}
+		return configurador;
+	}
+	
 	// Método invocado cuando se hace click sobre el botón Sonido.
 	public void responderSonido(){
 		evento.setText("Mudo");
 		evento.setToolTipText("Deshabilita el sonido");
-		prePartida.setSonidoHabilitado(true);
+		PrePartida.getPrePartida().setSonidoHabilitado(true);
 	}
 	// Método invocado cuando se hace click sobre el botón Mudo.
 	public void responderMudo(){
 		evento.setText("Sonido");
 		evento.setToolTipText("Habilita el sonido");
-		prePartida.setSonidoHabilitado(false);
+		PrePartida.getPrePartida().setSonidoHabilitado(false);
 	}
 	// Método invocado cuando se hace click sobre el botón Aceptar.
 	public void responderAceptar(){
 		this.dispose();
-		prePartida.setLocation(this.getX(), this.getY());
-		if (prePartida.getSonidoHabilitado()) 
-			prePartida.setEstado("Sonido habilitado.   Nick: "+campo_nick_propio.getText(),Font.PLAIN);
+		PrePartida.getPrePartida().setLocation(this.getX(), this.getY());
+		if (PrePartida.getPrePartida().getSonidoHabilitado()) 
+			PrePartida.getPrePartida().setEstado("Sonido habilitado.   Nick: "+campo_nick_propio.getText(),Font.PLAIN);
 		else 
-			prePartida.setEstado("Sonido deshabilitado.   Nick: "+campo_nick_propio.getText(),Font.PLAIN);
+			PrePartida.getPrePartida().setEstado("Sonido deshabilitado.   Nick: "+campo_nick_propio.getText(),Font.PLAIN);
 		
-		prePartida.setVisible(true);
+		PrePartida.getPrePartida().setVisible(true);
 	}
 	// Método que responder al evento click sobre la ventana de la instancia de Configurador.
 	public void mouseClicked(MouseEvent e) {
-		prePartida.setNickPropio(campo_nick_propio.getText()); 
+		PrePartida.getPrePartida().setNickPropio(campo_nick_propio.getText()); 
 		try { 
 			evento = ((JButton)e.getSource());
 			String nombre = new String(((JButton)e.getSource()).getText());

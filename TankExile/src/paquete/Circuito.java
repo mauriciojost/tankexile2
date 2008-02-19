@@ -13,11 +13,13 @@ public class Circuito implements CircuitoControlable {
 	//private Bloque matrizDeBloques[][] = new Bloque [Finals.BLOQUES_NUM][Finals.BLOQUES_NUM]; // Matriz que contiene los elementos Bloque que son mapeados en la pantalla.
 	private ArrayList<Bloque> bloques = new ArrayList<Bloque>();
 	private ArrayList<Bola> bolas = new ArrayList<Bola>();
+	ArrayList<Bloque> elementosChocados = new ArrayList<Bloque>(); // Colección usada para mantener los elementos chocados, sin perder algún evento.
 	
 	private Meta metas[] = new Meta[2];
 	private Conexion conexion;
 	private Tanque tanqueLocal;
 	private Tanque tanqueOponente;
+	private String nickPropio;
 	
 	// Constructor de la clase.
 	public Circuito(String nombreCircuitoTXT){
@@ -40,10 +42,9 @@ public class Circuito implements CircuitoControlable {
 						ex.printStackTrace();
 						System.exit(-1);
 					}
-					if ((i==Finals.BLOQUES_NUM/2)&&(j==Finals.BLOQUES_NUM/2)){bloque=null;}
-					if ((i==Finals.BLOQUES_NUM/2+1)&&(j==Finals.BLOQUES_NUM/2)){bloque=null;}
-					if ((i==Finals.BLOQUES_NUM/2)&&(j==Finals.BLOQUES_NUM/2+1)){bloque=null;}
-					if ((i==Finals.BLOQUES_NUM/2+1)&&(j==Finals.BLOQUES_NUM/2+1)){bloque=null;}
+					if ((i==Finals.BLOQUES_NUM/2)&&(j==Finals.BLOQUES_NUM/2)&&(!(bloque instanceof Meta))){
+							bloque = null;
+					}
 				}
 				this.agregarBloque(bloque); // Es agregado el bloque leído al circuito.
 				
@@ -120,16 +121,22 @@ public class Circuito implements CircuitoControlable {
 	// Indica además la llegada a la meta.
 	// Método que se encarga de mantener la coherencia entre el circuito y su tanque local.
 	public void actuar(){
-		Rectangle tanqueRec = tanqueLocal.getBounds();
-		Rectangle tanqueRec2 = this.tanqueOponente.getBounds();
-		
 		for(int i=0; i<bloques.size();i++){
 			Bloque bloque = (Bloque)bloques.get(i);
-			if (tanqueRec.intersects(bloque.getBounds())){
-				tanqueLocal.eventoChoque(bloque);
-				bloque.eventoChoque(tanqueLocal);
+			if (tanqueLocal.getBounds().intersects(bloque.getBounds())){
+				elementosChocados.add(bloque);
 			}	
 		}
+		
+		Iterator iterador = elementosChocados.iterator();
+		while(iterador.hasNext()){
+			Bloque bloque = (Bloque)iterador.next();
+			bloque.eventoChoque(tanqueLocal);
+			tanqueLocal.eventoChoque(bloque);
+			iterador.remove();
+		}
+		
+		
 		
 		for (int j=0; j<bolas.size();j++){
 			Bola bola = (Bola)bolas.get(j);
@@ -144,12 +151,13 @@ public class Circuito implements CircuitoControlable {
 		
 		for(int i=0; i<bolas.size();i++){
 			Bola bola = (Bola)bolas.get(i);
-			if (tanqueRec.intersects(bola.getBounds())){
+			if (tanqueLocal.getBounds().intersects(bola.getBounds())){
 				tanqueLocal.eventoChoque(bola);
 				bola.eventoChoque(tanqueLocal);
 			}	
 		}
-		if (tanqueRec.intersects(tanqueRec2)){
+		
+		if (tanqueLocal.getBounds().intersects(tanqueOponente.getBounds())){
 			tanqueLocal.eventoChoque(tanqueOponente);
 			tanqueOponente.eventoChoque(tanqueLocal);
 		}
@@ -164,5 +172,12 @@ public class Circuito implements CircuitoControlable {
 	public void informarChoque(int parametrosDelChoque[]) throws RemoteException {
 		// El parámetro contiene en su primer elemento el índice relacionado al muro chocado. En su segundo elemento, la magnitud del choque.
 		((Muro)bloques.get((int)parametrosDelChoque[0])).deterioro((int)parametrosDelChoque[1]);
+	}
+
+	public void setNickOponente(String n){
+		nickPropio = n;
+	}
+	public String getNickOponente() throws RemoteException {
+		return nickPropio;
 	}
 }	
