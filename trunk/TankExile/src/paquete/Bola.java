@@ -1,34 +1,30 @@
-
 package paquete;
 
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.lang.reflect.InvocationTargetException;
 import java.rmi.RemoteException;
 import java.util.Random;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 
 // Clase que representa a cada bola del juego.
 public class Bola extends Thread implements BolaControlable, ElementoDeJuego{
 	private static int RANGO_VELOCIDAD = 1;
 	private static int MIN_VELOCIDAD = 1;
+	private static final int MARGEN = 1;
 	private static BufferedImage imagen[] = new BufferedImage[2];
-	private int x,y; // Posición.
 	
 	private boolean correrHilos; // Indicador de detención del hilo.
 	private Tanque tanquePropio;
 	private boolean buena; // Indicador de bola buena o mala.
-	private int vx = 2; // Velocidad de la bola.
-	private int vy = 2;
+	private Point velocidad = new Point(2,2);
+	private Rectangle bounds = new Rectangle(0,0,Finals.BLOQUE_LADO_LONG,Finals.BLOQUE_LADO_LONG);
 	private int currentFrame; // Indicador de la imagen a mostrar.
 	private boolean soyLocal = false; // Indicador de que la bola actual es controlada localmente, y no de forma remota.
 	private Random rnd = new Random(); // Generador de números pseudo aleatorios usados en el rebote de las bolas.
-	private Rectangle r_bola;
+	
 	// Contructor.
-	public Bola(boolean buena, Tanque tanquePropio) {
+	public Bola(boolean buena, Tanque tanquePropio, boolean soyLocal) {
+		this.soyLocal = soyLocal;
 		this.setName(buena?"Hilo bola buena":"Hilo bola mala");
 		this.buena = buena; this.tanquePropio = tanquePropio;
 		currentFrame = (buena?0:1);
@@ -45,72 +41,58 @@ public class Bola extends Thread implements BolaControlable, ElementoDeJuego{
 		this.setX((Finals.BLOQUES_NUM/2) * 20);
 		this.setY((Finals.BLOQUES_NUM/2) * 20);
 
-		/*///////////////////////////////////////
-		this.setX(rnd.nextInt(Finals.BLOQUES_NUM) * Finals.BLOQUE_LADO_LONG);
-			this.setY(rnd.nextInt(Finals.BLOQUES_NUM) * Finals.BLOQUE_LADO_LONG);
-			this.vx = (rnd.nextBoolean()?1:-1) * vx;
-			this.vy = (rnd.nextBoolean()?1:-1) * vy;
-		///////////////////////////////////////*/
-
 	}
 
 	public void pintar(Graphics2D g){
-		g.drawImage( imagen[currentFrame], x,y, null);
+		g.drawImage( imagen[currentFrame], bounds.x,bounds.y, null);
 	}
 
-	public int getX ( ) { return x; }
-	public int getY ( ) { return y; }
-	public void setX (int i) { x = i; }
-	public void setY (int i) { y = i; }
+	public int getX ( ) { return bounds.x; }
+	public int getY ( ) { return bounds.y; }
+	public void setX (int i) { bounds.x = i; }
+	public void setY (int i) { bounds.y = i; }
 	
 	public void stopHilo(){
 		correrHilos = false;
 	}
-	public void setLocal(){
-		soyLocal = true;
-	}
-	
+
 	@Override
 	public void run(){
-		try {Thread.sleep(1000);} catch (InterruptedException ex) {Logger.getLogger(Bola.class.getName()).log(Level.SEVERE, null, ex);}
+		try {Thread.sleep(Finals.ESPERA_INICIAL_BOLAS);} catch (InterruptedException ex) {ex.printStackTrace();}
 		if (soyLocal){
-			
-			this.setX(rnd.nextInt(Finals.BLOQUES_NUM) * Finals.BLOQUE_LADO_LONG);
-			this.setY(rnd.nextInt(Finals.BLOQUES_NUM) * Finals.BLOQUE_LADO_LONG);
-			this.vx = (rnd.nextBoolean()?1:-1) * vx;
-			this.vy = (rnd.nextBoolean()?1:-1) * vy;
-			
+			bounds.setLocation(rnd.nextInt(Finals.BLOQUES_NUM) * Finals.BLOQUE_LADO_LONG, rnd.nextInt(Finals.BLOQUES_NUM) * Finals.BLOQUE_LADO_LONG);
+			velocidad.setLocation((rnd.nextBoolean()?1:-1) * velocidad.x, (rnd.nextBoolean()?1:-1) * velocidad.y);
 			while(correrHilos){
 				actuar(); // En caso de ser local, la bola actua teniendo en cuenta rebotes. No así cuando es controlada de forma remota.
-				try {Thread.sleep(Finals.PERIODO_BOLA*2);} catch (InterruptedException ex) {Logger.getLogger(Bola.class.getName()).log(Level.SEVERE, null, ex);}
+				try {Thread.sleep(Finals.PERIODO_SINCRONIZACION_BOLAS);} catch (InterruptedException ex) {ex.printStackTrace();}
 			}
 		}else{
 			while(correrHilos){
 				actuarResumido();
-				try {Thread.sleep(Finals.PERIODO_BOLA*2);} catch (InterruptedException ex) {Logger.getLogger(Bola.class.getName()).log(Level.SEVERE, null, ex);}
+				try {Thread.sleep(Finals.PERIODO_SINCRONIZACION_BOLAS);} catch (InterruptedException ex) {ex.printStackTrace();}
 			}
 		}
 	}
 	
 	public void actuar() {
-		x+=vx;
-		y+=vy;
+		bounds.x+=velocidad.x;
+		bounds.y+=velocidad.y;
 		
 		// Es verificada la condición de rebote.
-		if (x < 0)
-			vx = (Bola.MIN_VELOCIDAD + rnd.nextInt(Bola.RANGO_VELOCIDAD));
-		if (x > Finals.ANCHO_VENTANA-Finals.BLOQUE_LADO_LONG)
-		  vx = -(Bola.MIN_VELOCIDAD + rnd.nextInt(Bola.RANGO_VELOCIDAD));
-		if (y < 0)
-			vy = (Bola.MIN_VELOCIDAD + rnd.nextInt(Bola.RANGO_VELOCIDAD));
-		if ( y > Finals.ALTO_VENTANA-Finals.BLOQUE_LADO_LONG) 
-			vy = -(Bola.MIN_VELOCIDAD + rnd.nextInt(Bola.RANGO_VELOCIDAD));
+		if (bounds.x < 0)
+			velocidad.x = (Bola.MIN_VELOCIDAD + rnd.nextInt(Bola.RANGO_VELOCIDAD));
+		if (bounds.x > Finals.ANCHO_VENTANA-Finals.BLOQUE_LADO_LONG)
+			velocidad.x = -(Bola.MIN_VELOCIDAD + rnd.nextInt(Bola.RANGO_VELOCIDAD));
+		if (bounds.y < 0)
+			velocidad.y = (Bola.MIN_VELOCIDAD + rnd.nextInt(Bola.RANGO_VELOCIDAD));
+		if (bounds.y > Finals.ALTO_VENTANA-Finals.BLOQUE_LADO_LONG) 
+			velocidad.y = -(Bola.MIN_VELOCIDAD + rnd.nextInt(Bola.RANGO_VELOCIDAD));
 	}
 	
 	public void actuarResumido(){
 		// Es sólo verificada la condición de choque con el tanque local.
 		
-		Rectangle bolaRec = new Rectangle(x,y,Finals.BLOQUE_LADO_LONG,Finals.BLOQUE_LADO_LONG);
+		Rectangle bolaRec = new Rectangle(bounds.x,bounds.y,Finals.BLOQUE_LADO_LONG,Finals.BLOQUE_LADO_LONG);
 		if (bolaRec.intersects(tanquePropio.getBounds()))
 			if (buena)
 				tanquePropio.setVelocidad(Tanque.MAX_VELOCIDAD); // La bola buena aumenta la velocidad.
@@ -118,12 +100,9 @@ public class Bola extends Thread implements BolaControlable, ElementoDeJuego{
 				tanquePropio.choque(true); // La bola mala produce el efecto de choque y establece la velocidad estandar.
 	}
 
-	public int getVx() { return vx; }
-	public void setVx(int i) {vx = i;}
-
 	public void setTodo(int x, int y) throws RemoteException {
-		this.x = x;
-		this.y = y;
+		bounds.x = x;
+		bounds.y = y;
 	}
 	
 	public boolean getBuena(){
@@ -131,73 +110,44 @@ public class Bola extends Thread implements BolaControlable, ElementoDeJuego{
 	}
 
 	public void eventoChoque(ElementoDeJuego contraQuien) {
-
-		try {
-			Class[] arregloDeClases = {contraQuien.getClass()};
-			Object[] arrayArgumentos = {contraQuien};
-			this.getClass().getMethod("eventoChoqueCon" + contraQuien.getNombre(), (Class[]) arregloDeClases).invoke(this, arrayArgumentos);
-		} catch (IllegalAccessException ex) {
-			Logger.getLogger(Bola.class.getName()).log(Level.SEVERE, null, ex);
-		} catch (IllegalArgumentException ex) {
-			Logger.getLogger(Bola.class.getName()).log(Level.SEVERE, null, ex);
-		} catch (InvocationTargetException ex) {
-			Logger.getLogger(Bola.class.getName()).log(Level.SEVERE, null, ex);
-		} catch (NoSuchMethodException ex) {
-			Logger.getLogger(Bola.class.getName()).log(Level.SEVERE, null, ex);
-		} catch (SecurityException ex) {
-			Logger.getLogger(Bola.class.getName()).log(Level.SEVERE, null, ex);
+		Class[] arregloDeClases = {contraQuien.getClass()};
+		Object[] arrayArgumentos = {contraQuien};
+		try {	
+			this.getClass().getMethod("eventoChoqueCon" + contraQuien.getClass().getSimpleName(), (Class[]) arregloDeClases).invoke(this, arrayArgumentos);
+		} catch (Exception ex) {
+			ex.printStackTrace();
 		}
-
 	}
 	
-	public void eventoChoqueConTanque(Tanque tanque){
-		System.out.println(this.getNombre() +"."+ "eventoChoqueConTanque(...)");
-
-	}
-	
+	public void eventoChoqueConTanque(Tanque tanque){}
+	public void eventoChoqueConMeta(Meta meta){}
 	public void eventoChoqueConMuro(Muro muro){
 		
-		System.out.println("+++++"+this.getNombre() +"."+ "eventoChoqueConMuro(...)");
-		int MARGEN = 1;
-		Rectangle arriba = new Rectangle(this.getX()+Finals.BLOQUE_LADO_LONG/2,this.getY()+MARGEN,1,1);
-		Rectangle abajo = new Rectangle(this.getX()+Finals.BLOQUE_LADO_LONG/2,this.getY()+Finals.BLOQUE_LADO_LONG-1-MARGEN,1,1);
-		Rectangle derecha = new Rectangle(this.getX()+Finals.BLOQUE_LADO_LONG-1-MARGEN,this.getY()+Finals.BLOQUE_LADO_LONG/2,1,1);
-		Rectangle izquierda = new Rectangle(this.getX()+MARGEN,this.getY()+Finals.BLOQUE_LADO_LONG/2,1,1);
+		Point arriba = new Point(bounds.x+Finals.BLOQUE_LADO_LONG/2,bounds.y+MARGEN);
+		Point abajo = new Point(bounds.x+Finals.BLOQUE_LADO_LONG/2,bounds.y+Finals.BLOQUE_LADO_LONG-MARGEN);
+		Point derecha = new Point(bounds.x+Finals.BLOQUE_LADO_LONG-MARGEN,bounds.y+Finals.BLOQUE_LADO_LONG/2);
+		Point izquierda = new Point(bounds.x+MARGEN,bounds.y+Finals.BLOQUE_LADO_LONG/2);
 		
-		
-		if (arriba.intersects(muro.getBounds())){	
-			vy = (Bola.MIN_VELOCIDAD + rnd.nextInt(Bola.RANGO_VELOCIDAD));
-			System.out.printf("Choque con rec arriba.");
+		if (muro.getBounds().contains(arriba)){	
+			velocidad.y = (Bola.MIN_VELOCIDAD + rnd.nextInt(Bola.RANGO_VELOCIDAD));
+			//System.out.printf("Choque con rec arriba.");
 		}
-		else if (abajo.intersects(muro.getBounds())){ // Subiendo y el muro está más arriba.
-			vy =-(Bola.MIN_VELOCIDAD + rnd.nextInt(Bola.RANGO_VELOCIDAD));
-			System.out.printf("Choque con rec abajo.");
+		else if (muro.getBounds().contains(abajo)){ // Subiendo y el muro está más arriba.
+			velocidad.y =-(Bola.MIN_VELOCIDAD + rnd.nextInt(Bola.RANGO_VELOCIDAD));
+			//System.out.printf("Choque con rec abajo.");
 		}
-		if (izquierda.intersects(muro.getBounds())){ // A la derecha y el muro está más a la derecha.
-			vx =(Bola.MIN_VELOCIDAD + rnd.nextInt(Bola.RANGO_VELOCIDAD));
-			System.out.printf("Choque con rec izquierda.");
+		if (muro.getBounds().contains(izquierda)){ // A la derecha y el muro está más a la derecha.
+			velocidad.x =(Bola.MIN_VELOCIDAD + rnd.nextInt(Bola.RANGO_VELOCIDAD));
+			//System.out.printf("Choque con rec izquierda.");
 		}
-		else if (derecha.intersects(muro.getBounds())){ // A la izquierda y el muro está más a la izquierda.
-			vx =-(Bola.MIN_VELOCIDAD + rnd.nextInt(Bola.RANGO_VELOCIDAD));
-			System.out.printf("Choque con rec derecha.");
+		else if (muro.getBounds().contains(derecha)){ // A la izquierda y el muro está más a la izquierda.
+			velocidad.x =-(Bola.MIN_VELOCIDAD + rnd.nextInt(Bola.RANGO_VELOCIDAD));
+			//System.out.printf("Choque con rec derecha.");
 		}
-		
-		
-		System.out.printf("+x;y=%d;%d   vx;vy=%d;%d++++", x, y, vx, vy);
-		System.out.printf("+x;y=%d;%d   vx;vy=%d;%d++++", x, y, vx, vy);
-		
-	}
-	
-	public void eventoChoqueConMeta(Meta meta){
-		System.out.println(this.getNombre() +"."+ "eventoChoqueConMeta(...)");
-	}
-
-	public String getNombre() {
-		return "Bola";
 
 	}
+
 	public Rectangle getBounds(){
-		return new Rectangle(x,y,Finals.BLOQUE_LADO_LONG, Finals.BLOQUE_LADO_LONG);
+		return bounds;
 	}
-	
 }

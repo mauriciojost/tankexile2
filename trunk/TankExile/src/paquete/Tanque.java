@@ -1,17 +1,12 @@
 package paquete;
 
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
+
+import java.awt.*;
 import java.awt.geom.AffineTransform;
-import java.awt.image.AffineTransformOp;
-import java.awt.image.BufferedImage;
-import java.lang.reflect.InvocationTargetException;
+import java.awt.image.*;
 import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import presentacion.Conexion;
-
 
 public class Tanque implements Controlable, ElementoDeJuego{
 	public static final int U_VELOCIDAD = 2; // Parámetro utilizado para determinar la gravedad de un choque según su velocidad.
@@ -24,8 +19,10 @@ public class Tanque implements Controlable, ElementoDeJuego{
 	private static final int PERIODO_MOVIMENTO = 1;
 	private final int SUB_PERIODO_CHOQUE = 5; // Duración de un sub período de choque.
 	private int contadorSubTramaChoque; // Contador auxiliar para la situación de choque.
-	private int vX; // Velocidad horizontal del tanque.
-	private int vY; // Velocidad vertical del tanque.
+	//private int vX; // Velocidad horizontal del tanque.
+	//private int vY; // Velocidad vertical del tanque.
+	private Rectangle bounds = new Rectangle(0,0,Finals.BLOQUE_LADO_LONG, Finals.BLOQUE_LADO_LONG);
+	private Point velocidad = new Point(0,0);
 	private int trancoTanque = Tanque.MIN_VELOCIDAD; // Tamaño del tranco de avance del tanque (unidad de avance).
 	private int temporizadorMovimento = 0; 
 
@@ -41,7 +38,7 @@ public class Tanque implements Controlable, ElementoDeJuego{
 	private int temporizadorChoque = 0; // Temporizador que permite limitar en tiempo los efectos del choque.
 	private int choqueTrama = 0; // Índice auxiliar del arreglo las imágenes del tanque.
 	
-    private int X, Y; // Coordenadas (en píxeles) del tanque.
+    //private int X, Y; // Coordenadas (en píxeles) del tanque.
     private static HashMap<Integer, BufferedImage> imagenes = new HashMap<Integer, BufferedImage>(); // Conjunto de imágenes del tanque, asociadas a una clave cada una mediante un HashMap.
 	private int id; // Identificador del tanque.
 
@@ -80,7 +77,7 @@ public class Tanque implements Controlable, ElementoDeJuego{
 	
 	// Método que pinta en pantalla la imagen que corresponde al tanque y a su estado.
     public void pintar(Graphics2D g){
-		g.drawImage((BufferedImage)imagenes.get(new Integer(direccion * 10000 + choqueTrama * 100+ movimientoTrama)), X,Y, null);
+		g.drawImage((BufferedImage)imagenes.get(new Integer(direccion * 10000 + choqueTrama * 100+ movimientoTrama)), bounds.x,bounds.y, null);
     }
     
 	// Método que retorna la dirección actual del tanque.
@@ -92,8 +89,6 @@ public class Tanque implements Controlable, ElementoDeJuego{
 	@SuppressWarnings("static-access")
 	public Tanque(int id) {
 		this.id = id;
-		
-		
 		// Carga de las imágenes estáticamente.
 		if (imagenes.isEmpty())
 			try{
@@ -162,8 +157,8 @@ public class Tanque implements Controlable, ElementoDeJuego{
 	
 	// Método de actuación del tanque.
 	public void actuar() {
-		X+=vX; // Actualización de la posición.
-		Y+=vY;
+		bounds.x+=velocidad.x; // Actualización de la posición.
+		bounds.y+=velocidad.y;
 		
 		// Efectos del estado de choque.
 		if (choque){
@@ -209,18 +204,18 @@ public class Tanque implements Controlable, ElementoDeJuego{
 	
 	// Método que actualiza las velocidades según se tengan o no ciertas teclas presionadas.
 	private void actualizarVelocidades(){
-		vX=0; vY=0; 
-		if (abajo)		vY = +trancoTanque;
-		if (arriba)		vY = -trancoTanque;
-		if (izquierda)	vX = -trancoTanque;
-		if (derecha)	vX = +trancoTanque;
+		velocidad.x=0; velocidad.y=0; 
+		if (abajo)		velocidad.y = +trancoTanque;
+		if (arriba)		velocidad.y = -trancoTanque;
+		if (izquierda)	velocidad.x = -trancoTanque;
+		if (derecha)	velocidad.x = +trancoTanque;
 	}
   
 	// Métodos básicos de posicionamiento.
-	public int getX(){return X;}
-	public int getY(){return Y;}
-	public void setX(int i){X=i;}
-	public void setY(int i){Y=i;}
+	public int getX(){return bounds.x;}
+	public int getY(){return bounds.y;}
+	public void setX(int i){bounds.x=i;}
+	public void setY(int i){bounds.y=i;}
 		
 	// Conjunto de métodos de respuesta al teclado.
 	public void irArriba(){
@@ -307,8 +302,8 @@ public class Tanque implements Controlable, ElementoDeJuego{
 	}
 	
 	public void setTodo(int x, int y, int direccion, int movimientoTrama, int choqueTrama, boolean moviendose){
-		this.X = x;
-		this.Y = y;
+		bounds.x = x;
+		bounds.y = y;
 		this.moviendose = moviendose;
 		this.direccion = direccion;
 		this.movimientoTrama = movimientoTrama;
@@ -332,30 +327,22 @@ public class Tanque implements Controlable, ElementoDeJuego{
 	}
 	
 	public Rectangle getBounds(){
-		return new Rectangle(this.X, this.Y, Finals.BLOQUE_LADO_LONG, Finals.BLOQUE_LADO_LONG);
+		return bounds;
 	}
 
 	public void eventoChoque(ElementoDeJuego contraQuien) {
 		try {
 			Class[] arregloDeClases = {contraQuien.getClass()};
 			Object[] arrayArgumentos = {contraQuien};
-			this.getClass().getMethod("eventoChoqueCon" + contraQuien.getNombre(), (Class[]) arregloDeClases).invoke(this, arrayArgumentos);
-		} catch (IllegalAccessException ex) {
-			Logger.getLogger(Tanque.class.getName()).log(Level.SEVERE, null, ex);
-		} catch (IllegalArgumentException ex) {
-			Logger.getLogger(Tanque.class.getName()).log(Level.SEVERE, null, ex);
-		} catch (InvocationTargetException ex) {
-			Logger.getLogger(Tanque.class.getName()).log(Level.SEVERE, null, ex);
-		} catch (NoSuchMethodException ex) {
-			Logger.getLogger(Tanque.class.getName()).log(Level.SEVERE, null, ex);
-		} catch (SecurityException ex) {
-			Logger.getLogger(Tanque.class.getName()).log(Level.SEVERE, null, ex);
+			this.getClass().getMethod("eventoChoqueCon" + contraQuien.getClass().getSimpleName(), (Class[]) arregloDeClases).invoke(this, arrayArgumentos);
+		} catch (Exception ex) {
+			ex.printStackTrace();
 		}
 		
 	}
 	
 	public void eventoChoqueConTanque(Tanque tanque){
-		System.out.println(this.getNombre() +"."+ "eventoChoqueConTanque(...)");
+		System.out.println(this.getClass().getSimpleName() +"."+ "eventoChoqueConTanque(...)");
 		
 		switch (this.getDireccion()){
 				// Según la dirección del tanque, este es llevado hacia atrás hasta la condición de no solapamiento.
@@ -380,8 +367,7 @@ public class Tanque implements Controlable, ElementoDeJuego{
 
 	}
 	public void eventoChoqueConMuro(Muro muro){
-		System.out.println(this.getNombre() +"."+ "eventoChoqueConMuro(...)");
-		
+		System.out.println(this.getClass().getSimpleName() +"."+ "eventoChoqueConMuro(...)");
 		
 		switch (this.getDireccion()){
 				// Según la dirección del tanque, este es llevado hacia atrás hasta la condición de no solapamiento.
@@ -403,21 +389,15 @@ public class Tanque implements Controlable, ElementoDeJuego{
 		trancoTanque = Tanque.MIN_VELOCIDAD; // Modifica velocidad despues de comprobar el tipo de choque.
 		contadorSubTramaChoque=0;
 		Conexion.getConexion().indicarChoque();
-
 	}
-	public void eventoChoqueConMeta(Meta meta){
-		System.out.println(this.getNombre() +"."+ "eventoChoqueConMeta(...)");
-	}
+	public void eventoChoqueConMeta(Meta meta){}
+	
 	public void eventoChoqueConBola(Bola bola){
-		System.out.println(this.getNombre() +"."+ "eventoChoqueConBola(...)");
 		if(bola.getBuena())
 			setVelocidad(Tanque.MAX_VELOCIDAD);
 		else
 			choque(true);
 	}
-	
-		
-	public String getNombre(){
-		return "Tanque";
-	}
 }	
+
+

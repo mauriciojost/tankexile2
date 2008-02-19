@@ -2,6 +2,7 @@ package test;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import paquete.Finals;
 import presentacion.Conexion;
@@ -9,7 +10,7 @@ import presentacion.PrePartida;
 import presentacion.VentanaControlable;
 
 public class VentanaPresentacion extends javax.swing.JFrame {
-	private static VentanaPresentacion presentacion;
+	private static JFrame presentacion;
 	private static Conexion conexion;
 	private static PrePartida prePartida;
 	private VentanaControlable ventanaRemota;
@@ -30,7 +31,7 @@ public class VentanaPresentacion extends javax.swing.JFrame {
 		this.etiquetaEstado.setText(estado);
 	}
 	
-	public static VentanaPresentacion getPresentacion() {
+	public static JFrame getPresentacion() {
 		return presentacion;
 	}
 	
@@ -58,10 +59,11 @@ public class VentanaPresentacion extends javax.swing.JFrame {
         setTitle("TankExile - Presentación");
         setName("Ventana"); // NOI18N
         setResizable(false);
-        setUndecorated(true);
 
+        imagenTankExile.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         imagenTankExile.setIcon(new javax.swing.ImageIcon(getClass().getResource("/res/tank.JPG"))); // NOI18N
         imagenTankExile.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        imagenTankExile.setFocusable(false);
 
         botonConectar.setLabel("Conectar");
         botonConectar.addActionListener(new java.awt.event.ActionListener() {
@@ -131,16 +133,17 @@ public class VentanaPresentacion extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(separadorEstado, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 416, Short.MAX_VALUE)
-                    .addComponent(separador, javax.swing.GroupLayout.DEFAULT_SIZE, 416, Short.MAX_VALUE)
-                    .addComponent(imagenTankExile, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(sepadadorRed, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(botonConectar, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(botonCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addComponent(etiquetaEstado, javax.swing.GroupLayout.Alignment.TRAILING))
+                    .addComponent(etiquetaEstado, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(imagenTankExile, javax.swing.GroupLayout.PREFERRED_SIZE, 417, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addComponent(separadorEstado, javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(separador, javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                            .addComponent(sepadadorRed, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(botonConectar, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(botonCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -172,8 +175,7 @@ public class VentanaPresentacion extends javax.swing.JFrame {
 }//GEN-LAST:event_iPOponenteActionPerformed
 
 	private void botonConectarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonConectarActionPerformed
-		
-		
+
 		this.conexion = Conexion.getConexion();
 		// Hilo que realiza los intenetos de conexión
 		Runnable hilito = new Runnable(){

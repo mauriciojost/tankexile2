@@ -24,7 +24,7 @@ import javax.swing.JTextField;
 
 public class Presentacion extends JFrame implements MouseListener {
 	private PrePartida prePartida;
-    private static Presentacion presentacion1;
+    private static JFrame presentacion;
 	private JTextField area_ip;
 	private JTextField estado;
 	private Conexion conexion;
@@ -116,7 +116,7 @@ public class Presentacion extends JFrame implements MouseListener {
 		panel.add(estado);
 		
 		setVisible(true);
-		presentacion1 = this;
+		presentacion = this;
 		// Se establece el foco sobre el area de texto donde se ingresa el IP oponente.
 		this.area_ip.requestFocus();
 		this.area_ip.selectAll();
@@ -130,8 +130,8 @@ public class Presentacion extends JFrame implements MouseListener {
 		this.estado.setText(estado);
 	}
 
-	public static Presentacion getPresentacion() {
-		return presentacion1;
+	public static JFrame getPresentacion() {
+		return presentacion;
 	}
 	// Método invocado cuando se presiona click sobre el boton Conectar.
 	public void responderConectar(){
@@ -175,8 +175,7 @@ public class Presentacion extends JFrame implements MouseListener {
 				conexion.establecerIDs();
 				dispose();
 				
-				prePartida = PrePartida.getPrePartida(presentacion1, conexion); // Se crea una instancia de la clase PrePartida.
-				prePartida = PrePartida.getPrePartida(presentacion1, conexion); // Se crea una instancia de la clase PrePartida.
+				prePartida = PrePartida.getPrePartida(presentacion, conexion); // Se crea una instancia de la clase PrePartida.
 				
 				conexion.setVentanaRemota(prePartida);
 				conexion.bindearMiVentana(); // Pone a disposición la ventana de PrePartida para el host remoto (permite controlar el botón Inicio).
