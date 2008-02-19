@@ -65,8 +65,7 @@ public class TestBola  extends Canvas{
 		tanque.setX(100); tanque.setY(100);
 		jugador = new Jugador(tanque);
 		this.addKeyListener(jugador);
-		bola = new Bola(true,tanque);
-		bola.setLocal();
+		bola = new Bola(true,tanque,true);
 		
 		otroTanque = new Tanque(0);
 		try{Conexion.getConexion().conectar(null);}catch(Exception e){e.printStackTrace();}

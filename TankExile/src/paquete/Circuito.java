@@ -1,7 +1,5 @@
 package paquete;
-import java.awt.Font;
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.io.IOException;
 
 // Clase que contiene en sí la información sobre los elementos que componen el circuito de juego.
@@ -98,7 +96,6 @@ public class Circuito implements CircuitoControlable {
 	
 	// Método llamado remotamente para indicar que el jugador remoto ya ha llegado a su meta.
 	public void oponenteLlego() throws RemoteException{
-		
 		(new Thread(
 			new Runnable(){
 				public void run(){
@@ -107,13 +104,11 @@ public class Circuito implements CircuitoControlable {
 						PrePartida.getPrePartida().setEstado("", Font.BOLD);
 						try{Thread.sleep(300);}catch(Exception e){e.printStackTrace();}
 						PrePartida.getPrePartida().setEstado(mensaje, Font.BOLD);
-						try{Thread.sleep(300);}catch(Exception e){e.printStackTrace();}
-						
+						try{Thread.sleep(300);}catch(Exception e){e.printStackTrace();}				
 					}
 				}
 			}
 		)).start();
-		
 		PrePartida.getPrePartida().setVisible(true);
 		Partida.getPartida().finalizar();
 		//JOptionPane.showMessageDialog(null, "Fin del juego. Usted ha perdido...");
@@ -125,8 +120,6 @@ public class Circuito implements CircuitoControlable {
 	// Indica además la llegada a la meta.
 	// Método que se encarga de mantener la coherencia entre el circuito y su tanque local.
 	public void actuar(){
-		//boolean hayChoque = false; // Variable booleana que indica la existencia o no de choque con al menos un muro.
-		//Meta miMeta = metas[Math.abs((tanqueLocal.getID()+1)%2)];
 		Rectangle tanqueRec = tanqueLocal.getBounds();
 		Rectangle tanqueRec2 = this.tanqueOponente.getBounds();
 		
@@ -137,6 +130,7 @@ public class Circuito implements CircuitoControlable {
 				bloque.eventoChoque(tanqueLocal);
 			}	
 		}
+		
 		for (int j=0; j<bolas.size();j++){
 			Bola bola = (Bola)bolas.get(j);
 			for(int i=0; i<bloques.size();i++){
@@ -159,18 +153,6 @@ public class Circuito implements CircuitoControlable {
 			tanqueLocal.eventoChoque(tanqueOponente);
 			tanqueOponente.eventoChoque(tanqueLocal);
 		}
-	}
-	
-	// Método que indica mediante un booleano si ha existido un solapamiento con los muros del circuito, por parte del tanque indicado como parámetro.
-	private boolean solapamiento(Tanque tanque){
-		Iterator iterador = bloques.iterator();
-		Rectangle tanqueRec = tanque.getBounds();
-		while(iterador.hasNext()){
-			if (tanqueRec.intersects(((Bloque)iterador.next()).getBounds())){
-				return true;
-			}
-		}
-		return false;
 	}
 	
 	// Método que retorna el objeto de la clase Meta solicitado.

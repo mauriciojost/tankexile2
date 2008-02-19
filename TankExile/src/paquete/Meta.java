@@ -36,10 +36,6 @@ public class Meta extends Bloque{
 		return numeroDeMeta;
 	}
 	
-	public String getNombre() {
-		return "Meta";
-	}
-	
 	public void eventoChoqueConTanque(Tanque tanque){
 		if (this.numeroDeMeta == otroID(tanque.getID())){
 			PrePartida.getPrePartida().setEstado("Fin del juego. Usted ha ganado...", Font.BOLD);
@@ -53,7 +49,7 @@ public class Meta extends Bloque{
 	}
 	
 	public void eventoChoqueConBola(Bola bola){
-		System.out.println(this.getNombre() + ": eventoChoqueConBola(...)");
+		//System.out.println(this.getNombre() + ": eventoChoqueConBola(...)");
 	}
 	
 }

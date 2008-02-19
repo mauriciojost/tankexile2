@@ -258,7 +258,7 @@ public class Conexion implements Conectable{
 				while(correrHilos){
 					try{
 						manejarTanqueRemoto();
-						Thread.sleep(Finals.PERIODO);
+						Thread.sleep(Finals.PERIODO_SINCRONIZACION_TANQUES);
 					}catch(InterruptedException ex){
 						Logger.getLogger(Conexion.class.getName()).log(Level.SEVERE, null, ex);
 					}

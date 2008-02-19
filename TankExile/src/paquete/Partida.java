@@ -3,16 +3,10 @@ package paquete;
 import java.rmi.RemoteException;
 import presentacion.*;
 import presentacion.Conexion;
-import java.awt.Canvas;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics2D;
-import java.awt.GridLayout;
+import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferStrategy;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
@@ -107,7 +101,7 @@ public class Partida extends Canvas implements Runnable{
 			conexion.ponerADisposicionTanqueRemoto(); // La conexión es establecida.
 			}catch(Exception e){
 				System.out.println("Intento fallido para obtener tanque remoto. Intentando de nuevo...");
-				try {Thread.sleep(Finals.ESPERA_CONEXION);} catch (InterruptedException ex) {Logger.getLogger(Partida.class.getName()).log(Level.SEVERE, null, ex);}
+				try {Thread.sleep(Finals.ESPERA_CONEXION);} catch (InterruptedException ex) {ex.printStackTrace();}
 			}
 		}while(!conexion.tanqueListo());
 
@@ -125,8 +119,8 @@ public class Partida extends Canvas implements Runnable{
 		hiloTanqueRemoto.start(); // El hilo que controla al tanque remoto es iniciado.
 		
 		// Creación y bindeo de las bolas.
-		bolaBuena = new Bola(true,tanquePropio);
-		bolaMala = new Bola(false,tanquePropio);
+		bolaBuena = new Bola(true,tanquePropio,this.yoID == 1);
+		bolaMala = new Bola(false,tanquePropio,this.yoID == 1);
 		circuito.agregarBola(bolaBuena);
 		circuito.agregarBola(bolaMala);
 		
@@ -136,15 +130,12 @@ public class Partida extends Canvas implements Runnable{
 		
 		
 		if (this.yoID == 1){
-			// Se establece la responsabilidad de las bolas según la localidad o no del host.
-			bolaBuena.setLocal();
-			bolaMala.setLocal();
-			
+			// Se establece la responsabilidad de las bolas según la localidad o no del host.	
 			do{
 				try{
 					conexion.ponerADisposicionBolasRemotas(); // Se llama a las remotas en caso de hacer control de bolas localmente, para controlarlas.
 				}catch(Exception e){
-					try { Thread.sleep(Finals.ESPERA_CONEXION); } catch (InterruptedException ex) {Logger.getLogger(Partida.class.getName()).log(Level.SEVERE, null, ex);}
+					try { Thread.sleep(Finals.ESPERA_CONEXION); } catch (InterruptedException ex) {ex.printStackTrace();}
 					System.out.println("Intento fallido por obtener bolas remotas... Reintentando...");
 				}
 			}while(!conexion.bolasListo());
@@ -167,7 +158,7 @@ public class Partida extends Canvas implements Runnable{
 			try{
 				conexion.ponerADisposicionCircuitoRemoto(); // El circuito remoto es puesto a disposición del host local.
 			}catch(Exception e){
-				try { Thread.sleep(Finals.ESPERA_CONEXION); } catch (InterruptedException ex) {Logger.getLogger(Partida.class.getName()).log(Level.SEVERE, null, ex);}
+				try { Thread.sleep(Finals.ESPERA_CONEXION); } catch (InterruptedException ex) {ex.printStackTrace();}
 				System.out.println("Intento fallido por obtener circuito remoto... Reintentando...");
 			}
 		}while(!conexion.circuitoListo());
@@ -190,7 +181,7 @@ public class Partida extends Canvas implements Runnable{
 	// Método que retorna la ventana de prePartida, y según sea la localidad o no del host, habilita el botón de inicio.
 	public PrePartida getPrePartida(){
 		if (conexion.getID()==0){
-			try {prePartida.setInicioHabilitado(false);} catch (RemoteException ex) {Logger.getLogger(Partida.class.getName()).log(Level.SEVERE, null, ex);}
+			try {prePartida.setInicioHabilitado(false);} catch (RemoteException ex) {ex.printStackTrace();}
 		}
 		return prePartida;
 	}
@@ -202,10 +193,7 @@ public class Partida extends Canvas implements Runnable{
 		// Establecimiento del fondo.
 		g.setColor(Color.WHITE);
 		g.fillRect(0,0,this.getWidth(),this.getHeight());
-		
-		
-		
-		
+			
 		// Pintado del circuito.
 		circuito.pintar(g);
 		bolaBuena.pintar(g);
@@ -270,7 +258,7 @@ public class Partida extends Canvas implements Runnable{
 			this.bolaMala.stopHilo();
 			ventana.dispose(); // Se da de baja esta ventana.
 		} catch (Throwable ex) {
-			Logger.getLogger(Partida.class.getName()).log(Level.SEVERE, null, ex);
+			ex.printStackTrace();
 		}
 		conexion.desbindearTodo(false); // Se hace unbind de todo aquello bindeado.
 	}

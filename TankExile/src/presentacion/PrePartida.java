@@ -1,36 +1,18 @@
 package presentacion;
 
-
-import java.awt.event.MouseEvent;
 import java.rmi.RemoteException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import paquete.*;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.GridLayout;
-import java.awt.event.MouseListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.*;
 import java.nio.channels.FileChannel;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import test.VentanaPresentacion;
+
+import javax.swing.*;
+
 
 public class PrePartida extends JFrame implements MouseListener, VentanaControlable{
 	private final String NOMBRE_CIRCUITO_TEMPORAL = "temporal.tmp";
-	private static Presentacion presentacion;
-	private static VentanaPresentacion presentacion1;
+	private static JFrame presentacion;
 
 	private static VentanaControlable ventanaRemota;
 	private static Conexion conexion;
@@ -52,7 +34,7 @@ public class PrePartida extends JFrame implements MouseListener, VentanaControla
     private JButton b_elegir_circuito;
 	
 	// Método que permite tener referencias, a la instancia de Presentacion y de Conexión, por parte de la instancia de PrePartida.
-	public static PrePartida getPrePartida(Presentacion presentacion, Conexion conexion){
+	public static PrePartida getPrePartida(JFrame presentacion, Conexion conexion){
 		PrePartida.conexion = conexion;
 		PrePartida.presentacion = presentacion;
 		if (prePartida == null){
@@ -61,21 +43,13 @@ public class PrePartida extends JFrame implements MouseListener, VentanaControla
 		return prePartida;
 	}
 	
-	public static PrePartida getPrePartida(VentanaPresentacion presentacion, Conexion conexion){
-		PrePartida.conexion = conexion;
-		PrePartida.presentacion1 = presentacion;
-		if (prePartida == null){
-			//prePartida = new PrePartida(presentacion); // En caso de no existir instancia, la crea.
-		}
-		return prePartida;
-	}
 	
 	public void setVentanaRemota(VentanaControlable ventanaRemota){
 		PrePartida.ventanaRemota = ventanaRemota;
 	}
 	
 	// Constructor de la clase.
-	private PrePartida(Presentacion presentacion){
+	private PrePartida(JFrame presentacion){
 		super("Tank Exile - Pre Partida");
 		
 	
@@ -143,6 +117,7 @@ public class PrePartida extends JFrame implements MouseListener, VentanaControla
 	
 	public boolean getSonidoHabilitado(){
 		return sonido_prepartida;
+		
 	}
 	
 	public void setNickPropio(String nick){
@@ -174,7 +149,7 @@ public class PrePartida extends JFrame implements MouseListener, VentanaControla
 			partida.jugar();
 			this.dispose();
 		} catch (Exception ex) {
-			Logger.getLogger(PrePartida.class.getName()).log(Level.SEVERE, null, ex);
+			
 		}
 	}
         
@@ -195,7 +170,6 @@ public class PrePartida extends JFrame implements MouseListener, VentanaControla
 			try {copiarArchivo(circuitoSeleccionado.getPath(), NOMBRE_CIRCUITO_TEMPORAL);}catch(Exception e){e.printStackTrace();}
 		} catch (IOException ex) {
 			System.err.println("Error al intentar copiar en el método de Conexion copiarDeHostRemoto.");
-			Logger.getLogger(Partida.class.getName()).log(Level.SEVERE, null, ex);
 		}	
 			
 		b_inicio.setEnabled(true); // Se habilita botón Inicio luego de haber seleccionado circuito. Se puede iniciar el juego.
@@ -234,7 +208,6 @@ public class PrePartida extends JFrame implements MouseListener, VentanaControla
 			this.getClass().getMethod("responder"+nombre, (Class[])null).invoke(this, (Object[])null);
 		} catch (Exception ex) {	
 			ex.printStackTrace();
-			Logger.getLogger(PrePartida.class.getName()).log(Level.SEVERE, null, ex);
 		}
 	}
 

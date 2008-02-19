@@ -14,6 +14,7 @@ public class Muro extends Bloque{
 	
 	public Muro(int x, int y){
 		super(x,y); // Constructor del bloque.
+		//System.out.println(this.getClass().getSimpleName());
 		try {
 			// Carga de las imágenes en la Clase (puesto que son las mismas para cada objeto de la misma).
 			for (int i = 0; i < NUMERO_DE_IMAGENES; i++){
@@ -38,10 +39,6 @@ public class Muro extends Bloque{
 		}
 	}
 
-	public String getNombre() {
-		return "Muro";
-	}
-	
 	public void eventoChoqueConTanque(Tanque tanque){
 		deterioro(tanque.getVelocidad()/Tanque.U_VELOCIDAD); // Se provoca en el muro indicado un deterioro.
 		Conexion.getConexion().choqueNuevoCircuitoLocal(this.getIndice(), tanque.getVelocidad());
@@ -49,7 +46,7 @@ public class Muro extends Bloque{
 	}
 	
 	public void eventoChoqueConBola(Bola bola){
-		System.out.println(this.getNombre() + ": eventoChoqueConBola(...)");
+		//System.out.println(this.getNombre() + ": eventoChoqueConBola(...)");
 
 	}
 }
