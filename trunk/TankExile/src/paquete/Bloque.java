@@ -40,13 +40,4 @@ public abstract class Bloque implements ElementoDeJuego, Imitable{
 		return bounds;
 	}
 	
-	public void imitar(Imitable objeto){
-		try {
-			Class[] arreglo = {objeto.getClass()};
-			//System.out.println(this.getClass().getSimpleName() +" llamó a imitar("+objeto.getClass().getSimpleName()+":"+ ((Bloque)objeto).getIndice()+"). Índice "+ indice);
-			this.getClass().getMethod("imitar", arreglo);
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-	}
 }
