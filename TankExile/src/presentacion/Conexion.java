@@ -192,18 +192,24 @@ public class Conexion implements Conectable{
 	}
 	
 	public void actualizar(){
-		Iterator iterador = clavesImitados.iterator();
-		while(iterador.hasNext()){
-				String clave = (String) iterador.next();
-				Imitable imitador = this.imitadoresRemotos.get(clave);
-			try {
-				imitador.imitar(imitables.get(clave));
-			} catch (RemoteException ex) {
-				ex.printStackTrace();
-				JOptionPane.showMessageDialog(null, "Se perdió la conexión.");
-				System.exit(-1);
-			}
-		}
+		Runnable a = new Runnable(){
+			public void run(){
+				Iterator iterador = clavesImitados.iterator();
+				while(iterador.hasNext()){
+					String clave = (String) iterador.next();
+					Imitable imitador = imitadoresRemotos.get(clave);
+					try {
+						imitador.imitar(imitables.get(clave));
+					} catch (RemoteException ex) {
+						ex.printStackTrace();
+						JOptionPane.showMessageDialog(null, "Se perdió la conexión.");
+						System.exit(-1);
+					}
+				}
+			
+			}	
+		};
+		(new Thread(a, "Hilo imitador")).start();
 	}
 	
 	public void ponerImitador(String clave, Imitable imitador){
