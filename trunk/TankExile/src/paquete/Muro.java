@@ -2,6 +2,7 @@ package paquete;
 
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.rmi.RemoteException;
 import javax.imageio.ImageIO;
 
 // Clase que representa a los muros en el circuito. 
@@ -32,7 +33,7 @@ public class Muro extends Bloque{
 	}
 	
 	// Método que realiza una variación en la imagen a mostrar, dando un efecto de deterioro en el bloque.
-	public void deterioro(int magnitud){
+	private void deterioro(int magnitud){
 		tramaActual = ( tramaActual + ( magnitud ) / Muro.UNIDAD_DE_MAGNITUD ); // Se toma la trama 1 del arreglo de imágenes.
 		if (tramaActual > (imagenes.length - 1)){
 			tramaActual = imagenes.length -1;
@@ -41,10 +42,21 @@ public class Muro extends Bloque{
 
 	public void eventoChoqueConTanque(Tanque tanque){
 		deterioro(tanque.getVelocidad()); // Se provoca en el muro indicado un deterioro.
-		Circuito.getCircuito().choqueNuevoCircuitoLocal(this.getIndice(), tanque.getVelocidad());
 	}
 	
 	public void eventoChoqueConBola(Bola bola){
 		//System.out.println(this.getNombre() + ": eventoChoqueConBola(...)");
+	}
+
+	public void imitar(Imitable objetoAImitar) throws RemoteException {
+		Muro muro = (Muro)objetoAImitar;
+		this.tramaActual = muro.getTramaActual();
+	}
+
+	public int getTramaActual(){
+		return this.tramaActual;
+	}
+	public Object[] getParametros() throws RemoteException {
+		throw new UnsupportedOperationException("Not supported yet.");
 	}
 }

@@ -3,6 +3,7 @@ package paquete;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.rmi.RemoteException;
 import javax.imageio.ImageIO;
 
 // Clase cuyos objetos son parte del circuito, cada uno es partida para un tanque y llegada para el otro.
@@ -11,6 +12,7 @@ import presentacion.PrePartida;
 public class Meta extends Bloque{
 	private static BufferedImage imagenes[] = new BufferedImage[2]; // Conjunto de imágenes asociadas a la clase Meta.
 	private int numeroDeMeta; // Atributo que representa el número de meta.
+	private boolean teGanaron = false;
 	
 	// Constructor de la clase.
 	public Meta(int x, int y, int numeroDeMeta){
@@ -26,6 +28,10 @@ public class Meta extends Bloque{
 		}
 	}
 	
+	public boolean getTeGanaron(){
+		return teGanaron;
+	}
+	
 	// Método de dibujo.
 	public void pintar(Graphics2D g) {
 		g.drawImage(imagenes[numeroDeMeta], super.getX(), super.getY(), null);
@@ -38,11 +44,8 @@ public class Meta extends Bloque{
 	
 	public void eventoChoqueConTanque(Tanque tanque){
 		if (this.numeroDeMeta == otroID(tanque.getID())){
-			PrePartida.getPrePartida().setEstado("Fin del juego. Usted ha ganado...", Font.BOLD);
-			PrePartida.getPrePartida().setVisible(true);
-			Circuito.getCircuito().localLlego();
-			Conexion.getConexion().partidaPerdida();
-			Partida.getPartida().finalizar();
+			this.teGanaron = true;
+			this.finPartida(true);
 		}
 	}
 	private int otroID(int id){
@@ -52,5 +55,28 @@ public class Meta extends Bloque{
 	public void eventoChoqueConBola(Bola bola){
 		//System.out.println(this.getNombre() + ": eventoChoqueConBola(...)");
 	}
+
+	public void imitar(Imitable objetoAImitar) throws RemoteException {
+		Meta imitada = (Meta) objetoAImitar;
+		
+		if (imitada.getTeGanaron()){
+			this.finPartida(false);
+		}
+	}
+
+	public Object[] getParametros() throws RemoteException {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
 	
+	private void finPartida(boolean gane){
+		if(gane)
+			PrePartida.getPrePartida().setEstado("Fin del juego. Usted ha ganado...", Font.BOLD);
+		else
+			PrePartida.getPrePartida().setEstado("Fin del juego. Usted ha perdido...", Font.BOLD);
+			
+		PrePartida.getPrePartida().setVisible(true);
+		Partida.getPartida().finalizar();
+	}
+	
+
 }

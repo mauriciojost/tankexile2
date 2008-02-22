@@ -6,6 +6,7 @@ import java.rmi.RemoteException;
 import java.util.*;
 
 // Clase cuya función es establecer la comunicación entre los dos hosts.
+import javax.swing.JOptionPane;
 public class Conexion implements Conectable{
 	private static Conexion instanciaConexion = null;
 	private Conectable conexionRemoto;
@@ -155,15 +156,6 @@ public class Conexion implements Conectable{
 		}
 	}
 	
-	public void partidaPerdida(){
-		try {
-			circuitoRemotoAControlar.oponenteLlego();
-		} catch (RemoteException ex) {
-			System.out.println("Error en el método finDePartida en la clase Conexion.");
-			ex.printStackTrace();
-		}
-	}
-	
 	public int getID(){
 		return this.miID;
 	}
@@ -208,6 +200,8 @@ public class Conexion implements Conectable{
 				imitador.imitar(imitables.get(clave));
 			} catch (RemoteException ex) {
 				ex.printStackTrace();
+				JOptionPane.showMessageDialog(null, "Se perdió la conexión.");
+				System.exit(-1);
 			}
 		}
 	}

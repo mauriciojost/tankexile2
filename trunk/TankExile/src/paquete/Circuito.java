@@ -19,9 +19,8 @@ public class Circuito implements CircuitoControlable, Serializable, Imitable{
 	private transient Meta metas[] = new Meta[2];
 	private transient Tanque tanqueLocal;
 	private transient Tanque tanqueOponente;
-	private ArrayList<int[]> choquesPendientesCircuitoRemoto = new ArrayList<int[]>();
-	private Boolean localLLego = new Boolean(false);
 	
+	private ArrayList<Imitable> elementosAImitar = new ArrayList<Imitable>();
 	
 	// Constructor de la clase.
 	public Circuito(String nombreCircuitoTXT){
@@ -89,25 +88,6 @@ public class Circuito implements CircuitoControlable, Serializable, Imitable{
 		}
 	}
 	
-	// Método llamado remotamente para indicar que el jugador remoto ya ha llegado a su meta.
-	public void oponenteLlego(){
-		(new Thread(
-			new Runnable(){
-				public void run(){
-					String mensaje = "Fin del juego. Usted ha perdido.";
-					for (int i=0; i<10;i++){
-						PrePartida.getPrePartida().setEstado("", Font.BOLD);
-						try{Thread.sleep(300);}catch(Exception e){e.printStackTrace();}
-						PrePartida.getPrePartida().setEstado(mensaje, Font.BOLD);
-						try{Thread.sleep(300);}catch(Exception e){e.printStackTrace();}				
-					}
-				}
-			}
-		)).start();
-		PrePartida.getPrePartida().setVisible(true);
-		Partida.getPartida().finalizar();
-		//JOptionPane.showMessageDialog(null, "Fin del juego. Usted ha perdido...");
-	}
 	
 	// Método que mantiene la coherencia entre el circuito y su tanque local.
 	// También ejecuta: el efecto de deterioro del muro correspondiente (en caso de colisión) y la corrección de la posición del tanque.
@@ -127,6 +107,7 @@ public class Circuito implements CircuitoControlable, Serializable, Imitable{
 			Bloque bloque = (Bloque)iterador.next();
 			bloque.eventoChoque(tanqueLocal);
 			tanqueLocal.eventoChoque(bloque);
+			this.elementosAImitar.add(bloque);
 			iterador.remove();
 		}
 		
@@ -160,61 +141,45 @@ public class Circuito implements CircuitoControlable, Serializable, Imitable{
 		return metas[Math.abs(numero%2)];
 	}
 	
-	// Método llamado remotamente, que indica un nuevo choque para representar en los muros, con sus parámetros como un array.
-	public void informarChoque(int parametrosDelChoque[]) throws RemoteException {
-		// El parámetro contiene en su primer elemento el índice relacionado al muro chocado. En su segundo elemento, la magnitud del choque.
-		((Muro)bloques.get((int)parametrosDelChoque[0])).deterioro((int)parametrosDelChoque[1]);
-	}
-
 	
-	public ArrayList<int []> getChoquesPendientes(){
+	/*public ArrayList<int []> getChoquesPendientes(){
 		ArrayList<int[]> retorno = choquesPendientesCircuitoRemoto;
 		choquesPendientesCircuitoRemoto = new ArrayList<int[]>();
 		return retorno;
-	}
+	}*/
 	
 	public void imitar(Imitable circuito){
 		Object[] array = null;
-		Iterator<int[]> iterador = null;
+		
+		
 		try{
 			array = (Object[])circuito.getParametros();
-			ArrayList<int[]> unElem = (ArrayList<int[]>) array[0];
-			iterador = unElem.iterator();
-			//iterador = ((ArrayList<int[]>)(((Object[])circuito.getParametros())[0])).iterator();
-			//iterador = circuitoAImitar.getChoquesPendientes().iterator();
 		}catch(Exception e){e.printStackTrace();}
+		
+		ArrayList<Imitable> listaImitables = (ArrayList<Imitable>) array[0];
+		
+		Iterator<Imitable> iterador = listaImitables.iterator();
 		
 		try {
 			while(iterador.hasNext()){
-				this.informarChoque(iterador.next());
+				Bloque bloque = (Bloque)iterador.next();
+				this.bloques.get(bloque.getIndice()).imitar(bloque);
 			}
-			
 		} catch (RemoteException ex) {
 			System.out.println("Error al imitar al circuito remoto. El oponente ha finalizado la sesión.");
 			ex.printStackTrace();
 			JOptionPane.showMessageDialog(null, "El oponente abandono conexión.");
 			System.exit(0);
 		}
-		Boolean fin = (Boolean)array[1];
-		if (fin){
-			this.oponenteLlego();
-		}
 	}
 	
-	public void localLlego(){
-		this.localLLego = true;
-	}
-	public void choqueNuevoCircuitoLocal(int indice, int magnitudDelChoque){
-		int choque[] = {indice,magnitudDelChoque};
-		this.choquesPendientesCircuitoRemoto.add(choque);
-	}
 	
 	public static Circuito getCircuito(){
 		return circuito;
 	}
 
 	public Object[] getParametros() throws RemoteException {
-		Object[] arreglo = {this.getChoquesPendientes(), localLLego};
+		Object[] arreglo = {this.elementosAImitar};
 		return arreglo;
 	}
 }	
