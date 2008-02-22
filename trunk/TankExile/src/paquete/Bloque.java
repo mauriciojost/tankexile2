@@ -3,8 +3,10 @@ import java.awt.Graphics2D;
 
 // Clase cuyos objetos son las unidades de conformación del circuito de juego.
 import java.awt.Rectangle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 public abstract class Bloque implements ElementoDeJuego, Imitable{	
-	private transient int indice=-1;
+	private int indice=-1;
 	private transient Rectangle bounds = new Rectangle(0,0,Finals.BLOQUE_LADO_LONG,Finals.BLOQUE_LADO_LONG);
 	
 	public Bloque(int bx, int by) {
@@ -36,5 +38,15 @@ public abstract class Bloque implements ElementoDeJuego, Imitable{
 	public int getY(){return bounds.y;}
 	public Rectangle getBounds(){
 		return bounds;
+	}
+	
+	public void imitar(Imitable objeto){
+		try {
+			Class[] arreglo = {objeto.getClass()};
+			//System.out.println(this.getClass().getSimpleName() +" llamó a imitar("+objeto.getClass().getSimpleName()+":"+ ((Bloque)objeto).getIndice()+"). Índice "+ indice);
+			this.getClass().getMethod("imitar", arreglo);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
 	}
 }

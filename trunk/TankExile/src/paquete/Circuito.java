@@ -76,7 +76,9 @@ public class Circuito implements CircuitoControlable, Serializable, Imitable{
 			if (bloque instanceof Meta){ // Es verificada la posibilidad de que este bloque sea una meta, para vincularla con alguno de los atributos.
 				metas[Math.abs(((Meta)bloque).getNumero()%2)] = (Meta)bloque ;
 			}
+			
 			bloque.setIndice(bloques.indexOf(bloque));
+			//System.out.println(bloque.getClass().getSimpleName() +":"+ bloque.getIndice());
 		}
 	}
 	
@@ -141,13 +143,6 @@ public class Circuito implements CircuitoControlable, Serializable, Imitable{
 		return metas[Math.abs(numero%2)];
 	}
 	
-	
-	/*public ArrayList<int []> getChoquesPendientes(){
-		ArrayList<int[]> retorno = choquesPendientesCircuitoRemoto;
-		choquesPendientesCircuitoRemoto = new ArrayList<int[]>();
-		return retorno;
-	}*/
-	
 	public void imitar(Imitable circuito){
 		Object[] array = null;
 		
@@ -163,9 +158,10 @@ public class Circuito implements CircuitoControlable, Serializable, Imitable{
 		try {
 			while(iterador.hasNext()){
 				Bloque bloque = (Bloque)iterador.next();
+				//System.out.println("Bloque " + bloque.getIndice());
 				this.bloques.get(bloque.getIndice()).imitar(bloque);
 			}
-		} catch (RemoteException ex) {
+		} catch (Exception ex) {
 			System.out.println("Error al imitar al circuito remoto. El oponente ha finalizado la sesión.");
 			ex.printStackTrace();
 			JOptionPane.showMessageDialog(null, "El oponente abandono conexión.");

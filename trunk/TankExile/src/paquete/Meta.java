@@ -55,9 +55,7 @@ public class Meta extends Bloque{
 		//System.out.println(this.getNombre() + ": eventoChoqueConBola(...)");
 	}
 
-	public void imitar(Imitable objetoAImitar) throws RemoteException {
-		Meta imitada = (Meta) objetoAImitar;
-		
+	public void imitar(Meta imitada){
 		if (imitada.getTeGanaron()){
 			this.finPartida(false);
 		}
