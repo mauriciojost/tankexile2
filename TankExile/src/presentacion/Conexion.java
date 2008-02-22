@@ -420,12 +420,9 @@ public class Conexion implements Conectable{
 		imitableREmoto.imitar(imitable)
 		*/
 	}
-	public void ponerImitador(String clave, Imitable imitador){
-		this.imitadores.put(clave, imitador);
-		if (!this.claves.contains(clave)) this.claves.add(clave);
-	}
 	
-	public void ponerImitado(String clave, Imitable imitado){
+	public void ponerImitadoImitador(String clave, Imitable imitado,Imitable imitador){
+		this.imitadores.put(clave, imitador);
 		this.imitables.put(clave, imitado);
 		if (!this.claves.contains(clave)) this.claves.add(clave);
 	}

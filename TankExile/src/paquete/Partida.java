@@ -95,9 +95,7 @@ public class Partida extends Canvas implements Runnable{
 //////////////probando		
 		System.out.println("Arranca");
 		
-		conexion.ponerImitado("tanque", tanquePropio);
-		conexion.ponerImitador("tanque", this.tanqueLocalLigadoOponente);
-		
+		conexion.ponerImitadoImitador("tanque", tanquePropio,tanqueLocalLigadoOponente);
 		conexion.bindearImitadores();
 		conexion.ponerADisposicionImitadoresRemotos();
 //////////////
