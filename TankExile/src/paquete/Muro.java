@@ -8,9 +8,9 @@ import javax.imageio.ImageIO;
 // Clase que representa a los muros en el circuito. 
 import presentacion.Conexion;
 public class Muro extends Bloque{
-	public static final int UNIDAD_DE_MAGNITUD = Tanque.U_VELOCIDAD;
-	private static int NUMERO_DE_IMAGENES=5;
-	private static BufferedImage imagenes[] = new BufferedImage[NUMERO_DE_IMAGENES]; // Conjunto de imágenes asociadas a la clase Muro.
+	public transient static final int UNIDAD_DE_MAGNITUD = Tanque.U_VELOCIDAD;
+	private transient static int NUMERO_DE_IMAGENES=5;
+	private transient static BufferedImage imagenes[] = new BufferedImage[NUMERO_DE_IMAGENES]; // Conjunto de imágenes asociadas a la clase Muro.
 	private int tramaActual = 0; // Atributo que representa al número de imagen x (en imagenes[x]) que se ha de representar para este bloque al pintarlo en la pantalla.
 	
 	public Muro(int x, int y){

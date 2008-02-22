@@ -7,14 +7,13 @@ import java.rmi.RemoteException;
 import javax.imageio.ImageIO;
 
 // Clase cuyos objetos son parte del circuito, cada uno es partida para un tanque y llegada para el otro.
-import presentacion.Conexion;
 import presentacion.PrePartida;
 public class Meta extends Bloque{
-	private static BufferedImage imagenes[] = new BufferedImage[2]; // Conjunto de imágenes asociadas a la clase Meta.
-	private int numeroDeMeta; // Atributo que representa el número de meta.
+	private transient static BufferedImage imagenes[] = new BufferedImage[2]; // Conjunto de imágenes asociadas a la clase Meta.
+	private transient int numeroDeMeta; // Atributo que representa el número de meta.
 	private boolean teGanaron = false;
 	
-	// Constructor de la clase.
+	// Constructor de transientla clase.
 	public Meta(int x, int y, int numeroDeMeta){
 		super(x,y); // Constructor del bloque.
 		this.numeroDeMeta = numeroDeMeta;
