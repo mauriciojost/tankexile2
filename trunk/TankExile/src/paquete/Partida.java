@@ -98,7 +98,7 @@ public class Partida extends Canvas implements Runnable{
 		
 
 		
-		this.circuito.setNickOponente(prePartida.getNickPropio()); // Nick que será leido por el host remoto.
+		Conexion.getConexion().setNickPropio(prePartida.getNickPropio()); // Nick que será leido por el host remoto.
 		tanquePropio.setSonidoHabilitado(prePartida.getSonidoHabilitado());
 		
 		jugador = new Jugador(tanquePropio); // Un jugador es creado para comandar el tanque propio del host.
@@ -127,7 +127,7 @@ public class Partida extends Canvas implements Runnable{
 		circuito.agregarBola(bolaMala);
 		
 
-				
+		/*		
 		if (this.yoID == 1){
 			bolaBuena.start();
 			conexion.ponerImitado("bolaBuena", bolaBuena);
@@ -137,8 +137,12 @@ public class Partida extends Canvas implements Runnable{
 			conexion.ponerImitado("bolaMala", bolaMala);
 			conexion.ponerImitador("bolaBuena", bolaBuena);
 		}
+		*/
 		
-		
+		//BORRAR, SÓLO PARA PRUEBAS
+			bolaBuena.start();
+			bolaMala.start();
+		//
 		
 		System.out.println("Arranca");
 		conexion.ponerImitador("circuito", circuito);
@@ -153,11 +157,7 @@ public class Partida extends Canvas implements Runnable{
 //////////////
 		// Se comienza la sincronización de los dos circuitos.
 		this.nickPropio = (prePartida.getNickPropio());
-		this.nickOponente = conexion.getNickTanqueOponente();
-		hiloCircuitoRemoto = new Thread(conexion.getHiloManejadorDeCircuitoRemoto(), "Hilo manejador de circuito remoto");
-		hiloCircuitoRemoto.start();
-		
-		
+		this.nickOponente = conexion.getNickOponente();
 		
     }
 

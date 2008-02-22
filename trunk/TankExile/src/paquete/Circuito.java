@@ -168,12 +168,6 @@ public class Circuito implements CircuitoControlable, Serializable, Imitable{
 		((Muro)bloques.get((int)parametrosDelChoque[0])).deterioro((int)parametrosDelChoque[1]);
 	}
 
-	public void setNickOponente(String n){
-		nickPropio = n;
-	}
-	public String getNickOponente() throws RemoteException {
-		return nickPropio;
-	}
 	
 	public ArrayList<int []> getChoquesPendientes(){
 		ArrayList<int[]> retorno = choquesPendientesCircuitoRemoto;

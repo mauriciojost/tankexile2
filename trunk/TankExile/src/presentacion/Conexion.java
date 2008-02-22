@@ -57,6 +57,7 @@ public class Conexion implements Conectable{
 			return instanciaConexion;
 		}
 	}
+	private String nickPropio;
 
 	// Constructor.
 	private Conexion(){
@@ -176,15 +177,23 @@ public class Conexion implements Conectable{
 	}
 	// Método utilizado por el hilo de conexión para lograr el control del tanque propio remoto.
 	
-	public String getNickTanqueOponente(){
+	public String getNickOponente(){
 		String nick = null;
 		try {
-			nick = this.circuitoRemotoAControlar.getNickOponente();
+			nick = this.conexionRemoto.getNickPropio();
 		} catch (RemoteException ex) {
 			System.out.println("Error al intentar obtener el nick del oponente. Clase conexión.");
 			ex.printStackTrace();
 		}
 		return nick;
+	}
+	
+	
+	public void setNickPropio(String n){
+		nickPropio = n;
+	}
+	public String getNickPropio() throws RemoteException {
+		return nickPropio;
 	}
 	
 	// Método que pone a disposición las bolas locales, para que sean controladas remotamente.
