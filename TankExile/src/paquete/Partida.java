@@ -89,6 +89,20 @@ public class Partida extends Canvas implements Runnable{
 		tanqueLocalLigadoOponente = new Tanque(otroID); // Creación del tanque que será ligado al registro de RMI para ser comandado por el host remoto.
 		circuito.setTanques(tanquePropio, tanqueLocalLigadoOponente);
 		//conexion.setTanqueLocalOponente(tanqueLocalLigadoOponente); 
+		
+		
+				
+//////////////probando		
+		System.out.println("Arranca");
+		
+		conexion.ponerImitado("tanque", tanquePropio);
+		conexion.ponerImitador("tanque", this.tanqueLocalLigadoOponente);
+		
+		conexion.bindearImitadores();
+		conexion.ponerADisposicionImitadoresRemotos();
+//////////////
+
+		
 		conexion.bindearTanqueLocalOponente(tanqueLocalLigadoOponente); // El tanque anterior es puesto a disposición del host remoto.
 		conexion.setTanquePropio(tanquePropio); // La conexión esta lista para ser establecida, el hilo conexión observará al tanque y con sus parámetros comandará al tanque remoto puesto en el registro de RMI.
 		this.circuito.setNickOponente(prePartida.getNickPropio()); // Nick que será leido por el host remoto.
@@ -112,16 +126,6 @@ public class Partida extends Canvas implements Runnable{
 		
 		
 		
-		
-//////////////probando		
-		System.out.println("Arranca");
-		
-		conexion.ponerImitado("tanque", tanquePropio);
-		conexion.ponerImitador("tanque", this.tanqueLocalLigadoOponente);
-		
-		conexion.bindearImitadores();
-		conexion.ponerADisposicionImitadoresRemotos();
-//////////////
 		
 		
 		
