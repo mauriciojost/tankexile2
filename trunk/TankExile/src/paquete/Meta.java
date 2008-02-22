@@ -40,6 +40,7 @@ public class Meta extends Bloque{
 		if (this.numeroDeMeta == otroID(tanque.getID())){
 			PrePartida.getPrePartida().setEstado("Fin del juego. Usted ha ganado...", Font.BOLD);
 			PrePartida.getPrePartida().setVisible(true);
+			Circuito.getCircuito().localLlego();
 			Conexion.getConexion().partidaPerdida();
 			Partida.getPartida().finalizar();
 		}

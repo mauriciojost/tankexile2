@@ -8,7 +8,6 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import javax.swing.JOptionPane;
-import presentacion.Conexion;
 import presentacion.PrePartida;
 
 public class Circuito implements CircuitoControlable, Serializable, Imitable{
@@ -20,8 +19,8 @@ public class Circuito implements CircuitoControlable, Serializable, Imitable{
 	private transient Meta metas[] = new Meta[2];
 	private transient Tanque tanqueLocal;
 	private transient Tanque tanqueOponente;
-	private String nickPropio;
 	private ArrayList<int[]> choquesPendientesCircuitoRemoto = new ArrayList<int[]>();
+	private Boolean localLLego = new Boolean(false);
 	
 	
 	// Constructor de la clase.
@@ -50,7 +49,6 @@ public class Circuito implements CircuitoControlable, Serializable, Imitable{
 					}
 				}
 				this.agregarBloque(bloque); // Es agregado el bloque leído al circuito.
-				
 			}
 		}
 		
@@ -92,7 +90,7 @@ public class Circuito implements CircuitoControlable, Serializable, Imitable{
 	}
 	
 	// Método llamado remotamente para indicar que el jugador remoto ya ha llegado a su meta.
-	public void oponenteLlego() throws RemoteException{
+	public void oponenteLlego(){
 		(new Thread(
 			new Runnable(){
 				public void run(){
@@ -176,10 +174,10 @@ public class Circuito implements CircuitoControlable, Serializable, Imitable{
 	}
 	
 	public void imitar(Imitable circuito){
-		
+		Object[] array = null;
 		Iterator<int[]> iterador = null;
 		try{
-			Object[] array = (Object[])circuito.getParametros();
+			array = (Object[])circuito.getParametros();
 			ArrayList<int[]> unElem = (ArrayList<int[]>) array[0];
 			iterador = unElem.iterator();
 			//iterador = ((ArrayList<int[]>)(((Object[])circuito.getParametros())[0])).iterator();
@@ -197,15 +195,18 @@ public class Circuito implements CircuitoControlable, Serializable, Imitable{
 			JOptionPane.showMessageDialog(null, "El oponente abandono conexión.");
 			System.exit(0);
 		}
+		Boolean fin = (Boolean)array[1];
+		if (fin){
+			this.oponenteLlego();
+		}
 	}
 	
+	public void localLlego(){
+		this.localLLego = true;
+	}
 	public void choqueNuevoCircuitoLocal(int indice, int magnitudDelChoque){
 		int choque[] = {indice,magnitudDelChoque};
 		this.choquesPendientesCircuitoRemoto.add(choque);
-	}
-	
-	public void manejarCircuitoRemoto(){
-		
 	}
 	
 	public static Circuito getCircuito(){
@@ -213,8 +214,7 @@ public class Circuito implements CircuitoControlable, Serializable, Imitable{
 	}
 
 	public Object[] getParametros() throws RemoteException {
-		Object[] arreglo = {this.getChoquesPendientes()};
+		Object[] arreglo = {this.getChoquesPendientes(), localLLego};
 		return arreglo;
 	}
-	
 }	

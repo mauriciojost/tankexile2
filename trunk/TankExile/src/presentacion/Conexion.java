@@ -11,8 +11,6 @@ public class Conexion implements Conectable{
 	private Conectable conexionRemoto;
 	
 	private String iPOponente; // Ip del host oponente.
-	public static final int PUERTO = 4500; // Puerto al que se asocian todos los registros.
-	
 	private double clavePropia; // Valor numérico generado localmente para la inicialización del turno.
 	private double claveOponente; // Valor numérico enviado desde el oponente para iniciar el turno.
 	private boolean claveOponenteRecibida = false; // Indicador de la llegada de la clave del oponente.

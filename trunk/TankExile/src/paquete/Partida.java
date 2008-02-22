@@ -7,8 +7,6 @@ import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferStrategy;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
@@ -16,23 +14,17 @@ import javax.swing.JPanel;
 public class Partida extends Canvas implements Runnable{
     private BufferStrategy estrategia; // Atributo que permite establecer el Doble Buffering para pintar la pantalla.
     private Circuito circuito; // Circuito a ser creado para correr la partida.
-	private Circuito circuitoLocalLigadoOponente; // Circuito del oponente en el host.
     private Tanque tanquePropio; // Tanque del jugador en el host.
     private Tanque tanqueLocalLigadoOponente; // Tanque del oponente en el host.
     private Jugador jugador; // Jugador, atributo encargado de hacer el listening del teclado para comandar al tanque propio.
     private Bola bolaBuena;
     private Bola bolaMala;
-	private Bola bolaBuenaLocalLigadaOponente;
-	private Bola bolaMalaLocalLigadaOponente;
 
     private int yoID; // Representa el ID del jugador en este host.
     private int otroID; // Representa el ID del jugador oponente.
     private static Conexion conexion; // Objeto utilizado para todo lo relacionado a la comunicación entre ambos hosts.
     private static String nombreCircuitoTXT; // Atributo que representa el nombre del archivo del circuito.
 	private static PrePartida prePartida;
-	private Thread hiloTanqueRemoto;
-	private Thread hiloBolasRemotas;
-	private Thread hiloCircuitoRemoto;
 	private boolean correrHilos = true;
 	private static Partida instanciaPartida;
 	private JFrame ventana;
@@ -60,9 +52,6 @@ public class Partida extends Canvas implements Runnable{
 		ventana.addWindowListener(
 			new WindowAdapter() { // Ventana tiene escucha, una clase anónima, para el cierre.
 				public void windowClosing(WindowEvent e) {
-					//getPrePartida().setEstado("Partida abortada.");
-					//getPrePartida().setVisible(true);
-					//finalizar();
 					System.exit(0);
 				}
 			}
@@ -86,26 +75,18 @@ public class Partida extends Canvas implements Runnable{
 		ventana.setVisible(true); // Ventana visible.
 		this.requestFocus(); // El foco es tomado.
 		
-		circuito = new Circuito(nombreCircuitoTXT); // Creación del circuito de juego.
-		
-		
-		
-		
+		circuito = new Circuito(nombreCircuitoTXT); // Creación del circuito de juego.	
 		tanquePropio = new Tanque(yoID); // Creación del tanque comandado por el jugador en este host.
 		tanqueLocalLigadoOponente = new Tanque(otroID); // Creación del tanque que será ligado al registro de RMI para ser comandado por el host remoto.
 		
 		circuito.setTanques(tanquePropio, tanqueLocalLigadoOponente);
-		
-
-		
+	
 		Conexion.getConexion().setNickPropio(prePartida.getNickPropio()); // Nick que será leido por el host remoto.
 		tanquePropio.setSonidoHabilitado(prePartida.getSonidoHabilitado());
 		
 		jugador = new Jugador(tanquePropio); // Un jugador es creado para comandar el tanque propio del host.
 		this.addKeyListener(jugador); // El jugador comienza a escuchar el teclado.
-		
-		
-		
+			
 		// Ambos tanques son ubicados en sus metas correspondientes.
 		tanquePropio.setX(circuito.getMeta(yoID).getX());
 		tanquePropio.setY(circuito.getMeta(yoID).getY());
@@ -113,9 +94,6 @@ public class Partida extends Canvas implements Runnable{
 		tanqueLocalLigadoOponente.setX(circuito.getMeta(otroID).getX());
 		tanqueLocalLigadoOponente.setY(circuito.getMeta(otroID).getY());
 
-		
-
-		
 		// Creación y bindeo de las bolas.
 		bolaBuena = new Bola(true,tanquePropio,this.yoID == 1);
 		bolaMala = new Bola(false,tanquePropio,this.yoID == 1);
@@ -126,7 +104,6 @@ public class Partida extends Canvas implements Runnable{
 		circuito.agregarBola(bolaBuena);
 		circuito.agregarBola(bolaMala);
 		
-
 		/*		
 		if (this.yoID == 1){
 			bolaBuena.start();
