@@ -96,13 +96,13 @@ public class Partida extends Canvas implements Runnable{
 
 		// Creación y bindeo de las bolas.
 		bolaBuena = new Bola(true,this.yoID == 1);
-		bolaMala = new Bola(false,this.yoID == 1);
+		bolaMala = new Bola(false,!(this.yoID == 1));
 		
 		
 		circuito.agregarBola(bolaBuena);
 		circuito.agregarBola(bolaMala);
 		
-		/*		
+				
 		if (this.yoID == 1){
 			bolaBuena.start();
 			conexion.ponerImitado("bolaBuena", bolaBuena);
@@ -112,11 +112,11 @@ public class Partida extends Canvas implements Runnable{
 			conexion.ponerImitado("bolaMala", bolaMala);
 			conexion.ponerImitador("bolaBuena", bolaBuena);
 		}
-		*/
+		
 		
 		//BORRAR, SÓLO PARA PRUEBAS
-			bolaBuena.start();
-			bolaMala.start();
+		//	bolaBuena.start();
+		//	bolaMala.start();
 		//
 		
 		System.out.println("Arranca");
