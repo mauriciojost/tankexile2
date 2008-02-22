@@ -16,7 +16,7 @@ public class Bola extends Thread implements Imitable, ElementoDeJuego{
 
 	
 	private transient boolean correrHilos = true; // Indicador de detención del hilo.
-	private transient Tanque tanquePropio;
+	//private transient Tanque tanquePropio;
 	private transient boolean buena; // Indicador de bola buena o mala.
 	private transient Point velocidad = new Point(2,2);
 	private Rectangle bounds = new Rectangle((Finals.BLOQUES_NUM/2) * 20,(Finals.BLOQUES_NUM/2) * 20,Finals.BLOQUE_LADO_LONG,Finals.BLOQUE_LADO_LONG);
@@ -25,10 +25,10 @@ public class Bola extends Thread implements Imitable, ElementoDeJuego{
 	private transient Random rnd = new Random(); // Generador de números pseudo aleatorios usados en el rebote de las bolas.
 	
 	// Contructor.
-	public Bola(boolean buena, Tanque tanquePropio, boolean soyLocal) {
+	public Bola(boolean buena, boolean soyLocal) {
 		this.soyLocal = soyLocal;
 		this.setName(buena?"Hilo bola buena":"Hilo bola mala");
-		this.buena = buena; this.tanquePropio = tanquePropio;
+		this.buena = buena; //this.tanquePropio = tanquePropio;
 		currentFrame = (buena?0:1);
 		try {
 			if (imagen[0]== null) imagen[0] = ImageIO.read(getClass().getClassLoader().getResource("res/bolaBuena1.gif"));

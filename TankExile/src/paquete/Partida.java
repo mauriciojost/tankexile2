@@ -95,11 +95,9 @@ public class Partida extends Canvas implements Runnable{
 		tanqueLocalLigadoOponente.setY(circuito.getMeta(otroID).getY());
 
 		// Creación y bindeo de las bolas.
-		bolaBuena = new Bola(true,tanquePropio,this.yoID == 1);
-		bolaMala = new Bola(false,tanquePropio,this.yoID == 1);
+		bolaBuena = new Bola(true,this.yoID == 1);
+		bolaMala = new Bola(false,this.yoID == 1);
 		
-		//bolaBuenaLocalLigadaOponente = new Bola(true,tanquePropio, this.yoID == 1);
-		//bolaMalaLocalLigadaOponente = new Bola(false,tanquePropio, this.yoID == 1);
 		
 		circuito.agregarBola(bolaBuena);
 		circuito.agregarBola(bolaMala);
