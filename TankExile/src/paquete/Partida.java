@@ -87,19 +87,25 @@ public class Partida extends Canvas implements Runnable{
 		this.requestFocus(); // El foco es tomado.
 		
 		circuito = new Circuito(nombreCircuitoTXT); // Creación del circuito de juego.
-		circuito.setConexion(conexion);
+		
+		
+		
+		
 		tanquePropio = new Tanque(yoID); // Creación del tanque comandado por el jugador en este host.
 		tanqueLocalLigadoOponente = new Tanque(otroID); // Creación del tanque que será ligado al registro de RMI para ser comandado por el host remoto.
+		
 		circuito.setTanques(tanquePropio, tanqueLocalLigadoOponente);
 		
+
 		
-		conexion.setTanquePropio(tanquePropio); // La conexión esta lista para ser establecida, el hilo conexión observará al tanque y con sus parámetros comandará al tanque remoto puesto en el registro de RMI.
 		this.circuito.setNickOponente(prePartida.getNickPropio()); // Nick que será leido por el host remoto.
 		tanquePropio.setSonidoHabilitado(prePartida.getSonidoHabilitado());
+		
 		jugador = new Jugador(tanquePropio); // Un jugador es creado para comandar el tanque propio del host.
 		this.addKeyListener(jugador); // El jugador comienza a escuchar el teclado.
 		
-		hiloTanqueRemoto = new Thread(conexion.getHiloManejadorDeTanqueRemoto(), "Hilo manejador del tanque remoto");
+		
+		
 		// Ambos tanques son ubicados en sus metas correspondientes.
 		tanquePropio.setX(circuito.getMeta(yoID).getX());
 		tanquePropio.setY(circuito.getMeta(yoID).getY());
@@ -107,40 +113,41 @@ public class Partida extends Canvas implements Runnable{
 		tanqueLocalLigadoOponente.setX(circuito.getMeta(otroID).getX());
 		tanqueLocalLigadoOponente.setY(circuito.getMeta(otroID).getY());
 
-		hiloTanqueRemoto.start(); // El hilo que controla al tanque remoto es iniciado.
+		
 
 		
 		// Creación y bindeo de las bolas.
 		bolaBuena = new Bola(true,tanquePropio,this.yoID == 1);
 		bolaMala = new Bola(false,tanquePropio,this.yoID == 1);
 		
-		bolaBuenaLocalLigadaOponente = new Bola(true,tanquePropio, this.yoID == 1);
-		bolaMalaLocalLigadaOponente = new Bola(false,tanquePropio, this.yoID == 1);
+		//bolaBuenaLocalLigadaOponente = new Bola(true,tanquePropio, this.yoID == 1);
+		//bolaMalaLocalLigadaOponente = new Bola(false,tanquePropio, this.yoID == 1);
 		
 		circuito.agregarBola(bolaBuena);
 		circuito.agregarBola(bolaMala);
 		
-		conexion.setBolasLocales(bolaBuena, bolaMala);
+
 				
 		if (this.yoID == 1){
-			// Es creado e iniciado el hilo que manejará a las bolas remotas.
-			hiloBolasRemotas = new Thread(conexion.getHiloManejadorDeBolas(), "Hilo manejador de bolas remotas");
-			hiloBolasRemotas.start();
+			bolaBuena.start();
+			conexion.ponerImitado("bolaBuena", bolaBuena);
+			conexion.ponerImitador("bolaMala", bolaMala);
+		}else{
+			bolaMala.start();
+			conexion.ponerImitado("bolaMala", bolaMala);
+			conexion.ponerImitador("bolaBuena", bolaBuena);
 		}
 		
-		// Las bolas comienzan a actuar por sí mismas.
-		bolaBuena.start();/////////////////////////////////////////////////////////////////////////////////////////////////////
-		bolaMala.start();
 		
-		conexion.setCircuitoPropio(circuito);
 		
-		//////////////probando		
 		System.out.println("Arranca");
-		conexion.ponerImitadoImitador("circuito", circuito, circuitoLocalLigadoOponente);
-		//conexion.setTanqueLocalOponente(tanqueLocalLigadoOponente); 
-		conexion.ponerImitadoImitador("tanque", tanquePropio,tanqueLocalLigadoOponente);
-		conexion.ponerImitadoImitador("bolaBuena", bolaBuena, bolaBuenaLocalLigadaOponente);
-		conexion.ponerImitadoImitador("bolaMala", bolaMala, bolaMalaLocalLigadaOponente);
+		conexion.ponerImitador("circuito", circuito);
+		conexion.ponerImitado("circuito", circuito);
+		
+		
+		conexion.ponerImitado("tanque", tanquePropio);
+		conexion.ponerImitador("tanque", tanqueLocalLigadoOponente);
+
 		conexion.bindearImitadores();
 		conexion.ponerADisposicionImitadoresRemotos();
 //////////////

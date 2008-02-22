@@ -18,7 +18,6 @@ public class Circuito implements CircuitoControlable, Serializable, Imitable{
 	private transient ArrayList<Bola> bolas = new ArrayList<Bola>();
 	private transient ArrayList<Bloque> elementosChocados = new ArrayList<Bloque>(); // Colección usada para mantener los elementos chocados, sin perder algún evento.
 	private transient Meta metas[] = new Meta[2];
-	private transient Conexion conexion;
 	private transient Tanque tanqueLocal;
 	private transient Tanque tanqueOponente;
 	private String nickPropio;
@@ -82,13 +81,6 @@ public class Circuito implements CircuitoControlable, Serializable, Imitable{
 			}
 			bloque.setIndice(bloques.indexOf(bloque));
 		}
-	}
-	
-	public void setConexion(Conexion conexion){
-		this.conexion = conexion;
-	}
-	public Conexion getConexion(){
-		return conexion;
 	}
 	
 	// Método que realiza la llamada de pintado de cada elemento constitutivo del circuito (bloques).
