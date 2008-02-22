@@ -48,8 +48,7 @@ public class Muro extends Bloque{
 		//System.out.println(this.getNombre() + ": eventoChoqueConBola(...)");
 	}
 
-	public void imitar(Imitable objetoAImitar) throws RemoteException {
-		Muro muro = (Muro)objetoAImitar;
+	public void imitar(Muro muro){
 		this.tramaActual = muro.getTramaActual();
 	}
 
