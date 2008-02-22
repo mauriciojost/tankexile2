@@ -6,10 +6,12 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.Random;
+import javax.swing.JOptionPane;
 
 // Clase cuya función es establecer la comunicación entre los dos hosts.
-import javax.swing.JOptionPane;
+
 public class Conexion implements Conectable{
 	private static Conexion instanciaConexion = null;
 	private Conectable conexionRemoto;
@@ -36,10 +38,10 @@ public class Conexion implements Conectable{
 	private Tanque tanqueLocalLigadoOponente;
 	
 	
-	private HashMap imitadores = new HashMap();
-	private HashMap imitables = new HashMap();
-	private HashMap imitadoresRemotos = new HashMap();
-	private ArrayList claves = new ArrayList();
+	private HashMap<String,Imitable> imitadores = new HashMap<String,Imitable>();
+	private HashMap<String,Imitable> imitables = new HashMap<String,Imitable>();
+	private HashMap<String,Imitable> imitadoresRemotos = new HashMap<String,Imitable>();
+	private ArrayList<String> claves = new ArrayList<String>();
 	
 	
 	/* Formato de presentación:
@@ -379,7 +381,29 @@ public class Conexion implements Conectable{
 		return this.iPOponente;
 	}
 	
+	public void ponerADisposicionImitadoresRemotos(){
+		Iterator iterador = this.claves.iterator();
+		Imitable imitable=null;
+		while(iterador.hasNext()){
+			String clave = (String) iterador.next();
+			do{
+				try{
+					imitable = (Imitable)Bindeador.getBindeador().ponerADisposicion(clave);
+				}catch(Exception e){
+					e.printStackTrace();
+				}
+			}while(!Bindeador.getBindeador().getListo());
+			this.imitadoresRemotos.put(clave, imitable);
+		}
+	}
 	
+	public void bindearImitadores(){
+		Iterator iterador = this.claves.iterator();
+		while (iterador.hasNext()){
+			String clave = (String) iterador.next();
+			Bindeador.getBindeador().bindear((Imitable)this.imitadores.get(clave), clave);
+		}
+	}
 	
 	public void actualizar(){
 		Hashtable a = new Hashtable();
@@ -396,12 +420,12 @@ public class Conexion implements Conectable{
 		imitableREmoto.imitar(imitable)
 		*/
 	}
-	public void ponerImitador(Object clave, Object imitador){
+	public void ponerImitador(String clave, Imitable imitador){
 		this.imitadores.put(clave, imitador);
 		if (!this.claves.contains(clave)) this.claves.add(clave);
 	}
 	
-	public void ponerImitado(Object clave, Object imitado){
+	public void ponerImitado(String clave, Imitable imitado){
 		this.imitables.put(clave, imitado);
 		if (!this.claves.contains(clave)) this.claves.add(clave);
 	}
