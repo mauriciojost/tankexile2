@@ -334,7 +334,7 @@ public class Tanque implements Controlable, ElementoDeJuego, Serializable, Imita
 
 	public void imitar(Imitable objetoAImitar) throws RemoteException {
 		Tanque tanqueAImitar = (Tanque)objetoAImitar;
-		this.bounds.setLocation(tanqueAImitar.getPos().x+25, tanqueAImitar.getPos().y+25);
+		this.bounds.setLocation(tanqueAImitar.getPos().x, tanqueAImitar.getPos().y);
 		//this.bounds.setLocation(tanqueAImitar.getPos()); // USAR ESTO
 		this.moviendose = tanqueAImitar.getMoviendose();
 		this.direccion = tanqueAImitar.getDireccion();
