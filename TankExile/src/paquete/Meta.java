@@ -55,7 +55,8 @@ public class Meta extends Bloque{
 		//System.out.println(this.getNombre() + ": eventoChoqueConBola(...)");
 	}
 
-	public void imitar(Meta imitada){
+	public void imitar(Imitable objetoAImitar){
+		Meta imitada = (Meta) objetoAImitar;	
 		if (imitada.getTeGanaron()){
 			this.finPartida(false);
 		}
