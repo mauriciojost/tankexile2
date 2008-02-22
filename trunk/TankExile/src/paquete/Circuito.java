@@ -3,27 +3,31 @@ import java.awt.*;
 import java.io.IOException;
 
 // Clase que contiene en sí la información sobre los elementos que componen el circuito de juego.
+import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import javax.swing.JOptionPane;
 import presentacion.Conexion;
 import presentacion.PrePartida;
-public class Circuito implements CircuitoControlable {
-	private CargadorCircuitoTXT cargadorTXT; // Permite la conversión del archivo txt a circuito.
-	//private Bloque matrizDeBloques[][] = new Bloque [Finals.BLOQUES_NUM][Finals.BLOQUES_NUM]; // Matriz que contiene los elementos Bloque que son mapeados en la pantalla.
-	private ArrayList<Bloque> bloques = new ArrayList<Bloque>();
-	private ArrayList<Bola> bolas = new ArrayList<Bola>();
-	ArrayList<Bloque> elementosChocados = new ArrayList<Bloque>(); // Colección usada para mantener los elementos chocados, sin perder algún evento.
-	
-	private Meta metas[] = new Meta[2];
-	private Conexion conexion;
-	private Tanque tanqueLocal;
-	private Tanque tanqueOponente;
+
+public class Circuito implements CircuitoControlable, Serializable, Imitable{
+	private transient static Circuito circuito;
+	private transient CargadorCircuitoTXT cargadorTXT; // Permite la conversión del archivo txt a circuito.
+	private transient ArrayList<Bloque> bloques = new ArrayList<Bloque>();
+	private transient ArrayList<Bola> bolas = new ArrayList<Bola>();
+	private transient ArrayList<Bloque> elementosChocados = new ArrayList<Bloque>(); // Colección usada para mantener los elementos chocados, sin perder algún evento.
+	private transient Meta metas[] = new Meta[2];
+	private transient Conexion conexion;
+	private transient Tanque tanqueLocal;
+	private transient Tanque tanqueOponente;
 	private String nickPropio;
+	private ArrayList<int[]> choquesPendientesCircuitoRemoto = new ArrayList<int[]>();
+	
 	
 	// Constructor de la clase.
 	public Circuito(String nombreCircuitoTXT){
-		
+		circuito = this;
 		cargadorTXT = new CargadorCircuitoTXT(nombreCircuitoTXT);
 		Bloque bloque=null;
 		// Es recorrida secuencialmente cada posición del circuito para determinar según el archivo txt, si crear o no un muro o una meta, allí.
@@ -136,8 +140,6 @@ public class Circuito implements CircuitoControlable {
 			iterador.remove();
 		}
 		
-		
-		
 		for (int j=0; j<bolas.size();j++){
 			Bola bola = (Bola)bolas.get(j);
 			for(int i=0; i<bloques.size();i++){
@@ -180,4 +182,53 @@ public class Circuito implements CircuitoControlable {
 	public String getNickOponente() throws RemoteException {
 		return nickPropio;
 	}
+	
+	public ArrayList<int []> getChoquesPendientes(){
+		ArrayList<int[]> retorno = choquesPendientesCircuitoRemoto;
+		choquesPendientesCircuitoRemoto = new ArrayList<int[]>();
+		return retorno;
+	}
+	
+	public void imitar(Imitable circuito){
+		
+		Iterator<int[]> iterador = null;
+		try{
+			Object[] array = (Object[])circuito.getParametros();
+			ArrayList<int[]> unElem = (ArrayList<int[]>) array[0];
+			iterador = unElem.iterator();
+			//iterador = ((ArrayList<int[]>)(((Object[])circuito.getParametros())[0])).iterator();
+			//iterador = circuitoAImitar.getChoquesPendientes().iterator();
+		}catch(Exception e){e.printStackTrace();}
+		
+		try {
+			while(iterador.hasNext()){
+				this.informarChoque(iterador.next());
+			}
+			
+		} catch (RemoteException ex) {
+			System.out.println("Error al imitar al circuito remoto. El oponente ha finalizado la sesión.");
+			ex.printStackTrace();
+			JOptionPane.showMessageDialog(null, "El oponente abandono conexión.");
+			System.exit(0);
+		}
+	}
+	
+	public void choqueNuevoCircuitoLocal(int indice, int magnitudDelChoque){
+		int choque[] = {indice,magnitudDelChoque};
+		this.choquesPendientesCircuitoRemoto.add(choque);
+	}
+	
+	public void manejarCircuitoRemoto(){
+		
+	}
+	
+	public static Circuito getCircuito(){
+		return circuito;
+	}
+
+	public Object[] getParametros() throws RemoteException {
+		Object[] arreglo = {this.getChoquesPendientes()};
+		return arreglo;
+	}
+	
 }	
