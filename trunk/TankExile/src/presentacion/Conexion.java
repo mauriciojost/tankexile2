@@ -4,11 +4,7 @@ import java.util.Observable;
 import paquete.*;
 import java.io.*;
 import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.Random;
+import java.util.*;
 import javax.swing.JOptionPane;
 
 // Clase cuya función es establecer la comunicación entre los dos hosts.
@@ -19,10 +15,10 @@ public class Conexion implements Conectable{
 	
 	private String iPOponente; // Ip del host oponente.
 	public static final int PUERTO = 4500; // Puerto al que se asocian todos los registros.
-	private Tanque tanquePropio; // Tanque correspondiente al host propio (o no-remoto).
+	
 	private Controlable tanqueRemotoAControlar; // Interfaz con la que se controla el tanque propio remoto (en el host oponente).
-	private BolaControlable bolaBuenaAControlar;
-	private BolaControlable bolaMalaAControlar;
+	private Imitable bolaBuenaAControlar;
+	private Imitable bolaMalaAControlar;
 	private Bola bolaBuenaLocal;
 	private Bola bolaMalaLocal;
 	
@@ -42,7 +38,8 @@ public class Conexion implements Conectable{
 	private HashMap<String,Imitable> imitadores = new HashMap<String,Imitable>();
 	private HashMap<String,Imitable> imitables = new HashMap<String,Imitable>();
 	private HashMap<String,Imitable> imitadoresRemotos = new HashMap<String,Imitable>();
-	private ArrayList<String> claves = new ArrayList<String>();
+	private ArrayList<String> clavesImitadores = new ArrayList<String>();
+	private ArrayList<String> clavesImitados = new ArrayList<String>();
 	
 	
 	/* Formato de presentación:
@@ -178,33 +175,6 @@ public class Conexion implements Conectable{
 		(new Thread(hilito, "Hilo indicador de choque remoto")).start();
 	}
 	// Método utilizado por el hilo de conexión para lograr el control del tanque propio remoto.
-	public void manejarTanqueRemoto(){
-		try {
-			tanqueRemotoAControlar.imitar((Imitable)tanquePropio);
-		} catch (RemoteException ex) {
-			System.out.println("Error en el manejo del tanque remoto, clase Conexion. El oponente ha finalizado la sesión.");
-			ex.printStackTrace();
-			this.stopHilos();
-			JOptionPane.showMessageDialog(null, "El oponente abandono conexión.");
-			System.exit(0);
-		}
-	}
-
-	public void setTanquePropio(Tanque tanquePropio){
-		this.tanquePropio = tanquePropio;
-	}
-	
-	public Runnable getHiloManejadorDeTanqueRemoto(){
-		correrHilos = true;
-		return new Runnable(){
-			public void run() {
-				while(correrHilos){
-					manejarTanqueRemoto();
-					try{Thread.sleep(Finals.PERIODO_SINCRONIZACION_TANQUES);}catch(InterruptedException ex){ex.printStackTrace();}
-				}
-			}
-		};
-	}
 	
 	public String getNickTanqueOponente(){
 		String nick = null;
@@ -228,8 +198,8 @@ public class Conexion implements Conectable{
 	public void ponerADisposicionBolasRemotas(){
 		do{
 			try{
-				this.bolaBuenaAControlar = (BolaControlable)Bindeador.getBindeador().ponerADisposicion("Clave bolaBuena");
-				this.bolaMalaAControlar = (BolaControlable)Bindeador.getBindeador().ponerADisposicion("Clave bolaMala"); // Se llama a las remotas en caso de hacer control de bolas localmente, para controlarlas.
+				this.bolaBuenaAControlar = (Imitable)Bindeador.getBindeador().ponerADisposicion("Clave bolaBuena");
+				this.bolaMalaAControlar = (Imitable)Bindeador.getBindeador().ponerADisposicion("Clave bolaMala"); // Se llama a las remotas en caso de hacer control de bolas localmente, para controlarlas.
 			}catch(Exception e){
 				try { Thread.sleep(Finals.ESPERA_CONEXION); } catch (InterruptedException ex) {ex.printStackTrace();}
 				System.out.println("Intento fallido por obtener bolas remotas... Reintentando...");
@@ -245,8 +215,8 @@ public class Conexion implements Conectable{
 	// Método utilizado por el hilo de conexión para lograr el control de las bolas remotas.
 	public void manejarBolasRemotas(){
 		try {
-			bolaBuenaAControlar.setTodo(bolaBuenaLocal.getX(), bolaBuenaLocal.getY());
-			bolaMalaAControlar.setTodo(bolaMalaLocal.getX(), bolaMalaLocal.getY());
+			bolaBuenaAControlar.imitar(this.bolaBuenaLocal);
+			bolaMalaAControlar.imitar(this.bolaMalaLocal);
 		} catch (RemoteException ex) {
 			System.out.println("Error en el manejo de bolas remotas, clase Conexion. El oponente ha finalizado la sesión.");
 			ex.printStackTrace();
@@ -308,20 +278,6 @@ public class Conexion implements Conectable{
 
 		}
 		
-		/*try {
-			if (!this.choquesPendientesCircuitoRemoto.isEmpty()){
-				for(int i = 0; i<this.choquesPendientesCircuitoRemoto.size();i++){
-					this.circuitoRemotoAControlar.informarChoque(this.choquesPendientesCircuitoRemoto.get(i));
-				}
-				this.choquesPendientesCircuitoRemoto.clear();
-			}
-		} catch (RemoteException ex) {
-			System.out.println("Error en el manejo del circuito remoto, clase Conexion. El oponente ha finalizado la sesión.");
-			ex.printStackTrace();
-			this.stopHilos();
-			JOptionPane.showMessageDialog(null, "El oponente abandono conexión.");
-			System.exit(0);
-		}*/
 	}
 	
 	public void setCircuitoPropio(Circuito circuitoPropio){
@@ -384,7 +340,7 @@ public class Conexion implements Conectable{
 
 	
 	public void ponerADisposicionImitadoresRemotos(){
-		Iterator iterador = this.claves.iterator();
+		Iterator iterador = this.clavesImitados.iterator();
 		Imitable imitable=null;
 		while(iterador.hasNext()){
 			String clave = (String) iterador.next();
@@ -400,7 +356,7 @@ public class Conexion implements Conectable{
 	}
 	
 	public void bindearImitadores(){
-		Iterator iterador = this.claves.iterator();
+		Iterator iterador = this.clavesImitadores.iterator();
 		while (iterador.hasNext()){
 			String clave = (String) iterador.next();
 			Bindeador.getBindeador().bindear((Imitable)this.imitadores.get(clave), clave);
@@ -408,27 +364,27 @@ public class Conexion implements Conectable{
 	}
 	
 	public void actualizar(){
-		Hashtable a = new Hashtable();
-		
-		/*
-		Iterator iterador = imitadorRemoto.iterator();
-		while(iterador.hasMore()){
-			iterador.next()
+		Iterator iterador = clavesImitados.iterator();
+		while(iterador.hasNext()){
+				String clave = (String) iterador.next();
+				Imitable imitador = this.imitadoresRemotos.get(clave);
+			try {
+				imitador.imitar(imitables.get(clave));
+			} catch (RemoteException ex) {
+				ex.printStackTrace();
+			}
 		}
-		recorrer imitadorRemoto
-		tomar Clave del objeto recorrido
-		 * buscar clave en imitables
-		 * tomar ese imitable
-		imitableREmoto.imitar(imitable)
-		*/
 	}
 	
-	public void ponerImitadoImitador(String clave, Imitable imitado,Imitable imitador){
+	public void ponerImitador(String clave, Imitable imitador){
 		this.imitadores.put(clave, imitador);
-		this.imitables.put(clave, imitado);
-		if (!this.claves.contains(clave)) this.claves.add(clave);
+		if (!this.clavesImitadores.contains(clave)) this.clavesImitadores.add(clave);
 	}
 	
+	public void ponerImitado(String clave, Imitable imitado){
+		this.imitables.put(clave, imitado);
+		if (!this.clavesImitados.contains(clave)) this.clavesImitados.add(clave);
+	}
 	
 	
 }
