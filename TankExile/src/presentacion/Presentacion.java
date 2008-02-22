@@ -2,25 +2,13 @@
 package presentacion;
 
 import paquete.*;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.*;
+import java.awt.event.*;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
+import javax.swing.*;
 
 public class Presentacion extends JFrame implements MouseListener {
     private static JFrame presentacion;
@@ -166,8 +154,6 @@ public class Presentacion extends JFrame implements MouseListener {
 				}
 				conexion.establecerIDs();
 				dispose();
-				
-				
 				
 				conexion.setVentanaRemota(PrePartida.getPrePartida());
 				conexion.bindearMiVentana(); // Pone a disposición la ventana de PrePartida para el host remoto (permite controlar el botón Inicio).

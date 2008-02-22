@@ -7,6 +7,7 @@ import java.rmi.server.UnicastRemoteObject;
 import paquete.*;
 
 public class Bindeador {
+	public static final int PUERTO = 4500; // Puerto al que se asocian todos los registros.
 	private static Bindeador bindeador = null;
 	
 	public static Bindeador getBindeador(){
@@ -22,13 +23,13 @@ public class Bindeador {
 	}
 	public void bindear(Remote objeto, String clave){
 		try{
-			LocateRegistry.createRegistry(Conexion.PUERTO);
+			LocateRegistry.createRegistry(PUERTO);
 		}catch(Exception e){
 			System.out.println("Registro sobre el puerto realizado.");
 		}
 		try{
-			Remote stub = UnicastRemoteObject.exportObject(objeto, Conexion.PUERTO);		
-			Registry registry = LocateRegistry.getRegistry(Conexion.PUERTO);
+			Remote stub = UnicastRemoteObject.exportObject(objeto, PUERTO);		
+			Registry registry = LocateRegistry.getRegistry(PUERTO);
 			registry.rebind(clave, stub);
 			System.out.print("Servidor de: '"+ clave +"' listo.\nElementos bindeados: ");
 			String lista[] = registry.list();
@@ -46,7 +47,7 @@ public class Bindeador {
 		System.out.println("Poniendo a disposición: '"+clave+"'.");
 		Remote retorno;
 		listo = false;
-		Registry registry = LocateRegistry.getRegistry(Conexion.getConexion().getIP(),Conexion.PUERTO);
+		Registry registry = LocateRegistry.getRegistry(Conexion.getConexion().getIP(), PUERTO);
 		retorno = (Remote) registry.lookup(clave);    
 		listo = true;
 		System.out.println("Correcto: '"+clave+"'.");
@@ -55,7 +56,7 @@ public class Bindeador {
 	
 	public void desbindearTodo(boolean inclusoConexion){
 		try {
-			Registry registro = LocateRegistry.getRegistry(Conexion.PUERTO);
+			Registry registro = LocateRegistry.getRegistry( PUERTO);
 			String[] lista = registro.list();
 			String clave;
 			for(int i=0;i<lista.length;i++){
@@ -69,6 +70,4 @@ public class Bindeador {
 			ex.printStackTrace();
 		}
 	}
-	
-	
 }

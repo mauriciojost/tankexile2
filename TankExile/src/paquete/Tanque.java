@@ -7,8 +7,6 @@ import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.HashMap;
 import javax.imageio.ImageIO;
-import presentacion.Conexion;
-
 
 public class Tanque implements Controlable, ElementoDeJuego, Serializable, Imitable{
 
@@ -162,8 +160,6 @@ public class Tanque implements Controlable, ElementoDeJuego, Serializable, Imita
 		if (temporizadorChoque<5){
 			
 		}
-		
-		
 		// Efectos de animación y reproducción de sonido.
 		if (arriba || abajo || derecha || izquierda){
 			moviendose = true;
@@ -181,7 +177,6 @@ public class Tanque implements Controlable, ElementoDeJuego, Serializable, Imita
 			audio_movimiento.detener();
 			ayuda_sonido = false;
 		}
-
     }
     
 	public int getMovimientoTrama(){return movimientoTrama;}
@@ -285,26 +280,9 @@ public class Tanque implements Controlable, ElementoDeJuego, Serializable, Imita
 		}
 	}
 	
-	/*public void setTodo(int x, int y, int direccion, int movimientoTrama, int choqueTrama, boolean moviendose){
-		bounds.x = x;
-		bounds.y = y;
-		this.moviendose = moviendose;
-		this.direccion = direccion;
-		this.movimientoTrama = movimientoTrama;
-		this.choqueTrama = choqueTrama;
-	}*/
-	
 	public int getChoqueTrama(){
 		return choqueTrama;
 	}
-	
-	/*public String getNickOponente(){
-		return nickOponente;
-	}
-	
-	public void setNickOponente(String nickOponente){
-		this.nickOponente = nickOponente;
-	}*/
 	
 	public void detenerReproduccion(){
 		audio_movimiento.detener();
@@ -368,5 +346,3 @@ public class Tanque implements Controlable, ElementoDeJuego, Serializable, Imita
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 }	
-
-
