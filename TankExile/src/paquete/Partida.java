@@ -108,6 +108,21 @@ public class Partida extends Canvas implements Runnable{
 		
 		tanqueLocalLigadoOponente.setX(circuito.getMeta(otroID).getX());
 		tanqueLocalLigadoOponente.setY(circuito.getMeta(otroID).getY());
+
+		
+		
+		
+		
+//////////////probando		
+		System.out.println("Arranca");
+		
+		conexion.ponerImitado("tanque", tanquePropio);
+		conexion.ponerImitador("tanque", this.tanqueLocalLigadoOponente);
+		
+		conexion.bindearImitadores();
+		conexion.ponerADisposicionImitadoresRemotos();
+//////////////
+		
 		
 		
 		hiloTanqueRemoto.start(); // El hilo que controla al tanque remoto es iniciado.
@@ -146,6 +161,9 @@ public class Partida extends Canvas implements Runnable{
 		this.nickOponente = conexion.getNickTanqueOponente();
 		hiloCircuitoRemoto = new Thread(conexion.getHiloManejadorDeCircuitoRemoto(), "Hilo manejador de circuito remoto");
 		hiloCircuitoRemoto.start();
+		
+		
+		
     }
 
     // Método que llama a la actuación de cada tanque.
