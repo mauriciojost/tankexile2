@@ -4,11 +4,12 @@ import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.*;
 import java.io.Serializable;
+import java.rmi.RemoteException;
 import java.util.HashMap;
 import javax.imageio.ImageIO;
 import presentacion.Conexion;
 
-public class Tanque implements Controlable, ElementoDeJuego, Serializable{
+public class Tanque implements Controlable, ElementoDeJuego, Serializable, Imitable{
 	public transient static final int U_VELOCIDAD = 2; // Parámetro utilizado para determinar la gravedad de un choque según su velocidad.
 	public transient static final int MAX_VELOCIDAD = U_VELOCIDAD * 2; // Velocidad máxima.
 	public transient static final int MIN_VELOCIDAD = U_VELOCIDAD; // Velocidad mínima.
@@ -46,17 +47,6 @@ public class Tanque implements Controlable, ElementoDeJuego, Serializable{
 	//private String nickOponente; 
 	private boolean moviendose; 
 
-	public void imitar(Tanque tanqueAImitar){
-		
-		this.bounds.setLocation(tanqueAImitar.getPos().x+25, tanqueAImitar.getPos().y+25);
-		//this.bounds.setLocation(tanqueAImitar.getPos()); // USAR ESTO
-		this.moviendose = tanqueAImitar.getMoviendose();
-		this.direccion = tanqueAImitar.getDireccion();
-		this.movimientoTrama = tanqueAImitar.getMovimientoTrama();
-		this.choqueTrama = tanqueAImitar.getChoqueTrama();
-		 
-	}
-	
 	public boolean getSonidoHabilitado(){
 		return sonido_habilitado;
 	}
@@ -165,6 +155,11 @@ public class Tanque implements Controlable, ElementoDeJuego, Serializable{
 				choqueTrama = 0;
 			}
 		}
+		
+		if (temporizadorChoque<5){
+			
+		}
+		
 		
 		// Efectos de animación y reproducción de sonido.
 		if (arriba || abajo || derecha || izquierda){
@@ -353,6 +348,20 @@ public class Tanque implements Controlable, ElementoDeJuego, Serializable{
 			setVelocidad(Tanque.MAX_VELOCIDAD);
 		else
 			choque(true);
+	}
+
+	public void imitar(Imitable objetoAImitar) throws RemoteException {
+		Tanque tanqueAImitar = (Tanque)objetoAImitar;
+		this.bounds.setLocation(tanqueAImitar.getPos().x+25, tanqueAImitar.getPos().y+25);
+		//this.bounds.setLocation(tanqueAImitar.getPos()); // USAR ESTO
+		this.moviendose = tanqueAImitar.getMoviendose();
+		this.direccion = tanqueAImitar.getDireccion();
+		this.movimientoTrama = tanqueAImitar.getMovimientoTrama();
+		this.choqueTrama = tanqueAImitar.getChoqueTrama();
+	}
+
+	public Object[] getParametros() throws RemoteException {
+		throw new UnsupportedOperationException("Not supported yet.");
 	}
 }	
 

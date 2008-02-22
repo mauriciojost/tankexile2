@@ -14,7 +14,6 @@ public class Conexion implements Conectable{
 	
 	private String iPOponente; // Ip del host oponente.
 	public static final int PUERTO = 4500; // Puerto al que se asocian todos los registros.
-	
 	private Tanque tanquePropio; // Tanque correspondiente al host propio (o no-remoto).
 	private Controlable tanqueRemotoAControlar; // Interfaz con la que se controla el tanque propio remoto (en el host oponente).
 	private BolaControlable bolaBuenaAControlar;
@@ -30,7 +29,7 @@ public class Conexion implements Conectable{
 	
 	private CircuitoControlable circuitoRemotoAControlar;
 	private Circuito circuitoPropio;
-	private ArrayList<int[]> choquesPendientesCircuitoRemoto = new ArrayList<int[]>();
+	
 	private PrePartida ventana;
 	private Tanque tanqueLocalLigadoOponente;
 	
@@ -169,7 +168,7 @@ public class Conexion implements Conectable{
 	// Método utilizado por el hilo de conexión para lograr el control del tanque propio remoto.
 	public void manejarTanqueRemoto(){
 		try {
-			tanqueRemotoAControlar.imitar(tanquePropio);
+			tanqueRemotoAControlar.imitar((Imitable)tanquePropio);
 		} catch (RemoteException ex) {
 			System.out.println("Error en el manejo del tanque remoto, clase Conexion. El oponente ha finalizado la sesión.");
 			ex.printStackTrace();
@@ -286,7 +285,18 @@ public class Conexion implements Conectable{
 	
 	// Método utilizado por el hilo de conexión para lograr el control del tanque propio remoto.
 	public void manejarCircuitoRemoto(){
-		try {
+		
+		try{
+			
+			circuitoRemotoAControlar.imitar(this.circuitoPropio);
+			
+		}catch(Exception e){
+			System.out.println("Error al intentar que el circuito remoto imite.");
+			e.printStackTrace();
+
+		}
+		
+		/*try {
 			if (!this.choquesPendientesCircuitoRemoto.isEmpty()){
 				for(int i = 0; i<this.choquesPendientesCircuitoRemoto.size();i++){
 					this.circuitoRemotoAControlar.informarChoque(this.choquesPendientesCircuitoRemoto.get(i));
@@ -299,17 +309,14 @@ public class Conexion implements Conectable{
 			this.stopHilos();
 			JOptionPane.showMessageDialog(null, "El oponente abandono conexión.");
 			System.exit(0);
-		}
+		}*/
 	}
 	
 	public void setCircuitoPropio(Circuito circuitoPropio){
 		this.circuitoPropio = circuitoPropio;
 	}
 	
-	public void choqueNuevoCircuitoLocal(int indice, int magnitudDelChoque){
-		int choque[] = {indice,magnitudDelChoque};
-		this.choquesPendientesCircuitoRemoto.add(choque);
-	}
+	
 	public Runnable getHiloManejadorDeCircuitoRemoto(){
 		correrHilos = true;
 		return new Runnable(){
