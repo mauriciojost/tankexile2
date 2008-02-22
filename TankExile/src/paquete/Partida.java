@@ -166,6 +166,7 @@ public class Partida extends Canvas implements Runnable{
 		tanquePropio.actuar();
 		tanqueLocalLigadoOponente.actuarResumido();
 		circuito.actuar();
+		conexion.actualizar();
     }
 	
 	
@@ -244,7 +245,6 @@ public class Partida extends Canvas implements Runnable{
 			this.tanqueLocalLigadoOponente.detenerReproduccion();
 			this.getPrePartida().setVisible(true); // Se hace visible la ventana de prePartida.
 			this.stopHilos(); // Se detienen los hilos del juego.
-			conexion.stopHilos(); // Se detienen los hilos que controlan remotamente.
 			this.bolaBuena.stopHilo(); // Se detienen los hilos de cada bola.
 			this.bolaMala.stopHilo();
 			ventana.dispose(); // Se da de baja esta ventana.
