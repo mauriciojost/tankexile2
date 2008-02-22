@@ -7,7 +7,7 @@ import java.util.Random;
 import javax.imageio.ImageIO;
 
 // Clase que representa a cada bola del juego.
-public class Bola extends Thread implements BolaControlable, ElementoDeJuego{
+public class Bola extends Thread implements Imitable, BolaControlable, ElementoDeJuego{
 	private static int RANGO_VELOCIDAD = 1;
 	private static int MIN_VELOCIDAD = 1;
 	private static final int MARGEN = 1;
@@ -29,7 +29,7 @@ public class Bola extends Thread implements BolaControlable, ElementoDeJuego{
 		this.buena = buena; this.tanquePropio = tanquePropio;
 		currentFrame = (buena?0:1);
 		try {
-			if (imagen[0]== null) imagen[0] = ImageIO.read(getClass().getClassLoader().getResource("res/bolaBuena.gif"));
+			if (imagen[0]== null) imagen[0] = ImageIO.read(getClass().getClassLoader().getResource("res/bolaBuena1.gif"));
 			if (imagen[1]== null) imagen[1] = ImageIO.read(getClass().getClassLoader().getResource("res/bolaMala.gif"));
 			
 		} catch (Exception e) {
@@ -141,5 +141,13 @@ public class Bola extends Thread implements BolaControlable, ElementoDeJuego{
 
 	public Rectangle getBounds(){
 		return bounds;
+	}
+
+	public void imitar(Imitable objetoAImitar) throws RemoteException {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	public Object[] getParametros() throws RemoteException {
+		throw new UnsupportedOperationException("Not supported yet.");
 	}
 }

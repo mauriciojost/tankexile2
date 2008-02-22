@@ -8,7 +8,7 @@ import javax.imageio.ImageIO;
 import presentacion.Conexion;
 public class Muro extends Bloque{
 	public static final int UNIDAD_DE_MAGNITUD = Tanque.U_VELOCIDAD;
-	private static final int NUMERO_DE_IMAGENES=5;
+	private static int NUMERO_DE_IMAGENES=5;
 	private static BufferedImage imagenes[] = new BufferedImage[NUMERO_DE_IMAGENES]; // Conjunto de imágenes asociadas a la clase Muro.
 	private int tramaActual = 0; // Atributo que representa al número de imagen x (en imagenes[x]) que se ha de representar para este bloque al pintarlo en la pantalla.
 	
@@ -18,7 +18,7 @@ public class Muro extends Bloque{
 		try {
 			// Carga de las imágenes en la Clase (puesto que son las mismas para cada objeto de la misma).
 			for (int i = 0; i < NUMERO_DE_IMAGENES; i++){
-				if (imagenes[i]==null) imagenes[i] = ImageIO.read(getClass().getClassLoader().getResource("res/murito"+i+".gif"));
+				if (imagenes[i]==null) imagenes[i] = ImageIO.read(getClass().getClassLoader().getResource("res/murito0"+i+".gif"));
 			}
 		} catch (Exception e) {
 			System.out.println("Error: no se ha podido realizar la carga de imágenes de la clase Muro, " + e.getClass().getName()+" "+e.getMessage());

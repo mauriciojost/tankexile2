@@ -1,5 +1,6 @@
 package presentacion;
 
+import java.util.Observable;
 import paquete.*;
 import java.io.*;
 import java.rmi.RemoteException;
@@ -37,7 +38,7 @@ public class Conexion implements Conectable{
 	private PrePartida ventana;
 	private Tanque tanqueLocalLigadoOponente;
 	
-	
+
 	private HashMap<String,Imitable> imitadores = new HashMap<String,Imitable>();
 	private HashMap<String,Imitable> imitables = new HashMap<String,Imitable>();
 	private HashMap<String,Imitable> imitadoresRemotos = new HashMap<String,Imitable>();
@@ -380,6 +381,7 @@ public class Conexion implements Conectable{
 	public String getIP(){
 		return this.iPOponente;
 	}
+
 	
 	public void ponerADisposicionImitadoresRemotos(){
 		Iterator iterador = this.claves.iterator();

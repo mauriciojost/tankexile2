@@ -9,7 +9,9 @@ import java.util.HashMap;
 import javax.imageio.ImageIO;
 import presentacion.Conexion;
 
+
 public class Tanque implements Controlable, ElementoDeJuego, Serializable, Imitable{
+
 	public transient static final int U_VELOCIDAD = 2; // Parámetro utilizado para determinar la gravedad de un choque según su velocidad.
 	public transient static final int MAX_VELOCIDAD = U_VELOCIDAD * 2; // Velocidad máxima.
 	public transient static final int MIN_VELOCIDAD = U_VELOCIDAD; // Velocidad mínima.
@@ -120,6 +122,7 @@ public class Tanque implements Controlable, ElementoDeJuego, Serializable, Imita
 	public void setMoviendose(boolean estaMoviendose){moviendose = estaMoviendose;}
 	public boolean getMoviendose(){return moviendose;}
 	
+
 	// Método de actuación resumida del tanque, que sólo reproduce o nó un sonido según la situación o no de movimiento. Usado por el tanque oponente.
 	public void actuarResumido() {
 		if (moviendose){
@@ -178,6 +181,7 @@ public class Tanque implements Controlable, ElementoDeJuego, Serializable, Imita
 			audio_movimiento.detener();
 			ayuda_sonido = false;
 		}
+
     }
     
 	public int getMovimientoTrama(){return movimientoTrama;}

@@ -8,12 +8,11 @@ import java.io.*;
 import java.nio.channels.FileChannel;
 
 import javax.swing.*;
-import test.VentanaPresentacion;
+//import test.VentanaPresentacion;
 
 
 public class PrePartida extends JFrame implements MouseListener, VentanaControlable{
 	private final String NOMBRE_CIRCUITO_TEMPORAL = "temporal.tmp";
-
 	private static VentanaControlable ventanaRemota;
 	private static PrePartida prePartida;
 	private JTextField estado;
@@ -45,7 +44,7 @@ public class PrePartida extends JFrame implements MouseListener, VentanaControla
 		super("Tank Exile - Pre Partida");
 		
 	
-		setBounds(VentanaPresentacion.getPresentacion().getX(),VentanaPresentacion.getPresentacion().getY(),Finals.ANCHO_VENTANA-250,385); // Establece posición y tamaño de la ventana.
+		setBounds(Presentacion.getPresentacion().getX(),Presentacion.getPresentacion().getY(),Finals.ANCHO_VENTANA-250,385); // Establece posición y tamaño de la ventana.
 		setResizable(false); // No se permite dar nuevo tamaño a la ventana.
 		
 		JPanel panel = (JPanel)this.getContentPane(); // Panel donde se grafican los objetos (bloques)que componen el escenario y los tanques que representan a cada jugador.
