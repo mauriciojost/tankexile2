@@ -4,6 +4,8 @@ import paquete.*;
 import java.io.*;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Random;
 
 // Clase cuya función es establecer la comunicación entre los dos hosts.
@@ -32,6 +34,13 @@ public class Conexion implements Conectable{
 	
 	private PrePartida ventana;
 	private Tanque tanqueLocalLigadoOponente;
+	
+	
+	private HashMap imitadores = new HashMap();
+	private HashMap imitables = new HashMap();
+	private HashMap imitadoresRemotos = new HashMap();
+	private ArrayList claves = new ArrayList();
+	
 	
 	/* Formato de presentación:
 			1. Bindeo.
@@ -348,6 +357,9 @@ public class Conexion implements Conectable{
 		}
 	}
 	
+	
+	
+	
 	public void partidaPerdida(){
 		try {
 			circuitoRemotoAControlar.oponenteLlego();
@@ -366,4 +378,34 @@ public class Conexion implements Conectable{
 	public String getIP(){
 		return this.iPOponente;
 	}
+	
+	
+	
+	public void actualizar(){
+		Hashtable a = new Hashtable();
+		
+		/*
+		Iterator iterador = imitadorRemoto.iterator();
+		while(iterador.hasMore()){
+			iterador.next()
+		}
+		recorrer imitadorRemoto
+		tomar Clave del objeto recorrido
+		 * buscar clave en imitables
+		 * tomar ese imitable
+		imitableREmoto.imitar(imitable)
+		*/
+	}
+	public void ponerImitador(Object clave, Object imitador){
+		this.imitadores.put(clave, imitador);
+		if (!this.claves.contains(clave)) this.claves.add(clave);
+	}
+	
+	public void ponerImitado(Object clave, Object imitado){
+		this.imitables.put(clave, imitado);
+		if (!this.claves.contains(clave)) this.claves.add(clave);
+	}
+	
+	
+	
 }
