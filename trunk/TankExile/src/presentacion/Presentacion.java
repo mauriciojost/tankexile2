@@ -135,13 +135,6 @@ public class Presentacion extends JFrame implements MouseListener {
 	// Método invocado cuando se presiona click sobre el boton Conectar.
 	public void responderConectar(){
 		if (!bConectar.isEnabled()) return;
-
-		
-		if (conexion != null){ // Se asegura de desconectar una conexion previa y detiene los hilos asociados a ella.
-			Bindeador.getBindeador().desbindearTodo(true);
-			conexion.stopHilos();	
-		}
-		
 		
 		this.conexion = Conexion.getConexion();
 		// Hilo que realiza los intenetos de conexión

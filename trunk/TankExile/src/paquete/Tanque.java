@@ -276,7 +276,7 @@ public class Tanque implements Controlable, ElementoDeJuego, Serializable, Imita
 		choqueGrande = (this.trancoTanque==Tanque.MAX_VELOCIDAD)  || agravante; // Cuando un choque se quiere forzar a ser grande, se utiliza 'agravante' en true.
 		trancoTanque = Tanque.MIN_VELOCIDAD; // Modifica velocidad despues de comprobar el tipo de choque.
 		contadorSubTramaChoque=0;
-		Conexion.getConexion().indicarChoque();
+		
 	}
 	
 	public void choqueResumido(){
