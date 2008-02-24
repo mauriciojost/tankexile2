@@ -10,6 +10,7 @@ import javax.swing.event.*;
 import java.rmi.RemoteException;
 
 import java.util.*;
+import test.PrePartida;
 
 public class Escenografia extends JFrame implements MouseListener, ListSelectionListener {
     private static JList lista;
@@ -27,10 +28,8 @@ public class Escenografia extends JFrame implements MouseListener, ListSelection
     private Escenografia() {
 
 		super("TankExile - Seleccionar Escenario");
-		//setBounds(cx,cy,Finals.ANCHO_VENTANA-200,Finals.ALTO_VENTANA-300);
-		//escenografia=new Escenografia();
 		
-        setBounds(PrePartida.getPrePartida().getX(), PrePartida.getPrePartida().getY(), Finals.ANCHO_VENTANA-200,Finals.ALTO_VENTANA-300);
+        this.setBounds(PrePartida.getPrePartida().getX(), PrePartida.getPrePartida().getY(), Finals.ANCHO_VENTANA-200,Finals.ALTO_VENTANA-300);
 		setResizable(false);
 		getContentPane().setPreferredSize(new Dimension(Finals.ANCHO_VENTANA-200,Finals.ALTO_VENTANA-300));
 		//getContentPane().setLayout(new FlowLayout());
@@ -65,7 +64,7 @@ public class Escenografia extends JFrame implements MouseListener, ListSelection
 		
 		// Creamos Botones.
 		
-		Creador creador = new Creador();
+		Creador creador = Creador.getCreador();
 		
 		b_seleccion = creador.crearBoton("Seleccionar", "Utilizar circuito seleccionado", this);
 		
@@ -109,10 +108,6 @@ public class Escenografia extends JFrame implements MouseListener, ListSelection
 	}
 	
 	public void valueChanged(ListSelectionEvent e) {}
-	
-	public void metodoDeControl() throws RemoteException {
-		throw new UnsupportedOperationException("Not supported yet.");
-	}
 	
 	public void responderSeleccionar(){
 		File archivo = (File)lista.getSelectedValue();

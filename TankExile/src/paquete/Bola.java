@@ -31,7 +31,7 @@ public class Bola extends Thread implements Imitable, ElementoDeJuego{
 		this.buena = buena; //this.tanquePropio = tanquePropio;
 		currentFrame = (buena?0:1);
 		try {
-			if (imagen[0]== null) imagen[0] = ImageIO.read(getClass().getClassLoader().getResource("res/bolaBuena1.gif"));
+			if (imagen[0]== null) imagen[0] = ImageIO.read(getClass().getClassLoader().getResource("res/bolaBuena1.GIF"));
 			if (imagen[1]== null) imagen[1] = ImageIO.read(getClass().getClassLoader().getResource("res/bolaMala.gif"));	
 		} catch (Exception e) {
 			System.out.println("Error: no se ha podido realizar la carga de imágenes de la clase Bola, "+e.getClass().getName()+" "+e.getMessage());
@@ -42,7 +42,6 @@ public class Bola extends Thread implements Imitable, ElementoDeJuego{
 	public void pintar(Graphics2D g){
 		g.drawImage( imagen[currentFrame], bounds.x,bounds.y, null);
 	}
-
 
 	public int getX ( ) { return bounds.x; }
 	public int getY ( ) { return bounds.y; }
@@ -69,11 +68,6 @@ public class Bola extends Thread implements Imitable, ElementoDeJuego{
 		bounds.y+=velocidad.y;
 	}
 
-	public void setTodo(int x, int y) throws RemoteException {
-		bounds.x = x;
-		bounds.y = y;
-	}
-	
 	public boolean getBuena(){
 		return buena;
 	}
@@ -120,7 +114,6 @@ public class Bola extends Thread implements Imitable, ElementoDeJuego{
 	public Rectangle getBounds(){
 		return bounds;
 	}
-
 
 	public void imitar(Imitable objetoAImitar) throws RemoteException {
 		Bola bola = (Bola)objetoAImitar;

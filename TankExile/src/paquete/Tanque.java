@@ -8,7 +8,7 @@ import java.rmi.RemoteException;
 import java.util.HashMap;
 import javax.imageio.ImageIO;
 
-public class Tanque implements Controlable, ElementoDeJuego, Serializable, Imitable{
+public class Tanque implements ElementoDeJuego, Serializable, Imitable{
 
 	public transient static final int U_VELOCIDAD = 2; // Parámetro utilizado para determinar la gravedad de un choque según su velocidad.
 	public transient static final int MAX_VELOCIDAD = U_VELOCIDAD * 2; // Velocidad máxima.
@@ -34,18 +34,18 @@ public class Tanque implements Controlable, ElementoDeJuego, Serializable, Imita
 	private int direccion = Finals.ARRIBA; // Atributo representativo de la dirección actual del tanque.
 	
 	private boolean choque = false; // Indicador del estado de choque.
-	private int temporizadorChoque = 0; // Temporizador que permite limitar en tiempo los efectos del choque.
+	private int temporizadorChoque = PERIODO_CHOQUE_GRANDE; // Temporizador que permite limitar en tiempo los efectos del choque.
 	private int choqueTrama = 0; // Índice auxiliar del arreglo las imágenes del tanque.
 	
     private transient static HashMap<Integer, BufferedImage> imagenes = new HashMap<Integer, BufferedImage>(); // Conjunto de imágenes del tanque, asociadas a una clave cada una mediante un HashMap.
 	private int id; // Identificador del tanque.
-
-	private transient boolean ayuda_sonido = false;
+	
 	private transient static boolean sonido_habilitado = false;
 	private transient Audio audio_movimiento;
 	private transient Audio audio_choque;
 	//private String nickOponente; 
-	private boolean moviendose; 
+	private boolean moviendose;
+	private transient boolean moviendose_remoto=false;
 
 	public boolean getSonidoHabilitado(){
 		return sonido_habilitado;
@@ -84,13 +84,12 @@ public class Tanque implements Controlable, ElementoDeJuego, Serializable, Imita
     }
     
 	// Constructor.
-	@SuppressWarnings("static-access")
 	public Tanque(int id) {
 		this.id = id;
 		// Carga de las imágenes estáticamente.
 		if (imagenes.isEmpty())
 			try{
-				for (int i = 0; i < this.TRAMAS_MOVIMIENTO;i++){
+				for (int i = 0; i < Tanque.TRAMAS_MOVIMIENTO;i++){
 					String nombre = "res/Tanque_arriba"+(TRAMAS_MOVIMIENTO - i-1)+".gif";
 					imagenes.put(new Integer(30000+i), ImageIO.read(getClass().getClassLoader().getResource(nombre)));
 					imagenes.put(new Integer(Finals.ABAJO    *10000+ i), this.rotarImagen(imagenes.get(30000+ i),180));
@@ -120,20 +119,6 @@ public class Tanque implements Controlable, ElementoDeJuego, Serializable, Imita
 	public void setMoviendose(boolean estaMoviendose){moviendose = estaMoviendose;}
 	public boolean getMoviendose(){return moviendose;}
 	
-
-	// Método de actuación resumida del tanque, que sólo reproduce o nó un sonido según la situación o no de movimiento. Usado por el tanque oponente.
-	public void actuarResumido() {
-		if (moviendose){
-			if(sonido_habilitado && !ayuda_sonido){
-				audio_movimiento.reproduccionLoop();
-				ayuda_sonido = true;
-			}
-		} else {
-			audio_movimiento.detener();
-			ayuda_sonido = false;
-		}
-    }
-	
 	// Método de actuación del tanque.
 	public void actuar() {
 		bounds.x+=velocidad.x; // Actualización de la posición.
@@ -157,30 +142,27 @@ public class Tanque implements Controlable, ElementoDeJuego, Serializable, Imita
 			}
 		}
 		
-		if (temporizadorChoque<5){
-			
-		}
 		// Efectos de animación y reproducción de sonido.
 		if (arriba || abajo || derecha || izquierda){
 			moviendose = true;
 			temporizadorMovimento++;			
-			if(sonido_habilitado && !ayuda_sonido){
-				audio_movimiento.reproduccionLoop();
-				ayuda_sonido = true;
-			}
 			if (temporizadorMovimento==PERIODO_MOVIMENTO){
 				temporizadorMovimento = 0;
 				movimientoTrama=(movimientoTrama+trancoTanque)%TRAMAS_MOVIMIENTO;
 			}
-		}else{ 
-			moviendose = false;
+		}else{moviendose = false;}
+		
+		if (moviendose || moviendose_remoto) {
+			if(sonido_habilitado){
+				audio_movimiento.reproduccionLoop();
+			}
+		} else {
 			audio_movimiento.detener();
-			ayuda_sonido = false;
 		}
+		
     }
     
 	public int getMovimientoTrama(){return movimientoTrama;}
-	
 	// Método que actualiza las velocidades según se tengan o no ciertas teclas presionadas.
 	private void actualizarVelocidades(){
 		velocidad.x=0; velocidad.y=0; 
@@ -189,14 +171,10 @@ public class Tanque implements Controlable, ElementoDeJuego, Serializable, Imita
 		if (izquierda)	velocidad.x = -trancoTanque;
 		if (derecha)	velocidad.x = +trancoTanque;
 	}
-  
 	// Métodos básicos de posicionamiento.
 	public Point getPos(){return bounds.getLocation();}
-	//public int getX(){return bounds.x;}
-	//public int getY(){return bounds.y;}
 	public void setX(int i){bounds.x=i;}
 	public void setY(int i){bounds.y=i;}
-		
 	// Conjunto de métodos de respuesta al teclado.
 	public void irArriba(){
 		forzarTeclasSueltas();
@@ -206,12 +184,10 @@ public class Tanque implements Controlable, ElementoDeJuego, Serializable, Imita
 		}
 		actualizarVelocidades();
 	}
-	
 	public void noIrArriba(){ 
 		arriba=false;
 		actualizarVelocidades();
 	}
-
 	public void irAbajo(){
 		forzarTeclasSueltas();
 		if (teclasHabilitadas){ 
@@ -220,12 +196,10 @@ public class Tanque implements Controlable, ElementoDeJuego, Serializable, Imita
 		}
 		actualizarVelocidades();
 	}
-
 	public void noIrAbajo(){ 	
 		abajo=false;
 		actualizarVelocidades();
 	}
-	
 	public void irIzquierda(){
 		forzarTeclasSueltas();
 		if (teclasHabilitadas){ 
@@ -234,12 +208,10 @@ public class Tanque implements Controlable, ElementoDeJuego, Serializable, Imita
 		}
 		actualizarVelocidades();
 	}
-	
 	public void noIrIzquierda(){ 
 		izquierda=false;
 		actualizarVelocidades();
 	}
-	
 	public void irDerecha(){ 
 		forzarTeclasSueltas();
 		if (teclasHabilitadas){
@@ -248,18 +220,16 @@ public class Tanque implements Controlable, ElementoDeJuego, Serializable, Imita
 		}
 		actualizarVelocidades();	
 	}
-	
 	public void noIrDerecha(){
 		derecha=false;
 		actualizarVelocidades();
 	}
-	
 	public void setDireccion(int direccion){
 		this.direccion = direccion;
 	}
 	
 	// Método que genera los efectos de un choque en el tanque.
-	public void choque(boolean agravante){ 
+	public void choque(boolean agravante){
 		teclasHabilitadas = false;
 		choque = true;
 		if(sonido_habilitado){
@@ -271,13 +241,6 @@ public class Tanque implements Controlable, ElementoDeJuego, Serializable, Imita
 		choqueGrande = (this.trancoTanque==Tanque.MAX_VELOCIDAD)  || agravante; // Cuando un choque se quiere forzar a ser grande, se utiliza 'agravante' en true.
 		trancoTanque = Tanque.MIN_VELOCIDAD; // Modifica velocidad despues de comprobar el tipo de choque.
 		contadorSubTramaChoque=0;
-		
-	}
-	
-	public void choqueResumido(){
-		if(sonido_habilitado){
-			audio_choque.reproduccionSimple();
-		}
 	}
 	
 	public int getChoqueTrama(){
@@ -285,14 +248,14 @@ public class Tanque implements Controlable, ElementoDeJuego, Serializable, Imita
 	}
 	
 	public void detenerReproduccion(){
-		audio_movimiento.detener();
+		audio_movimiento.detenerTotal();
+		this.audio_choque.detenerTotal();
 	}
 	
 	public Rectangle getBounds(){
 		return bounds;
 	}
 
-	
 	public void eventoChoque(ElementoDeJuego contraQuien) {
 		try {
 			Class[] arregloDeClases = {contraQuien.getClass()};
@@ -300,8 +263,7 @@ public class Tanque implements Controlable, ElementoDeJuego, Serializable, Imita
 			this.getClass().getMethod("eventoChoqueCon" + contraQuien.getClass().getSimpleName(), (Class[]) arregloDeClases).invoke(this, arrayArgumentos);
 		} catch (Exception ex) {
 			ex.printStackTrace();
-		}
-		
+		}	
 	}
 	
 	public void eventoChoqueConTanque(Tanque tanque){
@@ -309,6 +271,20 @@ public class Tanque implements Controlable, ElementoDeJuego, Serializable, Imita
 		choque(false);
 	}
 	
+	public void eventoChoqueConMuro(Muro muro){
+		corregirPosicion(muro);
+		choque(false);
+	}
+	
+	public void eventoChoqueConMeta(Meta meta){}
+	
+	public void eventoChoqueConBola(Bola bola){
+		if(bola.getBuena())
+			setVelocidad(Tanque.MAX_VELOCIDAD);
+		else
+			choque(true);
+	}
+
 	private void corregirPosicion(ElementoDeJuego objeto){
 		switch (this.getDireccion()){
 			// Según la dirección del tanque, este es llevado hacia atrás hasta la condición de no solapamiento.
@@ -319,29 +295,20 @@ public class Tanque implements Controlable, ElementoDeJuego, Serializable, Imita
 		}
 	}
 	
-	public void eventoChoqueConMuro(Muro muro){
-		corregirPosicion(muro);
-		choque(false);
-	}
-	public void eventoChoqueConMeta(Meta meta){}
-	
-	public void eventoChoqueConBola(Bola bola){
-		if(bola.getBuena())
-			setVelocidad(Tanque.MAX_VELOCIDAD);
-		else
-			choque(true);
-	}
-
 	public void imitar(Imitable objetoAImitar) throws RemoteException {
 		Tanque tanqueAImitar = (Tanque)objetoAImitar;
-		this.bounds.setLocation(tanqueAImitar.getPos().x+23, tanqueAImitar.getPos().y);
+		this.bounds.setLocation(tanqueAImitar.getPos().x, tanqueAImitar.getPos().y);
 		//this.bounds.setLocation(tanqueAImitar.getPos()); // USAR ESTO
-		this.moviendose = tanqueAImitar.getMoviendose();
+		this.moviendose_remoto = tanqueAImitar.getMoviendose();
 		this.direccion = tanqueAImitar.getDireccion();
 		this.movimientoTrama = tanqueAImitar.getMovimientoTrama();
 		this.choqueTrama = tanqueAImitar.getChoqueTrama();
+		if (tanqueAImitar.getChoque()) this.choque(false);
 	}
 
+	public boolean getChoque(){
+		return (this.temporizadorChoque<2);
+	}
 	public Object[] getParametros() throws RemoteException {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}

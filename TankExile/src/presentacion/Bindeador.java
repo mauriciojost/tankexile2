@@ -38,8 +38,8 @@ public class Bindeador {
 			}
 			System.out.println();
 		}catch(Exception e){
-			System.err.println("Excepción de servidor de:'"+clave+"'. ");
-			e.printStackTrace();
+			System.err.println("Excepción de servidor de:'"+clave+"'. Reintentando...");
+			//e.printStackTrace();
 		}
 	}
 	

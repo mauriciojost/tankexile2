@@ -12,8 +12,15 @@ import javax.swing.JTextField;
 import paquete.Finals;
 
 public class Creador {
+	private static Creador creador;
 	
-	public Creador(){
+	public static Creador getCreador(){
+		if (creador == null){
+			creador = new Creador();
+		}
+		return creador;
+	}
+	private Creador(){
 		
 	}
 	
@@ -29,7 +36,6 @@ public class Creador {
 		JPanel panel = new JPanel();
 		panel.setPreferredSize(d);
 		panel.setLayout(lm);
-		panel.setBackground(Finals.colorGris);
 		return panel;
 	}
 	
@@ -40,10 +46,22 @@ public class Creador {
 		return campo;
 	}
 	
+	public JTextField crearCampo(String nombre, boolean editable){
+		JTextField campo = new JTextField(nombre);
+		campo.setEditable(editable);
+		return campo;
+	}
+	
 	public JTextArea crearArea(String nombre, boolean editable, Color bg){
 		JTextArea area = new JTextArea(nombre);
 		area.setEditable(editable);
 		area.setBackground(bg);
+		return area;
+	}
+	public JTextArea crearArea(String nombre, boolean editable){
+		JTextArea area = new JTextArea(nombre);
+		area.setEditable(editable);
+		
 		return area;
 	}
 }

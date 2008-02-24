@@ -6,7 +6,6 @@ import java.rmi.RemoteException;
 import javax.imageio.ImageIO;
 
 // Clase que representa a los muros en el circuito. 
-import presentacion.Conexion;
 public class Muro extends Bloque{
 	public transient static final int UNIDAD_DE_MAGNITUD = Tanque.U_VELOCIDAD;
 	private transient static int NUMERO_DE_IMAGENES=5;
@@ -19,7 +18,7 @@ public class Muro extends Bloque{
 		try {
 			// Carga de las imágenes en la Clase (puesto que son las mismas para cada objeto de la misma).
 			for (int i = 0; i < NUMERO_DE_IMAGENES; i++){
-				if (imagenes[i]==null) imagenes[i] = ImageIO.read(getClass().getClassLoader().getResource("res/murito0"+i+".gif"));
+				if (imagenes[i]==null) imagenes[i] = ImageIO.read(getClass().getClassLoader().getResource("res/murito0"+i+".GIF"));
 			}
 		} catch (Exception e) {
 			System.out.println("Error: no se ha podido realizar la carga de imágenes de la clase Muro, " + e.getClass().getName()+" "+e.getMessage());
@@ -50,7 +49,9 @@ public class Muro extends Bloque{
 
 	public void imitar(Imitable objetoAImitar){
 		Muro muro = (Muro)objetoAImitar;
-		this.tramaActual = muro.getTramaActual();
+		if(this.tramaActual < muro.getTramaActual()){
+			this.tramaActual = muro.getTramaActual();
+		}
 	}
 
 	public int getTramaActual(){

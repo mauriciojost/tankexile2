@@ -9,6 +9,7 @@ import java.nio.channels.FileChannel;
 
 import javax.swing.*;
 //import test.VentanaPresentacion;
+import test.VentanaPresentacion;
 
 
 public class PrePartida extends JFrame implements MouseListener, VentanaControlable{
@@ -16,15 +17,11 @@ public class PrePartida extends JFrame implements MouseListener, VentanaControla
 	private static VentanaControlable ventanaRemota;
 	private static PrePartida prePartida;
 	private JTextField estado;
-	
-	private ImageIcon ii = new ImageIcon(getClass().getClassLoader().getResource("res/tank.GIF"));
-
+	private ImageIcon imagenPresentacion = new ImageIcon(getClass().getClassLoader().getResource("res/tank.GIF"));
 	private JButton b_inicio;
 	private File circuitoSeleccionado = new File(NOMBRE_CIRCUITO_TEMPORAL);
-
     private String nick_propio = null;
 	private boolean sonido_prepartida = false;
-
     private JButton b_elegir_circuito;
 	
 	// Método que permite tener referencias, a la instancia de Presentacion y de Conexión, por parte de la instancia de PrePartida.
@@ -43,15 +40,14 @@ public class PrePartida extends JFrame implements MouseListener, VentanaControla
 	private PrePartida(){
 		super("Tank Exile - Pre Partida");
 		
-	
-		setBounds(Presentacion.getPresentacion().getX(),Presentacion.getPresentacion().getY(),Finals.ANCHO_VENTANA-250,385); // Establece posición y tamaño de la ventana.
+		this.setBounds(VentanaPresentacion.getPresentacion().getX(),VentanaPresentacion.getPresentacion().getY(),400,350); // Establece posición y tamaño de la ventana.
 		setResizable(false); // No se permite dar nuevo tamaño a la ventana.
 		
 		JPanel panel = (JPanel)this.getContentPane(); // Panel donde se grafican los objetos (bloques)que componen el escenario y los tanques que representan a cada jugador.
-		panel.setPreferredSize(new Dimension(Finals.ANCHO_VENTANA-250,385));//Finals.ALTO_VENTANA-300
+		//panel.setPreferredSize(new Dimension(Finals.ANCHO_VENTANA-250,385));//Finals.ALTO_VENTANA-300
 		this.setLocation((Toolkit.getDefaultToolkit().getScreenSize().width-this.getSize().width)/2, (Toolkit.getDefaultToolkit().getScreenSize().height-this.getSize().height)/2);
 		panel.setLayout(new FlowLayout());
-		//panel.setBackground(Color.LIGHT_GRAY);
+		
 		
 		addWindowListener(
 			new WindowAdapter() {	
@@ -59,16 +55,18 @@ public class PrePartida extends JFrame implements MouseListener, VentanaControla
 			}
 		); // Se define un objeto que escucha los eventos sobre la ventana.
 		
-		Creador creador = new Creador(); // Objeto que puede crear paneles, botones, areas y campos de texto.
+		Creador creador = Creador.getCreador(); // Objeto que puede crear paneles, botones, areas y campos de texto.
 		
-		JPanel panel_icono = creador.crearPanel(new Dimension(Finals.ANCHO_VENTANA-250,150), new FlowLayout());
+		JPanel panel_icono = creador.crearPanel(new Dimension(400,120), new FlowLayout());
 		
 		// Crea una etiqueta para cargar icono que contiene a la imagen.
-		JLabel iM = new JLabel();
-		iM.setIcon(ii);
-		iM.setOpaque(false);
-		iM.setSize(200, 200);
-		panel_icono.add(iM);
+		JLabel imagen = new JLabel();
+		imagen.setIcon(imagenPresentacion);
+		imagen.setOpaque(false);
+		imagen.setSize(200, 200);
+		panel_icono.add(imagen);
+		panel_icono.setBounds(imagen.getBounds());
+		panel_icono.setLocation(0, 0);
 		
 		b_inicio = creador.crearBoton("Inicio", "Comienza la partida", this); // (texto, tool tip text, listener).
 		b_inicio.setEnabled(false);
@@ -81,7 +79,7 @@ public class PrePartida extends JFrame implements MouseListener, VentanaControla
 		
 		JButton b_salida = creador.crearBoton("Salida", "Cerrar", this);
 		
-		estado = creador.crearCampo("Estado ", false, Finals.colorGris);
+		estado = creador.crearCampo("Estado ", false);
 		estado.setPreferredSize(new Dimension(80,30));
 		
 		JPanel panel_botones = creador.crearPanel(new Dimension(Finals.ANCHO_VENTANA-250,200), new GridLayout(6,1));
@@ -134,8 +132,8 @@ public class PrePartida extends JFrame implements MouseListener, VentanaControla
         this.dispose();
         
         
-		Partida partida = new Partida(this.circuitoSeleccionado.getPath(), this);
-		partida.jugar();
+		//Partida partida = new Partida(this.circuitoSeleccionado.getPath(), this);
+		//partida.jugar();
 		this.dispose();
 		
 	}
@@ -151,7 +149,7 @@ public class PrePartida extends JFrame implements MouseListener, VentanaControla
 	
 	// Método invocado cuando se ha validado el circuito seleccionado.
 	public void setCircuitoSeleccionado(File circuitoSeleccionado){
-		// SE PUEDE EVITAR EL PROPIO PORQUE SIEMPRE SELECCIONO UN CIRCUITO PROPIO.
+		
 		try {
 			Conexion.getConexion().enviarAHostRemoto(circuitoSeleccionado.getPath(), NOMBRE_CIRCUITO_TEMPORAL);				
 			try {copiarArchivo(circuitoSeleccionado.getPath(), NOMBRE_CIRCUITO_TEMPORAL);}catch(Exception e){e.printStackTrace();}
@@ -175,7 +173,8 @@ public class PrePartida extends JFrame implements MouseListener, VentanaControla
 	public void responderOpciones(){
 		//configurar sonido y nombre del jugador
 		this.dispose();
-		Configurador.getConfigurador().setVisible(true);
+		//Configurador.getConfigurador().setVisible(true);
+		test.Configuracion.getConfiguracion().setVisible(true);
 	}
 	// Método invocado cuando se hace click en el botón Salida.
     public void responderSalida(){
@@ -200,6 +199,5 @@ public class PrePartida extends JFrame implements MouseListener, VentanaControla
 	
 	public void setInicioHabilitado(boolean habilitada) throws RemoteException {
 		this.b_inicio.setEnabled(habilitada);
-			
 	}
 }

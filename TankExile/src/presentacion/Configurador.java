@@ -42,7 +42,7 @@ public class Configurador extends JFrame implements MouseListener {
 		}); // Se define un objeto que escucha los eventos sobre la ventana.
 		
 		// Se crea instancia que sabe crear paneles, botones, areas y campos de texto.
-		Creador creador = new Creador();
+		Creador creador = Creador.getCreador();
 		JTextArea titulo_nick_propio = creador.crearArea("Nick: ", false, Finals.colorGris);
 		
 		campo_nick_propio = creador.crearCampo("", true, Finals.colorBlanco);
