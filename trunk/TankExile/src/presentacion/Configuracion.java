@@ -1,4 +1,4 @@
-package test;
+package presentacion;
 
 import java.awt.Font;
 import java.awt.Toolkit;

@@ -1,4 +1,4 @@
-package test;
+package presentacion;
 
 import java.awt.Toolkit;
 import java.net.InetAddress;
@@ -10,20 +10,21 @@ import presentacion.Conexion;
 import presentacion.VentanaControlable;
 
 public class VentanaPresentacion extends JFrame {
-	private static JFrame presentacion;
+	private static JFrame instanciaPresentacion;
 	private VentanaControlable ventanaRemota;
 	
 	/** Creates new form VentanaPresentacion */
 	public VentanaPresentacion() {
 		initComponents();
-		presentacion = this;
+		instanciaPresentacion = this;
 		try {
 			this.iPPropio.setText(InetAddress.getLocalHost().getHostAddress());
 		} catch (UnknownHostException ex) {
 			ex.printStackTrace();
 		}
-		
+		this.iPOponente.setText(this.iPPropio.getText().substring(0,iPPropio.getText().lastIndexOf(".")+1));
 		this.setLocation((Toolkit.getDefaultToolkit().getScreenSize().width-this.getSize().width)/2, (Toolkit.getDefaultToolkit().getScreenSize().height-this.getSize().height)/2);
+		
 	
 		
 	}
@@ -32,7 +33,7 @@ public class VentanaPresentacion extends JFrame {
 	}
 	
 	public static JFrame getPresentacion() {
-		return presentacion;
+		return instanciaPresentacion;
 	}
 	
 	/** This method is called from within the constructor to
@@ -124,7 +125,7 @@ public class VentanaPresentacion extends JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        etiquetaEstado.setText("Etiqueta de estado");
+        etiquetaEstado.setText("Ingrese la dirección IP del jugador oponente");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -209,14 +210,14 @@ public class VentanaPresentacion extends JFrame {
 				
 				
 				
-				Conexion.getConexion().setVentanaRemota(test.PrePartida.getPrePartida());
+				Conexion.getConexion().setVentanaRemota(PrePartida.getPrePartida());
 				Conexion.getConexion().bindearMiVentana(); // Pone a disposición la ventana de PrePartida para el host remoto (permite controlar el botón Inicio).
 				System.out.println("Servidor de ventana listo.");
 				
 				
 				ventanaRemota = Conexion.getConexion().ponerADisposicionVentanaRemota(); // Se intenta obtener la ventana PrePartida del host remoto.
 				System.out.println("Ventana remota a disposición.");
-				test.PrePartida.getPrePartida().setVentanaRemota(ventanaRemota);
+				PrePartida.getPrePartida().setVentanaRemota(ventanaRemota);
 				
 				iPOponente.setEnabled(true);
 				botonConectar.setEnabled(true);
