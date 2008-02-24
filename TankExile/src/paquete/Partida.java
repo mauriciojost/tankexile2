@@ -24,7 +24,7 @@ public class Partida extends Canvas implements Runnable{
     private int otroID; // Representa el ID del jugador oponente.
     private static Conexion conexion; // Objeto utilizado para todo lo relacionado a la comunicación entre ambos hosts.
     private static String nombreCircuitoTXT; // Atributo que representa el nombre del archivo del circuito.
-	private static test.PrePartida prePartida;
+	private static presentacion.PrePartida prePartida;
 	private boolean correrHilos = true;
 	private static Partida instanciaPartida;
 	private JFrame ventana;
@@ -32,7 +32,7 @@ public class Partida extends Canvas implements Runnable{
 	private String nickOponente;
 	
     // Contstructor. Genera los elementos básicos de una aplicación del tipo juego.
-    public Partida(String nombreCircuitoTXT, test.PrePartida prePartida) {
+    public Partida(String nombreCircuitoTXT, presentacion.PrePartida prePartida) {
 		instanciaPartida = this;
 		Partida.prePartida = prePartida;
 		ventana = new JFrame("TankExile"); // Armado de la ventana.
@@ -140,7 +140,7 @@ public class Partida extends Canvas implements Runnable{
 	}
 	
 	// Método que retorna la ventana de prePartida, y según sea la localidad o no del host, habilita el botón de inicio.
-	public test.PrePartida getPrePartida(){
+	public presentacion.PrePartida getPrePartida(){
 		if (conexion.getID()==0){
 			try {prePartida.setInicioHabilitado(false);} catch (RemoteException ex) {ex.printStackTrace();}
 		}

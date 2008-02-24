@@ -7,7 +7,7 @@ import java.rmi.RemoteException;
 import javax.imageio.ImageIO;
 
 // Clase cuyos objetos son parte del circuito, cada uno es partida para un tanque y llegada para el otro.
-import test.PrePartida;
+import presentacion.PrePartida;
 
 public class Meta extends Bloque{
 	private transient static BufferedImage imagenes[] = new BufferedImage[2]; // Conjunto de imágenes asociadas a la clase Meta.

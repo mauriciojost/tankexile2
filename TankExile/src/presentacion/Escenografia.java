@@ -9,7 +9,7 @@ import javax.swing.*;
 import javax.swing.event.*;
 
 import java.util.*;
-import test.PrePartida;
+import presentacion.PrePartida;
 
 public class Escenografia extends JFrame implements ListSelectionListener {
     private static JList lista;

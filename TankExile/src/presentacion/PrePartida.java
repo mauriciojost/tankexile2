@@ -1,4 +1,4 @@
-package test;
+package presentacion;
 
 import java.awt.Font;
 import java.awt.Toolkit;
@@ -170,7 +170,7 @@ public class PrePartida extends javax.swing.JFrame implements VentanaControlable
 		//configurar sonido y nombre del jugador
 		this.dispose();
 		//Configurador.getConfigurador().setVisible(true);
-		test.Configuracion.getConfiguracion().setVisible(true);
+		presentacion.Configuracion.getConfiguracion().setVisible(true);
 	}//GEN-LAST:event_botonOpcionesActionPerformed
 
 	private void botonSalidaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonSalidaActionPerformed
@@ -210,8 +210,8 @@ public class PrePartida extends javax.swing.JFrame implements VentanaControlable
 			new Runnable(){
 				String auxiliar[] = {etiquetaEstado.getText(),""};
 				public void run(){
-					for (int i=0;i<10;i++){
-						setEstado(auxiliar[i%2],2);
+					for (int i=0;i<13;i++){
+						setEstado(auxiliar[i%2],1);
 						try{Thread.sleep(1000);}catch(Exception e){e.printStackTrace();}
 					}
 				}

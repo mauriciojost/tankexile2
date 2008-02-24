@@ -183,7 +183,7 @@
     </Component>
     <Component class="javax.swing.JLabel" name="etiquetaEstado">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Etiqueta de estado"/>
+        <Property name="text" type="java.lang.String" value="Ingrese la direcci&#xf3;n IP del jugador oponente"/>
       </Properties>
     </Component>
   </SubComponents>
