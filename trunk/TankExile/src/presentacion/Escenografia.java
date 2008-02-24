@@ -34,7 +34,7 @@ public class Escenografia extends JFrame implements MouseListener, ListSelection
 		getContentPane().setPreferredSize(new Dimension(Finals.ANCHO_VENTANA-200,Finals.ALTO_VENTANA-300));
 		//getContentPane().setLayout(new FlowLayout());
 		getContentPane().setLayout(new FlowLayout());
-		getContentPane().setBackground(Finals.colorGris);
+		//getContentPane().setBackground(Finals.colorGris);
 		addWindowListener(new WindowAdapter() {
             @Override
 			public void windowClosing(WindowEvent e) {System.exit(0);}
@@ -60,7 +60,7 @@ public class Escenografia extends JFrame implements MouseListener, ListSelection
 		
 		JScrollPane jsp = new JScrollPane(lista);
 		jsp.setPreferredSize(new Dimension(Finals.ANCHO_VENTANA-210, Finals.ALTO_VENTANA-400));
-		jsp.setBackground(Finals.colorGris);
+		//jsp.setBackground(Finals.colorGris);
 		
 		// Creamos Botones.
 		
@@ -76,7 +76,7 @@ public class Escenografia extends JFrame implements MouseListener, ListSelection
 		
 		estado.setText("Estado:                     ");
 		estado.setEditable(false);
-		estado.setBackground(Finals.colorGris);
+		//estado.setBackground(Finals.colorGris);
 		
 		JPanel panel_estado = creador.crearPanel(new Dimension(Finals.ANCHO_VENTANA-200,100), new GridLayout(1,1));
 		panel_estado.add(estado);
