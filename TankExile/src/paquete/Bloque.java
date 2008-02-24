@@ -1,10 +1,10 @@
 package paquete;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 
 // Clase cuyos objetos son las unidades de conformación del circuito de juego.
-import java.awt.Rectangle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+
 public abstract class Bloque implements ElementoDeJuego, Imitable{	
 	private int indice=-1;
 	private transient Rectangle bounds = new Rectangle(0,0,Finals.BLOQUE_LADO_LONG,Finals.BLOQUE_LADO_LONG);

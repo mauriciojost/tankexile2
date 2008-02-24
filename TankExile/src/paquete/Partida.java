@@ -45,7 +45,7 @@ public class Partida extends Canvas implements Runnable{
 		panel.add(this); // El panel pintará este canvas (definido por esta instancia de Partida).
 	
 
-		ventana.setBounds(0,0,Finals.ANCHO_VENTANA+6,Finals.ALTO_VENTANA+30); // Establecimiento de las dimensiones de la ventana.
+		ventana.setBounds(0,0,Finals.ANCHO_VENTANA+6,Finals.ALTO_VENTANA+27); // Establecimiento de las dimensiones de la ventana.
 		
 		ventana.setVisible(true); // Ventana visible.
 
@@ -121,12 +121,10 @@ public class Partida extends Canvas implements Runnable{
 		ventana.setVisible(true); // Ventana visible.
 		this.requestFocus(); // El foco es tomado.
 		
-		
 		conexion.ponerADisposicionImitadoresRemotos();
 		// Se comienza la sincronización de los dos circuitos.
 		this.nickPropio = (prePartida.getNickPropio());
 		this.nickOponente = conexion.getNickOponente();
-		
     }
 
     // Método que llama a la actuación de cada tanque.
@@ -159,6 +157,7 @@ public class Partida extends Canvas implements Runnable{
 			
 		// Pintado del circuito.
 		circuito.pintar(g);
+		
 		bolaBuena.pintar(g);
 		bolaMala.pintar(g);
 		
@@ -177,7 +176,6 @@ public class Partida extends Canvas implements Runnable{
 		// Pintado de los tanques y las bolas.
 		tanqueLocalLigadoOponente.pintar(g);
 		tanquePropio.pintar(g);
-		
 		
 		// Se muestra lo pintado.
 		estrategia.show();

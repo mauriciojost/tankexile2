@@ -7,6 +7,7 @@ import java.nio.channels.FileChannel;
 import java.rmi.RemoteException;
 import paquete.Partida;
 import presentacion.Conexion;
+import presentacion.Copiador;
 import presentacion.Escenografia;
 import presentacion.VentanaControlable;
 
@@ -180,7 +181,7 @@ public class PrePartida extends javax.swing.JFrame implements VentanaControlable
 	public void setCircuitoSeleccionado(File circuitoSeleccionado){
 		
 		try {
-			Conexion.getConexion().enviarAHostRemoto(circuitoSeleccionado.getPath(), NOMBRE_CIRCUITO_TEMPORAL);				
+			Copiador.getCopiador().enviarAHostRemoto(circuitoSeleccionado.getPath(), NOMBRE_CIRCUITO_TEMPORAL);				
 			try {copiarArchivo(circuitoSeleccionado.getPath(), NOMBRE_CIRCUITO_TEMPORAL);}catch(Exception e){e.printStackTrace();}
 		} catch (IOException ex) {
 			System.err.println("Error al intentar copiar en el método de Conexion copiarDeHostRemoto.");
@@ -204,6 +205,19 @@ public class PrePartida extends javax.swing.JFrame implements VentanaControlable
 		this.botonInicio.setEnabled(habilitada);
 	}
 	
+	public void titilar(){
+		(new Thread(
+			new Runnable(){
+				String auxiliar[] = {etiquetaEstado.getText(),""};
+				public void run(){
+					for (int i=0;i<10;i++){
+						setEstado(auxiliar[i%2],2);
+						try{Thread.sleep(1000);}catch(Exception e){e.printStackTrace();}
+					}
+				}
+			}
+		)).start();
+	}
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton botonElegir;
     private javax.swing.JButton botonInicio;

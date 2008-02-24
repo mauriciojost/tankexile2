@@ -9,7 +9,7 @@ import javax.imageio.ImageIO;
 // Clase que representa a cada bola del juego.
 
 public class Bola extends Thread implements Imitable, ElementoDeJuego{
-	private transient static int RANGO_VELOCIDAD = 1;
+	private transient static int RANGO_VELOCIDAD = 2;
 	private transient static int MIN_VELOCIDAD = 1;
 	private transient static final int MARGEN = 1;
 	private transient static BufferedImage imagen[] = new BufferedImage[2];
@@ -18,8 +18,8 @@ public class Bola extends Thread implements Imitable, ElementoDeJuego{
 	private transient boolean correrHilos = true; // Indicador de detención del hilo.
 	//private transient Tanque tanquePropio;
 	private transient boolean buena; // Indicador de bola buena o mala.
-	private transient Point velocidad = new Point(2,2);
-	private Rectangle bounds = new Rectangle((Finals.BLOQUES_NUM/2) * 20,(Finals.BLOQUES_NUM/2) * 20,Finals.BLOQUE_LADO_LONG,Finals.BLOQUE_LADO_LONG);
+	private transient Point velocidad = new Point(0,0);
+	private Rectangle bounds = new Rectangle((Finals.BLOQUES_NUM/2) * 20+5,(Finals.BLOQUES_NUM/2) * 20+5,Finals.BLOQUE_LADO_LONG/2,Finals.BLOQUE_LADO_LONG/2);
 	private transient int currentFrame; // Indicador de la imagen a mostrar.
 	private transient boolean soyLocal = false; // Indicador de que la bola actual es controlada localmente, y no de forma remota.
 	private transient Random rnd = new Random(); // Generador de números pseudo aleatorios usados en el rebote de las bolas.
@@ -31,7 +31,7 @@ public class Bola extends Thread implements Imitable, ElementoDeJuego{
 		this.buena = buena; //this.tanquePropio = tanquePropio;
 		currentFrame = (buena?0:1);
 		try {
-			if (imagen[0]== null) imagen[0] = ImageIO.read(getClass().getClassLoader().getResource("res/bolaBuena1.GIF"));
+			if (imagen[0]== null) imagen[0] = ImageIO.read(getClass().getClassLoader().getResource("res/bolaBuena.gif"));
 			if (imagen[1]== null) imagen[1] = ImageIO.read(getClass().getClassLoader().getResource("res/bolaMala.gif"));	
 		} catch (Exception e) {
 			System.out.println("Error: no se ha podido realizar la carga de imágenes de la clase Bola, "+e.getClass().getName()+" "+e.getMessage());
@@ -43,9 +43,6 @@ public class Bola extends Thread implements Imitable, ElementoDeJuego{
 		g.drawImage( imagen[currentFrame], bounds.x,bounds.y, null);
 	}
 
-	public int getX ( ) { return bounds.x; }
-	public int getY ( ) { return bounds.y; }
-
 	public void stopHilo(){
 		correrHilos = false;
 	}
@@ -53,12 +50,11 @@ public class Bola extends Thread implements Imitable, ElementoDeJuego{
 	@Override
 	public void run(){
 		if (soyLocal){
-			bounds.setLocation(Finals.BLOQUES_NUM*Finals.BLOQUE_LADO_LONG/2,Finals.BLOQUES_NUM*Finals.BLOQUE_LADO_LONG/2);
-			velocidad.setLocation((rnd.nextBoolean()?1:-1) * velocidad.x, (rnd.nextBoolean()?1:-1) * velocidad.y);
+			velocidad.setLocation((rnd.nextBoolean()?1:-1), (rnd.nextBoolean()?1:-1));
 		}
-		try {Thread.sleep(2000);} catch (InterruptedException ex) {ex.printStackTrace();}
+		try {Thread.sleep(4000);} catch (InterruptedException ex) {ex.printStackTrace();}
 		while(correrHilos){
-			actuar(); // En caso de ser local, la bola actua teniendo en cuenta rebotes. No así cuando es controlada de forma remota.
+			actuar(); 
 			try {Thread.sleep(Finals.PERIODO_SINCRONIZACION_BOLAS);} catch (InterruptedException ex) {ex.printStackTrace();}
 		}
 	}
@@ -88,10 +84,10 @@ public class Bola extends Thread implements Imitable, ElementoDeJuego{
 	public void eventoChoqueConMeta(Meta meta){}
 	
 	private void rebotar(ElementoDeJuego objeto){
-		Point arriba = new Point(bounds.x+Finals.BLOQUE_LADO_LONG/2,bounds.y+MARGEN);
-		Point abajo = new Point(bounds.x+Finals.BLOQUE_LADO_LONG/2,bounds.y+Finals.BLOQUE_LADO_LONG-MARGEN);
-		Point derecha = new Point(bounds.x+Finals.BLOQUE_LADO_LONG-MARGEN,bounds.y+Finals.BLOQUE_LADO_LONG/2);
-		Point izquierda = new Point(bounds.x+MARGEN,bounds.y+Finals.BLOQUE_LADO_LONG/2);
+		Point arriba = new Point(bounds.x+bounds.width/2,bounds.y+MARGEN);
+		Point abajo = new Point(bounds.x+bounds.width/2,bounds.y+bounds.height-MARGEN);
+		Point derecha = new Point(bounds.x+bounds.width-MARGEN,bounds.y+bounds.height/2);
+		Point izquierda = new Point(bounds.x+MARGEN,bounds.y+bounds.height/2);
 		
 		if (objeto.getBounds().contains(arriba)){	
 			velocidad.y = (Bola.MIN_VELOCIDAD + rnd.nextInt(Bola.RANGO_VELOCIDAD));
@@ -117,12 +113,11 @@ public class Bola extends Thread implements Imitable, ElementoDeJuego{
 
 	public void imitar(Imitable objetoAImitar) throws RemoteException {
 		Bola bola = (Bola)objetoAImitar;
-		bounds.x = bola.getX();
-		bounds.y = bola.getY();
+		bounds.x = bola.getBounds().x;
+		bounds.y = bola.getBounds().y;
 	}
 
 	public Object[] getParametros() throws RemoteException {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
-
 }

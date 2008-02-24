@@ -43,11 +43,11 @@ public class Bindeador {
 		}
 	}
 	
-	public Remote ponerADisposicion(String clave)throws Exception{
+	public Remote ponerADisposicion(String ip, String clave)throws Exception{
 		System.out.println("Poniendo a disposición: '"+clave+"'.");
 		Remote retorno;
 		listo = false;
-		Registry registry = LocateRegistry.getRegistry(Conexion.getConexion().getIP(), PUERTO);
+		Registry registry = LocateRegistry.getRegistry(ip, PUERTO);
 		retorno = (Remote) registry.lookup(clave);    
 		listo = true;
 		System.out.println("Correcto: '"+clave+"'.");
