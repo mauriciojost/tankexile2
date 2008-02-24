@@ -24,7 +24,7 @@ public class Partida extends Canvas implements Runnable{
     private int otroID; // Representa el ID del jugador oponente.
     private static Conexion conexion; // Objeto utilizado para todo lo relacionado a la comunicación entre ambos hosts.
     private static String nombreCircuitoTXT; // Atributo que representa el nombre del archivo del circuito.
-	private static PrePartida prePartida;
+	private static test.PrePartida prePartida;
 	private boolean correrHilos = true;
 	private static Partida instanciaPartida;
 	private JFrame ventana;
@@ -32,7 +32,7 @@ public class Partida extends Canvas implements Runnable{
 	private String nickOponente;
 	
     // Contstructor. Genera los elementos básicos de una aplicación del tipo juego.
-    public Partida(String nombreCircuitoTXT, PrePartida prePartida) {
+    public Partida(String nombreCircuitoTXT, test.PrePartida prePartida) {
 		instanciaPartida = this;
 		Partida.prePartida = prePartida;
 		ventana = new JFrame("TankExile"); // Armado de la ventana.
@@ -72,15 +72,10 @@ public class Partida extends Canvas implements Runnable{
     }
     // Método que arranca la escena de la partida. Involucra la inicialización de los elementos principales del juego en sí.
     public void iniciarEscena() {
-		ventana.setVisible(true); // Ventana visible.
-		this.requestFocus(); // El foco es tomado.
-		
 		circuito = new Circuito(nombreCircuitoTXT); // Creación del circuito de juego.	
 		tanquePropio = new Tanque(yoID); // Creación del tanque comandado por el jugador en este host.
 		tanqueLocalLigadoOponente = new Tanque(otroID); // Creación del tanque que será ligado al registro de RMI para ser comandado por el host remoto.
-		
-		circuito.setTanques(tanquePropio, tanqueLocalLigadoOponente);
-	
+		circuito.setTanques(tanquePropio, tanqueLocalLigadoOponente);	
 		Conexion.getConexion().setNickPropio(prePartida.getNickPropio()); // Nick que será leido por el host remoto.
 		tanquePropio.setSonidoHabilitado(prePartida.getSonidoHabilitado());
 		
@@ -99,10 +94,11 @@ public class Partida extends Canvas implements Runnable{
 		bolaMala = new Bola(false,!(this.yoID == 1));
 		
 		
+		
 		circuito.agregarBola(bolaBuena);
 		circuito.agregarBola(bolaMala);
 		
-				
+		
 		if (this.yoID == 1){
 			bolaBuena.start();
 			conexion.ponerImitado("bolaBuena", bolaBuena);
@@ -114,22 +110,19 @@ public class Partida extends Canvas implements Runnable{
 		}
 		
 		
-		//BORRAR, SÓLO PARA PRUEBAS
-		//	bolaBuena.start();
-		//	bolaMala.start();
-		//
-		
-		System.out.println("Arranca");
 		conexion.ponerImitador("circuito", circuito);
 		conexion.ponerImitado("circuito", circuito);
-		
 		
 		conexion.ponerImitado("tanque", tanquePropio);
 		conexion.ponerImitador("tanque", tanqueLocalLigadoOponente);
 
 		conexion.bindearImitadores();
+		
+		ventana.setVisible(true); // Ventana visible.
+		this.requestFocus(); // El foco es tomado.
+		
+		
 		conexion.ponerADisposicionImitadoresRemotos();
-//////////////
 		// Se comienza la sincronización de los dos circuitos.
 		this.nickPropio = (prePartida.getNickPropio());
 		this.nickOponente = conexion.getNickOponente();
@@ -139,14 +132,17 @@ public class Partida extends Canvas implements Runnable{
     // Método que llama a la actuación de cada tanque.
     public void actualizarEscena(){
 		tanquePropio.actuar();
-		tanqueLocalLigadoOponente.actuarResumido();
+		tanqueLocalLigadoOponente.actuar();
 		circuito.actuar();
 		conexion.actualizar();
     }
-	
+	public void mostrarEstado(String estado){
+		estrategia.getDrawGraphics().drawString(estado, 20,20); // Grafica el nick propio
+		estrategia.show();
+	}
 	
 	// Método que retorna la ventana de prePartida, y según sea la localidad o no del host, habilita el botón de inicio.
-	public PrePartida getPrePartida(){
+	public test.PrePartida getPrePartida(){
 		if (conexion.getID()==0){
 			try {prePartida.setInicioHabilitado(false);} catch (RemoteException ex) {ex.printStackTrace();}
 		}

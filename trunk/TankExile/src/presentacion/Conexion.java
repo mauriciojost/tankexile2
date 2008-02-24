@@ -16,8 +16,7 @@ public class Conexion implements Conectable{
 	private double claveOponente; // Valor numérico enviado desde el oponente para iniciar el turno.
 	private boolean claveOponenteRecibida = false; // Indicador de la llegada de la clave del oponente.
 	private int miID = -1;
-	private CircuitoControlable circuitoRemotoAControlar;
-	private PrePartida ventana;
+	private VentanaControlable ventana;
 	
 	private HashMap<String,Imitable> imitadores = new HashMap<String,Imitable>();
 	private HashMap<String,Imitable> imitables = new HashMap<String,Imitable>();
@@ -52,7 +51,7 @@ public class Conexion implements Conectable{
 		return Bindeador.getBindeador().getListo();
 	}
 	
-	public void setVentanaRemota(PrePartida ventana){
+	public void setVentanaRemota(VentanaControlable ventana){
 		this.ventana = ventana;
 	}
 	// Método que pone la ventana de selección de circuitos de este host a disposición del host oponente.
@@ -166,7 +165,6 @@ public class Conexion implements Conectable{
 		return this.iPOponente;
 	}
 
-	
 	public void ponerADisposicionImitadoresRemotos(){
 		Iterator iterador = this.clavesImitados.iterator();
 		Imitable imitable=null;
@@ -176,9 +174,11 @@ public class Conexion implements Conectable{
 				try{
 					imitable = (Imitable)Bindeador.getBindeador().ponerADisposicion(clave);
 				}catch(Exception e){
-					e.printStackTrace();
+					Partida.getPartida().mostrarEstado("Fallo en el intento de poner a disposición la clave: '"+ clave + "'. Reintentando...");
+					try{Thread.sleep(500);}catch(Exception ex){ex.printStackTrace();}
 				}
 			}while(!Bindeador.getBindeador().getListo());
+			Partida.getPartida().mostrarEstado("Conexión exitosa (clave: '"+ clave + "').");
 			this.imitadoresRemotos.put(clave, imitable);
 		}
 	}
@@ -192,6 +192,7 @@ public class Conexion implements Conectable{
 	}
 	
 	public void actualizar(){
+		
 		Runnable a = new Runnable(){
 			public void run(){
 				Iterator iterador = clavesImitados.iterator();
@@ -202,8 +203,11 @@ public class Conexion implements Conectable{
 						imitador.imitar(imitables.get(clave));
 					} catch (RemoteException ex) {
 						ex.printStackTrace();
-						JOptionPane.showMessageDialog(null, "Se perdió la conexión.");
-						System.exit(-1);
+						Partida.getPartida().stopHilos();
+						synchronized(Conexion.getConexion()){
+							JOptionPane.showMessageDialog(null, "Se perdió la conexión.");
+							System.exit(-1);
+						}
 					}
 				}
 			

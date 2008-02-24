@@ -7,7 +7,6 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import paquete.Finals;
 import presentacion.Conexion;
-import presentacion.PrePartida;
 import presentacion.VentanaControlable;
 
 public class VentanaPresentacion extends JFrame {
@@ -133,18 +132,19 @@ public class VentanaPresentacion extends JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(etiquetaEstado, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(imagenTankExile, javax.swing.GroupLayout.PREFERRED_SIZE, 417, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addComponent(separadorEstado, javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(separador, javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                            .addComponent(sepadadorRed, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(botonConectar, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(botonCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(imagenTankExile, javax.swing.GroupLayout.Alignment.LEADING, 0, 0, Short.MAX_VALUE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(etiquetaEstado, javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(separadorEstado, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(separador, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                .addComponent(sepadadorRed, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(botonConectar, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(botonCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE))))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -209,14 +209,14 @@ public class VentanaPresentacion extends JFrame {
 				
 				
 				
-				Conexion.getConexion().setVentanaRemota(PrePartida.getPrePartida());
+				Conexion.getConexion().setVentanaRemota(test.PrePartida.getPrePartida());
 				Conexion.getConexion().bindearMiVentana(); // Pone a disposición la ventana de PrePartida para el host remoto (permite controlar el botón Inicio).
 				System.out.println("Servidor de ventana listo.");
 				
 				
 				ventanaRemota = Conexion.getConexion().ponerADisposicionVentanaRemota(); // Se intenta obtener la ventana PrePartida del host remoto.
 				System.out.println("Ventana remota a disposición.");
-				PrePartida.getPrePartida().setVentanaRemota(ventanaRemota);
+				test.PrePartida.getPrePartida().setVentanaRemota(ventanaRemota);
 				
 				iPOponente.setEnabled(true);
 				botonConectar.setEnabled(true);

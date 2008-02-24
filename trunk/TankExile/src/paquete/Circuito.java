@@ -8,7 +8,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import javax.swing.JOptionPane;
-import presentacion.PrePartida;
+
 
 public class Circuito implements CircuitoControlable, Serializable, Imitable{
 	private transient static Circuito circuito;
@@ -132,6 +132,14 @@ public class Circuito implements CircuitoControlable, Serializable, Imitable{
 			}	
 		}
 		
+		for(int i=0; i<bolas.size();i++){
+			Bola bola = (Bola)bolas.get(i);
+			if (tanqueOponente.getBounds().intersects(bola.getBounds())){
+				tanqueOponente.eventoChoque(bola);
+				bola.eventoChoque(tanqueOponente);
+			}	
+		}
+		
 		if (tanqueLocal.getBounds().intersects(tanqueOponente.getBounds())){
 			tanqueLocal.eventoChoque(tanqueOponente);
 			tanqueOponente.eventoChoque(tanqueLocal);
@@ -145,7 +153,6 @@ public class Circuito implements CircuitoControlable, Serializable, Imitable{
 	
 	public void imitar(Imitable circuito){
 		Object[] array = null;
-		
 		
 		try{
 			array = (Object[])circuito.getParametros();
@@ -176,6 +183,8 @@ public class Circuito implements CircuitoControlable, Serializable, Imitable{
 
 	public Object[] getParametros() throws RemoteException {
 		Object[] arreglo = {this.elementosAImitar};
+		//System.out.println("getParametros con elementos=" + elementosAImitar.size());
+		elementosAImitar = new ArrayList<Imitable>();
 		return arreglo;
 	}
 }	
