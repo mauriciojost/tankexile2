@@ -159,7 +159,6 @@ public class Tanque implements ElementoDeJuego, Serializable, Imitable{
 		} else {
 			audio_movimiento.detener();
 		}
-		
     }
     
 	public int getMovimientoTrama(){return movimientoTrama;}

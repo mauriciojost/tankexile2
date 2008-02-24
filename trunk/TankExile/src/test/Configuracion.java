@@ -60,7 +60,7 @@ public class Configuracion extends javax.swing.JFrame {
 
         jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("Sonido"));
 
-        botonSonido.setText("Habilitado");
+        botonSonido.setText("Deshabilitado");
         botonSonido.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 botonSonidoActionPerformed(evt);

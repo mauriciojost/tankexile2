@@ -43,9 +43,7 @@ public class Muro extends Bloque{
 		deterioro(tanque.getVelocidad()); // Se provoca en el muro indicado un deterioro.
 	}
 	
-	public void eventoChoqueConBola(Bola bola){
-		//System.out.println(this.getNombre() + ": eventoChoqueConBola(...)");
-	}
+	public void eventoChoqueConBola(Bola bola){}
 
 	public void imitar(Imitable objetoAImitar){
 		Muro muro = (Muro)objetoAImitar;

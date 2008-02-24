@@ -7,12 +7,11 @@ import java.io.File;
 import java.io.FileFilter;
 import javax.swing.*;
 import javax.swing.event.*;
-import java.rmi.RemoteException;
 
 import java.util.*;
 import test.PrePartida;
 
-public class Escenografia extends JFrame implements MouseListener, ListSelectionListener {
+public class Escenografia extends JFrame implements ListSelectionListener {
     private static JList lista;
     private JSplitPane splitPane;
     private static Escenografia escenografia;
@@ -28,7 +27,6 @@ public class Escenografia extends JFrame implements MouseListener, ListSelection
     private Escenografia() {
 
 		super("TankExile - Seleccionar Escenario");
-		
         this.setBounds(PrePartida.getPrePartida().getX(), PrePartida.getPrePartida().getY(), Finals.ANCHO_VENTANA-200,Finals.ALTO_VENTANA-300);
 		setResizable(false);
 		getContentPane().setPreferredSize(new Dimension(Finals.ANCHO_VENTANA-200,Finals.ALTO_VENTANA-300));
@@ -43,40 +41,40 @@ public class Escenografia extends JFrame implements MouseListener, ListSelection
 		// Filtrado de archivos del tipo circuito.
 		FileFilter fileFilter = new FileFilter() {
 			public boolean accept(File f) {
-				if (f.isDirectory() || (!tec.equals(f.getName().substring((f.getName().length())-4)))) {
-					return false;
-				} else {
-					return true;
-				} 
+				return !(f.isDirectory() || (!tec.equals(f.getName().substring((f.getName().length())-4))));
 			}
 		};
 		
 		vector_de_archivos = dir.listFiles(fileFilter); // Se aplica el filtro para que solo sean visibles los archivos .tec de la carpeta Circuitos.
 		lista = new JList(vector_de_archivos);
-		//lista.setPreferredSize(new Dimension(Finals.ANCHO_VENTANA-210,Finals.ALTO_VENTANA-300-110));
 		lista.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		lista.addListSelectionListener(this);
 		lista.setSelectedIndex(0);
 		
 		JScrollPane jsp = new JScrollPane(lista);
 		jsp.setPreferredSize(new Dimension(Finals.ANCHO_VENTANA-210, Finals.ALTO_VENTANA-400));
-		//jsp.setBackground(Finals.colorGris);
 		
 		// Creamos Botones.
-		
 		Creador creador = Creador.getCreador();
+		b_seleccion = creador.crearBoton("Seleccionar", "Utilizar circuito seleccionado", null);
+		b_seleccion.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                responderSeleccionar();
+            }
+        });
 		
-		b_seleccion = creador.crearBoton("Seleccionar", "Utilizar circuito seleccionado", this);
-		
-		b_cancelar = creador.crearBoton("Cancelar", "", this);
-		
+		b_cancelar = creador.crearBoton("Cancelar", "", null);
+		b_cancelar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                responderCancelar();
+            }
+        });
 		JPanel panel_boton = creador.crearPanel(new Dimension(Finals.ANCHO_VENTANA-200, 115), new FlowLayout(FlowLayout.CENTER));
 		panel_boton.add(b_seleccion);
 		panel_boton.add(b_cancelar);
 		
-		estado.setText("Estado:                     ");
+		estado.setText("");
 		estado.setEditable(false);
-		//estado.setBackground(Finals.colorGris);
 		
 		JPanel panel_estado = creador.crearPanel(new Dimension(Finals.ANCHO_VENTANA-200,100), new GridLayout(1,1));
 		panel_estado.add(estado);
@@ -85,9 +83,9 @@ public class Escenografia extends JFrame implements MouseListener, ListSelection
 		getContentPane().add(panel_boton);
 		getContentPane().add(panel_estado);
 		
+		this.setLocation((Toolkit.getDefaultToolkit().getScreenSize().width-this.getSize().width)/2, (Toolkit.getDefaultToolkit().getScreenSize().height-this.getSize().height)/2);
 		setVisible(true);
 		escenografia=this;
-		this.setLocation((Toolkit.getDefaultToolkit().getScreenSize().width-this.getSize().width)/2, (Toolkit.getDefaultToolkit().getScreenSize().height-this.getSize().height)/2);
 	}
 	
 	public JSplitPane getSplitPane() {
@@ -124,7 +122,6 @@ public class Escenografia extends JFrame implements MouseListener, ListSelection
 
 			System.out.println("Circuito no válido.");
 		}
-		
 	}
 	
 	public void responderCancelar(){
@@ -134,20 +131,5 @@ public class Escenografia extends JFrame implements MouseListener, ListSelection
 		if (ultimoArchivoElegido!=null){
 			PrePartida.getPrePartida().setEstado("Circuito: '"+ultimoArchivoElegido+"'.", Font.PLAIN);
 		}
-	}
-	
-	public void mouseClicked(MouseEvent e) {
-		try {
-			String nombre = new String(((JButton)e.getSource()).getText());
-			this.getClass().getMethod("responder"+nombre, (Class[])null).invoke(this, (Object[])null);
-		} catch (Exception ex) {	
-			ex.printStackTrace();
-		}		
-	}
-
-	public void mousePressed(MouseEvent e) { }
-	public void mouseReleased(MouseEvent e) { }
-	public void mouseEntered(MouseEvent e) { }
-	public void mouseExited(MouseEvent e) { }
+	}	
 }
-

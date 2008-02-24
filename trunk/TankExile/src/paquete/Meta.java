@@ -72,9 +72,8 @@ public class Meta extends Bloque{
 			PrePartida.getPrePartida().setEstado("Fin del juego. Usted ha ganado...", Font.BOLD);
 		else
 			PrePartida.getPrePartida().setEstado("Fin del juego. Usted ha perdido...", Font.BOLD);
+		PrePartida.getPrePartida().titilar();
 		PrePartida.getPrePartida().setVisible(true);
 		Partida.getPartida().finalizar();
 	}
-	
-
 }

@@ -1,15 +1,13 @@
 package paquete;
 import java.awt.*;
 import java.io.IOException;
-
-// Clase que contiene en sí la información sobre los elementos que componen el circuito de juego.
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import javax.swing.JOptionPane;
 
-
+// Clase que contiene en sí la información sobre los elementos que componen el circuito de juego.
 public class Circuito implements CircuitoControlable, Serializable, Imitable{
 	private transient static Circuito circuito;
 	private transient CargadorCircuitoTXT cargadorTXT; // Permite la conversión del archivo txt a circuito.
@@ -39,13 +37,9 @@ public class Circuito implements CircuitoControlable, Serializable, Imitable{
 						bloque = cargadorTXT.getBloqueLeido(i,j); // El elemento a crear es leído para ser agregado al circuito.
 						
 					} catch (IOException ex) {
-						System.out.println("Error de IO al leer el circuito.");
-						ex.printStackTrace();
-						System.exit(-1);
+						System.out.println("Error de IO al leer el circuito."); ex.printStackTrace(); System.exit(-1);
 					}
-					if ((i==Finals.BLOQUES_NUM/2)&&(j==Finals.BLOQUES_NUM/2)&&(!(bloque instanceof Meta))){
-							bloque = null;
-					}
+					if ((i==Finals.BLOQUES_NUM/2)&&(j==Finals.BLOQUES_NUM/2)&&(!(bloque instanceof Meta))){bloque = null;}
 				}
 				this.agregarBloque(bloque); // Es agregado el bloque leído al circuito.
 			}
@@ -65,9 +59,7 @@ public class Circuito implements CircuitoControlable, Serializable, Imitable{
 	public void setTanques(Tanque tanqueLocal, Tanque tanqueOponente){
 		this.tanqueLocal = tanqueLocal;
 		this.tanqueOponente = tanqueOponente;
-		
 	}
-	
 	
 	// Método privado que añade un bloque dado al circuito (tanto a la matriz como al grupo de objetos a representar).
 	private void agregarBloque(Bloque bloque){
@@ -76,7 +68,6 @@ public class Circuito implements CircuitoControlable, Serializable, Imitable{
 			if (bloque instanceof Meta){ // Es verificada la posibilidad de que este bloque sea una meta, para vincularla con alguno de los atributos.
 				metas[Math.abs(((Meta)bloque).getNumero()%2)] = (Meta)bloque ;
 			}
-			
 			bloque.setIndice(bloques.indexOf(bloque));
 			//System.out.println(bloque.getClass().getSimpleName() +":"+ bloque.getIndice());
 		}
@@ -90,18 +81,11 @@ public class Circuito implements CircuitoControlable, Serializable, Imitable{
 		}
 	}
 	
-	
-	// Método que mantiene la coherencia entre el circuito y su tanque local.
-	// También ejecuta: el efecto de deterioro del muro correspondiente (en caso de colisión) y la corrección de la posición del tanque.
-	// Además indica al circuito remoto la existencia de choques.
-	// Indica además la llegada a la meta.
-	// Método que se encarga de mantener la coherencia entre el circuito y su tanque local.
 	public void actuar(){
 		for(int i=0; i<bloques.size();i++){
 			Bloque bloque = (Bloque)bloques.get(i);
-			if (tanqueLocal.getBounds().intersects(bloque.getBounds())){
+			if (tanqueLocal.getBounds().intersects(bloque.getBounds()))
 				elementosChocados.add(bloque);
-			}	
 		}
 		
 		Iterator iterador = elementosChocados.iterator();
@@ -153,29 +137,24 @@ public class Circuito implements CircuitoControlable, Serializable, Imitable{
 	
 	public void imitar(Imitable circuito){
 		Object[] array = null;
-		
 		try{
 			array = (Object[])circuito.getParametros();
 		}catch(Exception e){e.printStackTrace();}
 		
 		ArrayList<Imitable> listaImitables = (ArrayList<Imitable>) array[0];
-		
 		Iterator<Imitable> iterador = listaImitables.iterator();
 		
 		try {
 			while(iterador.hasNext()){
 				Bloque bloque = (Bloque)iterador.next();
-				//System.out.println("Bloque " + bloque.getIndice());
 				this.bloques.get(bloque.getIndice()).imitar(bloque);
 			}
 		} catch (Exception ex) {
-			System.out.println("Error al imitar al circuito remoto. El oponente ha finalizado la sesión.");
 			ex.printStackTrace();
 			JOptionPane.showMessageDialog(null, "El oponente abandono conexión.");
 			System.exit(0);
 		}
 	}
-	
 	
 	public static Circuito getCircuito(){
 		return circuito;
@@ -183,7 +162,6 @@ public class Circuito implements CircuitoControlable, Serializable, Imitable{
 
 	public Object[] getParametros() throws RemoteException {
 		Object[] arreglo = {this.elementosAImitar};
-		//System.out.println("getParametros con elementos=" + elementosAImitar.size());
 		elementosAImitar = new ArrayList<Imitable>();
 		return arreglo;
 	}
