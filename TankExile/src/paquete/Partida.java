@@ -43,7 +43,7 @@ public class Partida extends Canvas implements Runnable{
 		panel.setPreferredSize(new Dimension(Finals.ANCHO_VENTANA,Finals.ALTO_VENTANA)); // Establecimiento de las dimensiones del panel.
 		panel.setLayout(new GridLayout());
 		panel.add(this); // El panel pintará este canvas (definido por esta instancia de Partida).
-		ventana.setBounds(0,0,Finals.ANCHO_VENTANA+6,Finals.ALTO_VENTANA+27); // Establecimiento de las dimensiones de la ventana.
+		ventana.setBounds(0,0,Finals.ANCHO_VENTANA+6,Finals.ALTO_VENTANA+29); // Establecimiento de las dimensiones de la ventana.
 		ventana.setVisible(true); // Ventana visible.
 		ventana.addWindowListener(new WindowAdapter() {public void windowClosing(WindowEvent e) {System.exit(0);}});
 		ventana.setResizable(false); // La ventana no es de tamaño ajustable.
@@ -71,30 +71,29 @@ public class Partida extends Canvas implements Runnable{
 		this.addKeyListener(jugador); // El jugador comienza a escuchar el teclado.
 			
 		// Ambos tanques son ubicados en sus metas correspondientes.
-		tanquePropio.setX(circuito.getMeta(yoID).getX());
-		tanquePropio.setY(circuito.getMeta(yoID).getY());
+		//tanquePropio.setX(circuito.getMeta(yoID).getX());
+		//tanquePropio.setY(circuito.getMeta(yoID).getY());
 		
-		tanqueLocalLigadoOponente.setX(circuito.getMeta(otroID).getX());
-		tanqueLocalLigadoOponente.setY(circuito.getMeta(otroID).getY());
+		tanquePropio.getBounds().setLocation(circuito.getMeta(yoID).getBounds().getLocation());
+		tanqueLocalLigadoOponente.getBounds().setLocation(circuito.getMeta(otroID).getBounds().getLocation());
+		//tanqueLocalLigadoOponente.setX(circuito.getMeta(otroID).getX());
+		//tanqueLocalLigadoOponente.setY(circuito.getMeta(otroID).getY());
 
 		// Creación y bindeo de las bolas.
-		bolaBuena = new Bola(true,this.yoID == 1);
-		bolaMala = new Bola(false,!(this.yoID == 1));
+		bolaBuena = new Bola(true);
+		bolaMala = new Bola(false);
 		
 		circuito.agregarBola(bolaBuena);
 		circuito.agregarBola(bolaMala);
 		
 		
 		if (this.yoID == 1){
-			bolaBuena.start();
 			conexion.ponerImitado("bolaBuena", bolaBuena);
 			conexion.ponerImitador("bolaMala", bolaMala);
 		}else{
-			bolaMala.start();
 			conexion.ponerImitado("bolaMala", bolaMala);
 			conexion.ponerImitador("bolaBuena", bolaBuena);
 		}
-		
 		
 		conexion.ponerImitador("circuito", circuito);
 		conexion.ponerImitado("circuito", circuito);
@@ -111,6 +110,8 @@ public class Partida extends Canvas implements Runnable{
 		// Se comienza la sincronización de los dos circuitos.
 		this.nickPropio = (prePartida.getNickPropio());
 		this.nickOponente = conexion.getNickOponente();
+		
+		if (this.yoID == 1){bolaBuena.start();}else{bolaMala.start();}
     }
 
     // Método que llama a la actuación de cada tanque.

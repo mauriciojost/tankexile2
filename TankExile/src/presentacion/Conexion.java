@@ -98,10 +98,14 @@ public class Conexion implements Conectable{
 	public void establecerIDs(){
 		clavePropia = random.nextDouble();
 		try{conexionRemoto.setClaveOponente(clavePropia);}catch(RemoteException e){e.printStackTrace();}
+		System.out.print("Esperando clave del oponente...");
 		while (!claveOponenteRecibida){
+			System.out.print(".");
 			try{Thread.sleep(Finals.ESPERA_CONEXION);}catch(InterruptedException e){e.printStackTrace();}
 		}
 		miID = ((clavePropia >= claveOponente)?1:0);
+		System.out.println();
+		System.out.println("Obtenido el ID local: "+miID+" (clavePropia>=claveOponente?):("+clavePropia+">="+claveOponente+").");
 	}
 	
 	public int getID(){
