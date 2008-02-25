@@ -14,19 +14,15 @@ public class Bola extends Thread implements Imitable, ElementoDeJuego{
 	private transient static final int MARGEN = 1;
 	private transient static BufferedImage imagen[] = new BufferedImage[2];
 
-	
 	private transient boolean correrHilos = true; // Indicador de detención del hilo.
-	//private transient Tanque tanquePropio;
 	private transient boolean buena; // Indicador de bola buena o mala.
 	private transient Point velocidad = new Point(0,0);
 	private Rectangle bounds = new Rectangle((Finals.BLOQUES_NUM/2) * 20+5,(Finals.BLOQUES_NUM/2) * 20+5,Finals.BLOQUE_LADO_LONG/2,Finals.BLOQUE_LADO_LONG/2);
 	private transient int currentFrame; // Indicador de la imagen a mostrar.
-	private transient boolean soyLocal = false; // Indicador de que la bola actual es controlada localmente, y no de forma remota.
 	private transient Random rnd = new Random(); // Generador de números pseudo aleatorios usados en el rebote de las bolas.
 	
 	// Contructor.
-	public Bola(boolean buena, boolean soyLocal) {
-		this.soyLocal = soyLocal;
+	public Bola(boolean buena) {
 		this.setName(buena?"Hilo bola buena":"Hilo bola mala");
 		this.buena = buena; //this.tanquePropio = tanquePropio;
 		currentFrame = (buena?0:1);
@@ -49,9 +45,7 @@ public class Bola extends Thread implements Imitable, ElementoDeJuego{
 
 	@Override
 	public void run(){
-		if (soyLocal){
-			velocidad.setLocation((rnd.nextBoolean()?1:-1), (rnd.nextBoolean()?1:-1));
-		}
+		velocidad.setLocation((rnd.nextBoolean()?1:-1), (rnd.nextBoolean()?1:-1));
 		try {Thread.sleep(4000);} catch (InterruptedException ex) {ex.printStackTrace();}
 		while(correrHilos){
 			actuar(); 

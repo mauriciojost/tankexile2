@@ -82,14 +82,14 @@ public class Circuito implements CircuitoControlable, Serializable, Imitable{
 	}
 	
 	public void actuar(){
-		for(int i=0; i<bloques.size();i++){
+		for(int i=0; i<bloques.size();i++){ // Choque de tanque local con muros.
 			Bloque bloque = (Bloque)bloques.get(i);
 			if (tanqueLocal.getBounds().intersects(bloque.getBounds()))
 				elementosChocados.add(bloque);
 		}
 		
 		Iterator iterador = elementosChocados.iterator();
-		while(iterador.hasNext()){
+		while(iterador.hasNext()){ // Despachamiento de eventos chocados en la comprobación anterior.
 			Bloque bloque = (Bloque)iterador.next();
 			bloque.eventoChoque(tanqueLocal);
 			tanqueLocal.eventoChoque(bloque);
@@ -97,7 +97,7 @@ public class Circuito implements CircuitoControlable, Serializable, Imitable{
 			iterador.remove();
 		}
 		
-		for (int j=0; j<bolas.size();j++){
+		for (int j=0; j<bolas.size();j++){ // Choque de bolas con bloques.
 			Bola bola = (Bola)bolas.get(j);
 			for(int i=0; i<bloques.size();i++){
 				Bloque bloque = (Bloque)bloques.get(i);
@@ -108,7 +108,7 @@ public class Circuito implements CircuitoControlable, Serializable, Imitable{
 			}
 		}
 		
-		for(int i=0; i<bolas.size();i++){
+		for(int i=0; i<bolas.size();i++){ // Choque de bolas con tanque local.
 			Bola bola = (Bola)bolas.get(i);
 			if (tanqueLocal.getBounds().intersects(bola.getBounds())){
 				tanqueLocal.eventoChoque(bola);
@@ -116,7 +116,7 @@ public class Circuito implements CircuitoControlable, Serializable, Imitable{
 			}	
 		}
 		
-		for(int i=0; i<bolas.size();i++){
+		for(int i=0; i<bolas.size();i++){ // Choque de bolas con tanque oponente.
 			Bola bola = (Bola)bolas.get(i);
 			if (tanqueOponente.getBounds().intersects(bola.getBounds())){
 				tanqueOponente.eventoChoque(bola);
@@ -124,7 +124,7 @@ public class Circuito implements CircuitoControlable, Serializable, Imitable{
 			}	
 		}
 		
-		if (tanqueLocal.getBounds().intersects(tanqueOponente.getBounds())){
+		if (tanqueLocal.getBounds().intersects(tanqueOponente.getBounds())){ // Choque de tanque local contra tanque oponente.
 			tanqueLocal.eventoChoque(tanqueOponente);
 			tanqueOponente.eventoChoque(tanqueLocal);
 		}
