@@ -43,21 +43,9 @@ public class Partida extends Canvas implements Runnable{
 		panel.setPreferredSize(new Dimension(Finals.ANCHO_VENTANA,Finals.ALTO_VENTANA)); // Establecimiento de las dimensiones del panel.
 		panel.setLayout(new GridLayout());
 		panel.add(this); // El panel pintará este canvas (definido por esta instancia de Partida).
-	
-
 		ventana.setBounds(0,0,Finals.ANCHO_VENTANA+6,Finals.ALTO_VENTANA+27); // Establecimiento de las dimensiones de la ventana.
-		
 		ventana.setVisible(true); // Ventana visible.
-
-		ventana.addWindowListener(
-			new WindowAdapter() { // Ventana tiene escucha, una clase anónima, para el cierre.
-				public void windowClosing(WindowEvent e) {
-					System.exit(0);
-				}
-			}
-		);
-
-		
+		ventana.addWindowListener(new WindowAdapter() {public void windowClosing(WindowEvent e) {System.exit(0);}});
 		ventana.setResizable(false); // La ventana no es de tamaño ajustable.
 		this.createBufferStrategy(2); // Es creado sobre este canvas una estrategia de buffering, de dos buffers.
 		estrategia = this.getBufferStrategy(); // Sobre este objeto se aplicará el método de paint. Este realizará por sí mismo el doble buffering.
@@ -92,8 +80,6 @@ public class Partida extends Canvas implements Runnable{
 		// Creación y bindeo de las bolas.
 		bolaBuena = new Bola(true,this.yoID == 1);
 		bolaMala = new Bola(false,!(this.yoID == 1));
-		
-		
 		
 		circuito.agregarBola(bolaBuena);
 		circuito.agregarBola(bolaMala);
