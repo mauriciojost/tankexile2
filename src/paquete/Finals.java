@@ -21,7 +21,7 @@ public interface Finals{
 	public static final int ARRIBA =			3;
 	
 	public static final int CANTIDAD_DE_INTENTOS_DE_CONEXION = 3;
-	public static final int ESPERA_CONEXION =	50;
+	public static final int ESPERA_CONEXION =	5000;
 	
 	public static final Color COLOR_LEYENDAS_PARTIDA = Color.black;
 }
