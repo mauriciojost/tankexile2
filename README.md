@@ -3,6 +3,15 @@
 This is a university project. 
 Simple game of tanks making full use of polymorphism. 
 
+
+![Splash screen](doc/images/demo-splash.png)
+
+![Game screen](doc/images/demo-game.png)
+
+## Disclaimer
+
+Want to dig into java-begginer bugs? Launch it then :)
+
 ## Build
 
 To generate a distributable `jar` do as follows: 
