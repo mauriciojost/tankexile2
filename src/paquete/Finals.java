@@ -5,8 +5,8 @@ import java.awt.Color;
 public interface Finals{	
 
 	public static final int PERIODO =			10;
-	public static final int PERIODO_SINCRONIZACION_TANQUES =			5;
-	public static final int PERIODO_SINCRONIZACION_BOLAS = 5;
+	public static final int PERIODO_SINCRONIZACION_TANQUES =			10;
+	public static final int PERIODO_SINCRONIZACION_BOLAS = 100;
 	public static final int PERIODO_BOLA =		10;
 	
 	public static final int BLOQUES_NUM =		32;
