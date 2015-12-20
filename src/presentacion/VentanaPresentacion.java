@@ -193,7 +193,7 @@ public class VentanaPresentacion extends JFrame {
 						Conexion.getConexion().conectar(iPOponente.getText()); // Intento de conexión.
 					}catch(Exception ex){
 						System.out.println("Fallo en el intento. Intentando conexión nuevamente...");
-						//ex.printStackTrace();
+						ex.printStackTrace();
 						try{Thread.sleep(Finals.ESPERA_CONEXION);}catch(InterruptedException r){}
 					}
 					if (Conexion.getConexion().conexionLista()) break; // Comprueba condición de salida del bucle (la conexión se ha establecido).
